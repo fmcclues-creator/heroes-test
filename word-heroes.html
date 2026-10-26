@@ -366,7 +366,7 @@ function loadArt(models, images) {
   }
   const TL = new THREE.TextureLoader();
   for (const [k, f] of Object.entries(images)) jobs.push(new Promise(res => TL.load(ART + f, t => { IMG[k] = t; res(); }, undefined, () => res())));
-  return Promise.race([Promise.all(jobs), new Promise(r => setTimeout(r, 15000))]);
+  return Promise.race([Promise.all(jobs), new Promise(r => setTimeout(r, 45000))]);
 }
 
 // ---------- THE CHILD (set per order) ----------

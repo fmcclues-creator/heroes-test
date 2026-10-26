@@ -1,0 +1,911 @@
+<!doctype html><html lang="ar" dir="rtl"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Pearl Diver · غوّاص اللؤلؤ</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+Bhaijaan+2:wght@500;700;800&display=swap">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/utils/SkeletonUtils.js"></script>
+<style>
+:root{
+  --ink:#10233f; --cream:#fff8ec; --sea:#1f8fc9; --sun:#ffc93c; --mint:#2fd39a; --berry:#ff5f8f; --pearl:#fff6fb; --line:#10233f;
+  --font:'Baloo Bhaijaan 2',system-ui,sans-serif;
+  color-scheme:light;
+}
+html,body{height:100%;margin:0;background:#1f8fc9;overflow:hidden;touch-action:none;-webkit-user-select:none;user-select:none}
+body{font-family:var(--font);color:var(--ink)}
+canvas#c{position:fixed;inset:0;width:100%;height:100%;display:block}
+.hidden{display:none!important}
+button{font-family:var(--font);cursor:pointer;color:var(--ink)}
+button:focus-visible{outline:3px solid var(--sun);outline-offset:2px}
+
+/* HUD */
+#hud{position:fixed;inset:0;pointer-events:none;padding:calc(env(safe-area-inset-top,0px) + 10px) max(12px,env(safe-area-inset-right,0px)) 0 max(12px,env(safe-area-inset-left,0px))}
+.topbar{display:flex;gap:8px;align-items:center;justify-content:space-between}
+.pills{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.pill{background:#fff;border:3px solid var(--line);border-radius:999px;padding:2px 12px;font-weight:800;font-size:17px;display:flex;align-items:center;gap:6px;box-shadow:0 3px 0 var(--line);white-space:nowrap;font-variant-numeric:tabular-nums}
+.iconbtn{pointer-events:auto;width:44px;height:44px;border-radius:50%;border:3px solid var(--line);background:#fff;box-shadow:0 3px 0 var(--line);font-size:20px;display:grid;place-items:center;padding:0}
+#airWrap{margin:8px auto 0;max-width:420px;display:flex;align-items:center;gap:8px;color:#fff;-webkit-text-stroke:.5px var(--line)}
+#airWrap b{font-size:16px;white-space:nowrap;font-weight:800}
+.bar{flex:1;height:16px;background:#fff;border:3px solid var(--line);border-radius:999px;overflow:hidden}
+#air{height:100%;width:100%;background:linear-gradient(90deg,#7ff9ff,#2fd39a);transition:width .15s}
+#air.low{background:linear-gradient(90deg,#ff5f6d,#ffb13c);animation:blink .5s infinite alternate}
+@keyframes blink{to{filter:brightness(1.4)}}
+#card{margin:10px auto 0;max-width:520px;background:var(--cream);border:3px solid var(--line);border-radius:20px;box-shadow:0 4px 0 var(--line);padding:8px 14px;text-align:center;direction:rtl}
+#card .tag{display:inline-block;font-size:13px;font-weight:800;background:var(--ink);color:#fff;border-radius:999px;padding:0 10px;margin-bottom:2px}
+#card .clue{font-size:clamp(18px,4.4vw,24px);font-weight:700;line-height:1.35}
+#card .clue .emo{font-size:1.25em;vertical-align:-3px;margin-inline-start:6px}
+.slots{display:flex;justify-content:center;gap:5px;margin-top:6px;direction:rtl;flex-wrap:wrap}
+.slot{width:38px;height:44px;border:3px dashed #9aa3b8;border-radius:10px;display:grid;place-items:center;font-size:28px;font-weight:800;background:#fff}
+.slot.given{border-style:solid;border-color:#c5cbd8;color:#5b6478;background:#f4f6fb}
+.slot.got{border-style:solid;border-color:var(--line);background:var(--mint);color:#fff}
+.slot.next{border-color:var(--sun);border-style:solid;animation:pulse .8s infinite alternate}
+@keyframes pulse{to{transform:scale(1.08)}}
+#toast{position:fixed;left:50%;top:46%;transform:translate(-50%,-50%);font-size:clamp(26px,6.5vw,44px);font-weight:800;color:#fff;-webkit-text-stroke:2px var(--line);text-shadow:0 4px 0 var(--line);pointer-events:none;transition:opacity .25s;opacity:0;white-space:pre-line;text-align:center;max-width:calc(100vw - 32px)}
+#toast.on{opacity:1}
+#pointer{position:fixed;top:50%;font-size:40px;pointer-events:none;filter:drop-shadow(0 3px 0 var(--line));transform:translateY(-50%)}
+
+/* touch joystick */
+#joy{position:fixed;left:max(18px,env(safe-area-inset-left,0px));bottom:calc(env(safe-area-inset-bottom,0px) + 18px);width:130px;height:130px;border-radius:50%;background:#ffffff44;border:4px solid #ffffffaa;touch-action:none}
+#knob{position:absolute;left:50%;top:50%;width:56px;height:56px;margin:-28px 0 0 -28px;border-radius:50%;background:#fff;border:4px solid var(--line);box-shadow:0 4px 0 var(--line)}
+
+/* screens */
+.screen{position:fixed;inset:0;display:grid;place-items:center;padding:calc(env(safe-area-inset-top,0px) + 16px) max(16px,env(safe-area-inset-right,0px)) calc(env(safe-area-inset-bottom,0px) + 16px) max(16px,env(safe-area-inset-left,0px));background:linear-gradient(#0f5f99cc,#1f8fc9cc);overflow:auto}
+.panel{background:var(--cream);border:4px solid var(--line);border-radius:28px;box-shadow:0 8px 0 var(--line);padding:18px 18px 16px;width:min(560px,100%);text-align:center;position:relative;box-sizing:border-box}
+h1{margin:30px 0 0;font-size:clamp(36px,9vw,56px);line-height:1.05;color:var(--pearl);-webkit-text-stroke:2px var(--line);text-shadow:0 5px 0 var(--line);font-weight:800}
+h2{margin:4px 0 6px;font-size:24px}
+.sub{margin:6px 0 12px;font-size:16px;line-height:1.45}
+.langs{position:absolute;top:12px;inset-inline-start:12px;display:flex;border:3px solid var(--line);border-radius:999px;overflow:hidden}
+.langs button{border:0;background:#fff;font-weight:800;padding:2px 12px;font-size:14px}
+.langs button.on{background:var(--ink);color:#fff}
+.me{display:flex;align-items:center;gap:12px;border:3px solid var(--line);border-radius:20px;background:#e6f6ff;padding:6px 14px 6px 6px;margin:6px 0 12px;box-shadow:0 4px 0 var(--line);text-align:start}
+.me canvas{width:110px;height:110px;border-radius:14px;background:#bfe7ff}
+.me b{font-size:26px;display:block}.me small{font-size:14px;font-weight:600}
+.ages{display:flex;gap:6px;justify-content:center;align-items:center;margin:0 0 12px;flex-wrap:wrap;font-weight:800}
+.age{width:46px;height:46px;border-radius:50%;border:3px solid var(--line);background:#fff;font-size:20px;font-weight:800;box-shadow:0 3px 0 var(--line);padding:0}
+.age.on{background:var(--sun)}
+.levels{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
+.lvl{border:3px solid var(--line);border-radius:16px;background:#fff;padding:6px 4px;font-weight:800;font-size:16px;box-shadow:0 3px 0 var(--line);line-height:1.2}
+.lvl small{display:block;font-weight:500;font-size:12px}
+.lvl .st{font-size:13px;color:#d79a00;letter-spacing:1px}
+.lvl.on{background:var(--sun)}
+.lvl[disabled]{opacity:.45;cursor:default}
+.go{width:100%;border:4px solid var(--line);border-radius:999px;background:var(--mint);color:#fff;font-size:26px;font-weight:800;padding:6px 0;box-shadow:0 5px 0 var(--line);-webkit-text-stroke:1px var(--line)}
+.ghost{border:3px solid var(--line);border-radius:999px;background:#fff;font-weight:800;font-size:16px;padding:4px 16px;box-shadow:0 3px 0 var(--line)}
+.howto{font-size:13px;text-align:start;background:#eef6ff;border-radius:14px;padding:8px 12px;margin:0 0 12px;line-height:1.55}
+.howto b{display:inline-block;min-width:64px}
+.stars{font-size:40px;color:#d9dde6;letter-spacing:4px}
+.stars .on{color:var(--sun);-webkit-text-stroke:2px var(--line)}
+.stats{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:8px 0}
+.learned{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;direction:rtl;margin:6px 0 12px}
+.learned span{background:#fff;border:2px solid var(--line);border-radius:10px;padding:0 8px;font-weight:700;font-size:16px}
+.learned span.miss{background:#ffe1e8}
+.row{display:flex;gap:8px;justify-content:center}
+#endImg{width:110px;height:110px;margin:-6px auto 0}
+/* reading scroll */
+#read .panel{background:#fbf0d6;direction:rtl;text-align:right}
+#read .scrollT{display:inline-block;background:var(--ink);color:#fff;border-radius:999px;padding:0 12px;font-weight:800;font-size:14px}
+#read .passage{font-size:clamp(19px,4.6vw,23px);line-height:1.75;margin:10px 0;font-weight:600}
+#read .q{font-size:clamp(18px,4.4vw,21px);font-weight:800;margin:6px 0 10px}
+#read .opts{display:grid;gap:8px}
+#read .opt{border:3px solid var(--line);border-radius:16px;background:#fff;font-size:18px;font-weight:700;padding:8px 12px;text-align:right;box-shadow:0 3px 0 var(--line)}
+#read .opt.ok{background:var(--mint);color:#fff}
+#read .opt.no{background:#ffd3dc;opacity:.7}
+#read .opt:disabled{color:inherit}#read .opt.ok:disabled{color:#fff}
+#read .fb{min-height:28px;font-weight:800;margin-top:8px;text-align:center}
+[dir=rtl] .howto{text-align:right}
+</style>
+
+<canvas id="c"></canvas>
+
+<div id="hud" class="hidden">
+  <div class="topbar">
+    <div class="pills"><span class="pill" id="hearts"></span><span class="pill">🦪 <span id="score">0</span></span><span class="pill" id="lvlPill"></span></div>
+    <div style="display:flex;gap:8px;pointer-events:none"><button class="iconbtn hidden" id="musicBtn" aria-label="Music">🎵</button><button class="iconbtn" id="pauseBtn" aria-label="Pause">⏸</button></div>
+  </div>
+  <div id="airWrap"><b id="airLbl"></b><div class="bar"><div id="air"></div></div></div>
+  <div id="card"></div>
+</div>
+<div id="pointer" class="hidden">➜</div>
+<div id="toast"></div>
+<div id="joy" class="hidden"><div id="knob"></div></div>
+
+<div class="screen" id="menu">
+  <div class="panel">
+    <div class="langs"><button id="langAr" class="on">عربي</button><button id="langEn">English</button></div>
+    <h1 id="title"></h1>
+    <p class="sub" id="tagline"></p>
+    <div class="me"><canvas id="pvMe" width="220" height="220"></canvas><div><small id="meT"></small><b id="meName"></b></div></div>
+    <div class="ages" id="ages"><span id="ageT"></span><button class="age" data-a="8"></button><button class="age" data-a="9"></button><button class="age" data-a="10"></button><button class="age" data-a="11"></button><button class="age" data-a="12"></button></div>
+    <div class="levels" id="levels"></div>
+    <div class="howto" id="howto"></div>
+    <button class="go" id="playBtn"></button>
+  </div>
+</div>
+
+<div class="screen hidden" id="read">
+  <div class="panel">
+    <span class="scrollT" id="readT"></span>
+    <div class="passage" id="passage"></div>
+    <div class="q" id="question"></div>
+    <div class="opts" id="opts"></div>
+    <div class="fb" id="fb"></div>
+  </div>
+</div>
+
+<div class="screen hidden" id="pause">
+  <div class="panel"><h2 id="pauseT"></h2><div class="row"><button class="go" id="resumeBtn" style="flex:1"></button></div><p></p><button class="ghost" id="quitBtn"></button></div>
+</div>
+
+<div class="screen hidden" id="end">
+  <div class="panel">
+    <canvas id="endImg" width="220" height="220"></canvas>
+    <h2 id="endTitle"></h2>
+    <div class="stars" id="endStars"></div>
+    <div class="stats" id="endStats"></div>
+    <div id="learnedT" style="font-weight:800"></div>
+    <div class="learned" id="learned"></div>
+    <div class="row"><button class="ghost" id="menuBtn"></button><button class="go" id="nextBtn" style="flex:1"></button></div>
+  </div>
+</div>
+
+<script>
+'use strict';
+// ====================================================================================
+//  Pearl Diver · غوّاص اللؤلؤ — Arabic spelling + reading comprehension for ages 8–12.
+//  The child dives from an old Kuwaiti pearling boat. Each word: read the clue, then
+//  collect the letter-pearls in order. Air runs out → swim to the surface to breathe
+//  (or the crew pulls you up by the rope). Between words the captain hands over a
+//  scroll: a short heritage passage + question. Finish → find the treasure chest.
+// ====================================================================================
+const $ = id => document.getElementById(id);
+const SAVE_KEY = 'pearldiver.v1';
+let save = { age: 0, unlocked: 0, stars: [0, 0, 0] };
+try { const s = JSON.parse(localStorage.getItem(SAVE_KEY) || 'null'); if (s) save = Object.assign(save, s); } catch (_) {}
+let lang = 'ar';
+try { const sl = sessionStorage.getItem('abdullahworld.lang'); if (sl === 'en' || sl === 'ar') lang = sl; } catch (_) {}
+function persist() { try { localStorage.setItem(SAVE_KEY, JSON.stringify(save)); } catch (_) {} }
+
+// ---------- THE CHILD (set per order — same block in every game of the bundle) ----------
+// headFront / headBack: transparent PNG cut-outs of the child's character head (data URI or file next to this page).
+// Leave them null to use the simple built-in placeholder head.
+const CHILD = {
+  name: { ar: 'ميار', en: 'Mayar' },
+  gender: 'girl',
+  skin: 0xd09a74, hair: 0x24170f, hijab: false,
+  suit: { main: 0xb8264a, accent: 0xff8a65, glow: 0x7ff9ff, veh: 0xffb000 },
+  age: 9,
+  headFront: null, headBack: null,
+  runModel: 'mayar-run.gltf.json', swimModel: 'mayar-swim.gltf.json', walkModel: 'mayar-run.gltf.json'
+};
+function kidName() { return CHILD.name[lang] || CHILD.name.ar; }
+const G = CHILD.gender === 'girl';
+
+// ---------- text ----------
+const T = {
+  ar: {
+    age: 'كم عمرك؟', title: 'غوّاص اللؤلؤ', tagline: 'اغطس من سفينة الغوص، اجمع لآلئ الحروف لتكتب الكلمات، واقرأ رسائل النّوخذة لتصل إلى الكنز! للأعمار من ٨ إلى ١٢ سنة.',
+    me: 'الغوّاص', meG: 'الغوّاصة', go: 'هيّا يا',
+    levels: [['الهير القريب', 'سهل'], ['جزيرة فيلكا', 'متوسط'], ['الهيرات البعيدة', 'صعب']],
+    howto: '<b>اسبح</b> بالأسهم أو بعصا التحكّم<br><b>تنفّس</b> اصعد إلى سطح الماء أو ادخل فقاعات الهواء<br><b>اكتب</b> اجمع لآلئ الحروف بالتّرتيب',
+    play: 'هيّا نغوص!', air: 'الهواء', spell: 'اجمع حروف الكلمة', miss1: 'اجمع الحرف الناقص', miss2: 'اجمع الحرفين الناقصين', lvl: 'الغوصة',
+    good: 'أحسنت!', goodG: 'أحسنتِ!', notNext: 'ليس هذا الحرف', word: 'كلمة رائعة!', breath: 'تنفّس!', low: 'الهواء قليل!\nاصعد للأعلى', rope: 'سحبك البحّارة بالحبل', jelly: 'انتبه من قنديل البحر!', jellyG: 'انتبهي من قنديل البحر!',
+    scroll: 'رسالة من النّوخذة', right: 'إجابة صحيحة!', wrong: 'اقرأ مرّة أخرى وحاول', cont: 'تابع الغوص',
+    chest: 'ابحث عن صندوق الكنز!', found: 'وجدت الكنز!', foundG: 'وجدتِ الكنز!',
+    pause: 'استراحة', resume: 'تابع', quit: 'القائمة', win: 'أحسنت يا {n}!', winG: 'أحسنتِ يا {n}!', over: 'انتهى يوم الغوص', learned: 'الكلمات التي تعلّمتها', accuracy: 'الدّقّة', next: 'الغوصة التالية', again: 'العب مرّة أخرى', menu: 'القائمة', locked: 'مقفلة'
+  },
+  en: {
+    age: 'How old are you?', title: 'Pearl Diver', tagline: "Dive from an old pearling boat, collect letter-pearls to spell Arabic words, and read the captain's scrolls to reach the treasure! For ages 8–12.",
+    me: 'Diver', meG: 'Diver', go: "Let's dive,",
+    levels: [['The Near Bank', 'Easy'], ['Failaka Island', 'Medium'], ['The Far Banks', 'Hard']],
+    howto: '<b>Swim</b> arrow keys or the joystick<br><b>Breathe</b> swim up to the surface or into air bubbles<br><b>Spell</b> collect the letter-pearls in order',
+    play: "Let's dive!", air: 'Air', spell: 'Collect the letters', miss1: 'Find the missing letter', miss2: 'Find the two missing letters', lvl: 'Dive',
+    good: 'Well done!', goodG: 'Well done!', notNext: 'Not that letter', word: 'Great word!', breath: 'Breathe!', low: 'Air is low!\nSwim up', rope: 'The crew pulled you up', jelly: 'Watch out for the jellyfish!', jellyG: 'Watch out for the jellyfish!',
+    scroll: "A scroll from the captain", right: 'Correct!', wrong: 'Read it again and try', cont: 'Keep diving',
+    chest: 'Find the treasure chest!', found: 'You found the treasure!', foundG: 'You found the treasure!',
+    pause: 'Paused', resume: 'Resume', quit: 'Menu', win: 'Well done, {n}!', winG: 'Well done, {n}!', over: 'The diving day is over', learned: 'Words you learned', accuracy: 'Accuracy', next: 'Next dive', again: 'Play again', menu: 'Menu', locked: 'Locked'
+  }
+};
+const t = k => { const v = T[lang][k]; if (G && T[lang][k + 'G'] !== undefined) return T[lang][k + 'G']; return v; };
+
+// ---------- learning content (Modern Standard Arabic, ages 8–12) ----------
+// WORDS[band]: [word (no tashkeel), emoji, clue]
+const WORDS = [
+  // Band 0 · ages 8–9
+  [['محارة', '🦪', 'صدفةٌ يختبئُ في داخلِها اللّؤلؤ'], ['مرجان', '🪸', 'كائناتٌ بحريّةٌ ملوّنةٌ تبني الشّعابَ في قاعِ البحر'], ['سلحفاة', '🐢', 'حيوانٌ بطيءٌ له درعٌ صلب، تضعُ بيضَها في رمالِ الشّاطئ'], ['شراع', '⛵', 'قماشٌ يدفعُه الهواءُ فتسيرُ السّفينة'], ['موجة', '🌊', 'ماءٌ يرتفعُ وينخفضُ على سطحِ البحر'], ['صياد', '🎣', 'رجلٌ يخرجُ إلى البحرِ ليصطادَ السّمك'], ['رمال', '🏖️', 'حبّاتٌ صغيرةٌ تغطّي الشّاطئ'], ['حبل', '🪢', 'يربطُه الغوّاصُ بجسمِه ويشدُّه ليصعدَ إلى السّفينة'], ['سمكة', '🐟', 'حيوانٌ يعيشُ في الماءِ ويتنفّسُ بالخياشيم'], ['قارب', '🛶', 'سفينةٌ صغيرةٌ نحرّكُها بالمجاديف'], ['شمس', '☀️', 'نجمٌ يضيءُ النّهارَ ويُدفئُ البحرَ في الصّيف']],
+  // Band 1 · age 10
+  [['لؤلؤة', '⚪', 'حبّةٌ ثمينةٌ لامعةٌ تتكوّنُ داخلَ المحارة'], ['غواص', '🤿', 'ينزلُ إلى قاعِ البحرِ ليجمعَ المحار'], ['مرساة', '⚓', 'نُلقيها في الماءِ لتثبتَ السّفينةُ في مكانِها'], ['أخطبوط', '🐙', 'حيوانٌ بحريٌّ له ثماني أذرعٍ طويلة'], ['ميناء', '🚢', 'مكانٌ على الشّاطئ تقفُ فيه السّفن'], ['دلفين', '🐬', 'حيوانٌ ذكيٌّ يسبحُ ويقفزُ فوقَ الموج'], ['بحارة', '🚣', 'الرّجالُ الذين يعملونَ على ظهرِ السّفينة'], ['سرطان', '🦀', 'حيوانٌ بحريٌّ يتحرّكُ جانبيًّا وله مِلقطان'], ['خياشيم', '🐟', 'أعضاءٌ تتنفّسُ بها الأسماكُ تحتَ الماء'], ['مجداف', '🛶', 'خشبةٌ طويلةٌ يحرّكُ بها البحّارةُ القارب'], ['بوصلة', '🧭', 'أداةٌ تدلُّ البحّارَ على الاتّجاهات']],
+  // Band 2 · ages 11–12
+  [['أعماق', '🌊', 'الأماكنُ البعيدةُ في أسفلِ البحر'], ['تراث', '🏺', 'عاداتُ الآباءِ والأجدادِ التي نحافظُ عليها'], ['شعاب', '🪸', 'صخورٌ مرجانيّةٌ تعيشُ فيها الأسماكُ الصّغيرة'], ['استكشاف', '🔦', 'البحثُ عن أماكنَ وأشياءَ لا نعرفُها'], ['نوخذة', '⛵', 'قائدُ سفينةِ الغوصِ في الكويتِ قديمًا'], ['ثروة', '💰', 'مالٌ وخيراتٌ كثيرةٌ يملكُها الإنسانُ أو الوطن'], ['مخلوقات', '🐠', 'كائناتٌ حيّةٌ خلقَها الله'], ['صبر', '⏳', 'أن نتحمّلَ التّعبَ ولا نستسلمَ حتّى ننجح'], ['تعاون', '🤝', 'أن يعملَ الجميعُ معًا ليصلوا إلى هدفٍ واحد'], ['مغامرة', '🧗', 'عملٌ جريءٌ فيه خطرٌ وتشويق'], ['تجارة', '🏪', 'بيعُ البضائعِ وشراؤها لكسبِ الرّبح']]
+];
+// READS[band]: [passage, question, correct, wrong, wrong] — real Kuwaiti pearl-diving heritage
+const READS = [
+  [['يغوصُ الغوّاصُ في البحرِ ليجمعَ المحار، ثمّ يضعُه في سلّةٍ صغيرةٍ معلّقةٍ في رقبتِه.', 'أين يضعُ الغوّاصُ المحار؟', 'في سلّةٍ معلّقةٍ في رقبتِه', 'في جيبِ ثوبِه', 'على رمالِ الشّاطئ'],
+   ['يحبسُ الغوّاصُ أنفاسَه تحتَ الماء. وحينَ يحتاجُ إلى الهواءِ يشدُّ الحبل، فيسحبُه البحّارُ إلى السّفينة.', 'ماذا يفعلُ الغوّاصُ حينَ يحتاجُ إلى الهواء؟', 'يشدُّ الحبلَ ليسحبَه البحّار', 'يسبحُ إلى الشّاطئ', 'ينتظرُ في قاعِ البحر'],
+   ['تخرجُ سفنُ الغوصِ في فصلِ الصّيف، لأنَّ البحرَ يكونُ فيه هادئًا ودافئًا.', 'لماذا تخرجُ سفنُ الغوصِ في الصّيف؟', 'لأنَّ البحرَ يكونُ هادئًا ودافئًا', 'لأنَّ السّمكَ يكونُ كثيرًا', 'لأنَّ الأمطارَ تكونُ غزيرة'],
+   ['قبلَ النّفط، كانَ كثيرٌ من أهلِ الكويتِ يغوصونَ لجمعِ اللّؤلؤ، ثمّ يبيعونَه ليشتروا الطّعامَ لعائلاتِهم.', 'ماذا كانوا يفعلونَ باللّؤلؤ؟', 'يبيعونَه ليشتروا الطّعام', 'يزيّنونَ به سفنَهم', 'يُعيدونَه إلى البحر']],
+  [['النّوخذةُ هو قائدُ السّفينة. وهو يعرفُ مواقعَ «الهيرات»، وهي أماكنُ في قاعِ البحرِ يكثرُ فيها المحار.', 'ما «الهيرات»؟', 'أماكنُ في قاعِ البحرِ يكثرُ فيها المحار', 'أسماءُ سفنِ الغوص', 'أغاني البحّارة'],
+   ['كانَ الغوّاصُ يضعُ على أنفِه مِلقطًا صغيرًا يُسمّى «الفِطام»، حتّى لا يدخلَ الماءُ إلى أنفِه.', 'لماذا يضعُ الغوّاصُ «الفطام»؟', 'حتّى لا يدخلَ الماءُ إلى أنفِه', 'ليرى في الماءِ بوضوح', 'ليسبحَ بسرعةٍ أكبر'],
+   ['على ظهرِ السّفينةِ يغنّي «النّهّام» أغانيَ جميلة، فيُشجّعُ البحّارةَ على العمل، فينسَونَ تعبَهم.', 'ما عملُ «النّهّام» على السّفينة؟', 'يغنّي ليشجّعَ البحّارة', 'يقودُ السّفينة', 'يطبخُ الطّعامَ للبحّارة'],
+   ['يقفُ «السّيبُ» على ظهرِ السّفينةِ ممسكًا الحبلَ المربوطَ بالغوّاص. فإذا شدَّ الغوّاصُ الحبل، سحبَه السّيبُ بسرعةٍ إلى السّطح.', 'مَن يسحبُ الغوّاصَ إلى السّطح؟', 'السّيب', 'النّوخذة', 'النّهّام']],
+  [['كانَ الغوّاصُ يضعُ قدمَه على حجرٍ ثقيلٍ مربوطٍ بحبلٍ ليهبطَ بسرعةٍ إلى القاع، ثمّ يتركُه فيسحبُه «السّيبُ» إلى السّفينة.', 'لماذا كانَ الغوّاصُ يستعملُ الحجرَ الثّقيل؟', 'ليهبطَ بسرعةٍ إلى القاع', 'ليحميَ قدمَه من الصّخور', 'ليصطادَ به السّمك'],
+   ['بعدَ أشهرٍ طويلةٍ في البحر، تعودُ السّفنُ إلى الكويت، ويُسمّى يومُ عودتِها «القفّال». وتنتظرُ العائلاتُ على الشّاطئِ فرِحةً بعودةِ الرّجال.', 'ماذا يعني «القفّال»؟', 'يومُ عودةِ سفنِ الغوصِ إلى الكويت', 'بدايةُ موسمِ الغوص', 'اسمُ لؤلؤةٍ كبيرة'],
+   ['انتشرَ اللّؤلؤُ المُستزرَعُ القادمُ من اليابان، وكانَ أرخصَ ثمنًا، فقلَّ الطّلبُ على اللّؤلؤِ الطّبيعيّ، وتركَ كثيرٌ من الكويتيّينَ مهنةَ الغوص.', 'لماذا تركَ كثيرٌ من الكويتيّينَ مهنةَ الغوص؟', 'لأنَّ اللّؤلؤَ المستزرعَ الأرخصَ قلّلَ الطّلبَ على الطّبيعيّ', 'لأنَّ البحرَ أصبحَ باردًا', 'لأنَّ السّفنَ أصبحت قليلة'], ['لم يكنِ الغوّاصُ يأخذُ أجرًا ثابتًا، بل يأخذُ نصيبًا من ثمنِ اللّؤلؤِ بعدَ بيعِه في نهايةِ الموسم.', 'إذا قلَّ اللّؤلؤُ في الموسم، ماذا يحدثُ لنصيبِ الغوّاص؟', 'يقلُّ نصيبُه', 'يزيدُ نصيبُه', 'يبقى نصيبُه كما هو']]
+];
+const LEVEL_CFG = [
+  { words: 4, reads: 2, R: 22, air: 42, jelly: 2, decoys: 6, vents: 2 },
+  { words: 5, reads: 2, R: 26, air: 36, jelly: 3, decoys: 7, vents: 2 },
+  { words: 5, reads: 3, R: 30, air: 32, jelly: 4, decoys: 8, vents: 2 }
+];
+const LOOKALIKE = [['ب', 'ت', 'ث', 'ن', 'ي'], ['ج', 'ح', 'خ'], ['د', 'ذ'], ['ر', 'ز', 'و'], ['س', 'ش'], ['ص', 'ض'], ['ط', 'ظ'], ['ع', 'غ'], ['ف', 'ق'], ['ك', 'ل'], ['م', 'ه'], ['ة', 'ه', 'ت'], ['ا', 'أ', 'إ', 'آ', 'ل'], ['ي', 'ى', 'ئ'], ['ء', 'ئ', 'ؤ', 'أ']];
+const ALL_L = 'ابتثجحخدذرزسشصضطظعغفقكلمنهويةءئأى'.split('');
+function lookalikes(ch) { const g = LOOKALIKE.find(g => g.includes(ch)) || []; return g.filter(c => c !== ch); }
+
+// ---------- audio ----------
+let actx = null;
+function beep(f, d = 0.12, type = 'sine', v = 0.18, slide = 0) {
+  if (!actx) return; const o = actx.createOscillator(), g = actx.createGain(), n = actx.currentTime;
+  o.type = type; o.frequency.setValueAtTime(f, n); if (slide) o.frequency.exponentialRampToValueAtTime(Math.max(40, f + slide), n + d);
+  g.gain.setValueAtTime(v, n); g.gain.exponentialRampToValueAtTime(0.001, n + d); o.connect(g); g.connect(actx.destination); o.start(n); o.stop(n + d + 0.02);
+}
+const sfx = {
+  good() { beep(880, 0.1, 'triangle'); setTimeout(() => beep(1320, 0.16, 'triangle'), 70); },
+  bad() { beep(240, 0.22, 'sawtooth', 0.1, -90); },
+  word() { [523, 659, 784, 1047].forEach((f, i) => setTimeout(() => beep(f, 0.14, 'triangle', 0.16), i * 80)); },
+  breath() { beep(300, 0.35, 'sine', 0.08, 500); },
+  bump() { beep(150, 0.25, 'sine', 0.2, -60); },
+  win() { [523, 659, 784, 659, 784, 1047].forEach((f, i) => setTimeout(() => beep(f, 0.18, 'triangle', 0.16), i * 120)); }
+};
+// ---------- voice (Hasan, ElevenLabs) — recorded clips keyed by text; the child's name is {n} ----------
+const VOICE_FILE = 'assets/voice-pd.json';
+let VOICE = null, vBuf = {}, vSrc = null, vQueue = [], vMiss = [];
+fetch(VOICE_FILE).then(r => r.ok ? r.json() : null).then(j => { VOICE = j; }).catch(() => {});
+function vCtx() { if (!actx) { try { actx = new (window.AudioContext || window.webkitAudioContext)(); } catch (_) {} } if (actx && actx.state === 'suspended') actx.resume(); return actx; }
+function vKey(text) { let k = String(text).trim(); const nm = CHILD.name && CHILD.name.ar; if (nm) k = k.split(nm).join('{n}'); return k; }
+async function vDecode(k) {
+  if (vBuf[k]) return vBuf[k]; const b64 = VOICE && VOICE[k]; const c = vCtx(); if (!b64 || !c) return null;
+  const bin = atob(b64), u8 = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) u8[i] = bin.charCodeAt(i);
+  vBuf[k] = await new Promise((res, rej) => c.decodeAudioData(u8.buffer, res, rej)).catch(() => null); return vBuf[k];
+}
+function vStop() { vQueue = []; if (vSrc) { try { vSrc.onended = null; vSrc.stop(); } catch (_) {} vSrc = null; } }
+async function vPlay(k) {
+  const buf = await vDecode(k); if (!buf) { vNext(); return false; }
+  const c = vCtx(), s = c.createBufferSource(), g = c.createGain(); g.gain.value = 1; s.buffer = buf; s.connect(g); g.connect(c.destination);
+  vSrc = s; s.onended = () => { if (vSrc === s) { vSrc = null; vNext(); } }; s.start(); return true;
+}
+function vNext() { if (vSrc || !vQueue.length) return; vPlay(vQueue.shift()); }
+// say(text, queued): play the recorded clip; English mode falls back to the browser voice
+function say(text, queued) {
+  if (!text) return;
+  if (typeof lang !== 'undefined' && lang === 'en') { try { const ss = window.speechSynthesis; if (!ss) return; ss.cancel(); const u = new SpeechSynthesisUtterance(text); u.lang = 'en-US'; u.rate = 0.95; ss.speak(u); } catch (_) {} return; }
+  const k = vKey(text); if (!(VOICE && VOICE[k]) && VOICE) { vMiss.push(k); return; }
+  if (queued && (vSrc || vQueue.length)) { vQueue.push(k); return; }
+  vStop(); vQueue = []; vPlay(k);
+}
+// voice line for a game event; gendered lines pick the boy/girl take
+function ev(name, queued) {
+  if (typeof lang !== 'undefined' && lang === 'en') return;
+  const girl = CHILD.gender === 'girl'; let k = 'ev_' + name;
+  if (VOICE && !VOICE[k]) k = 'ev_' + name + (girl ? '_g' : '_b');
+  if (name === 'clue' && girl) k = 'ev_clue_g';
+  if (!VOICE || !VOICE[k]) return;
+  if (queued && (vSrc || vQueue.length)) { vQueue.push(k); return; }
+  vStop(); vPlay(k);
+}
+function praise(q) { ev(['great1', 'great2', 'right', 'good'][Math.floor(Math.random() * 4)], q); }
+window.__voice = { get loaded() { return !!VOICE; }, get miss() { return vMiss; }, get playing() { return !!vSrc; } };
+
+// ---------- background music: loops quietly, dips under the voice, mute button remembered ----------
+let musBuf = null, musSrc = null, musGain = null, musOn = true;
+try { musOn = localStorage.getItem('heroes.music') !== 'off'; } catch (_) {}
+fetch('assets/music-pd.mp3').then(r => r.ok ? r.arrayBuffer() : null).then(ab => { if (!ab) return; window.__musAB = ab; const b = document.getElementById('musicBtn'); if (b) b.classList.remove('hidden'); drawMusicBtn(); }).catch(() => {});
+async function musStart() {
+  if (!musOn || musSrc || !window.__musAB) return; const c = vCtx(); if (!c) return;
+  if (!musBuf) musBuf = await new Promise((res, rej) => c.decodeAudioData(window.__musAB.slice(0), res, rej)).catch(() => null);
+  if (!musBuf || musSrc || !musOn) return;
+  musGain = c.createGain(); musGain.gain.value = 0; musGain.connect(c.destination);
+  musSrc = c.createBufferSource(); musSrc.buffer = musBuf; musSrc.loop = true; musSrc.connect(musGain); musSrc.start();
+}
+function musStop() { if (musSrc) { try { musSrc.stop(); } catch (_) {} musSrc = null; } }
+function drawMusicBtn() { const b = document.getElementById('musicBtn'); if (!b) return; b.textContent = musOn ? '🎵' : '🔇'; b.setAttribute('aria-label', (typeof lang !== 'undefined' && lang === 'en') ? (musOn ? 'Music on' : 'Music off') : (musOn ? 'الموسيقى تعمل' : 'الموسيقى مطفأة')); }
+function toggleMusic() { musOn = !musOn; try { localStorage.setItem('heroes.music', musOn ? 'on' : 'off'); } catch (_) {} if (musOn) musStart(); else musStop(); drawMusicBtn(); }
+setInterval(() => { if (!musGain || !actx) return; const target = (state === 'paused' || state === 'menu') ? 0.05 : vSrc ? 0.07 : 0.2; musGain.gain.setTargetAtTime(target, actx.currentTime, 0.25); }, 150);
+document.addEventListener('pointerdown', () => { if (state !== 'menu') musStart(); }, { capture: true });
+
+// ---------- three.js ----------
+const canvas = $('c');
+function noGL() { const d = document.createElement('div'); d.style.cssText = 'position:fixed;inset:0;z-index:99;display:flex;align-items:center;justify-content:center;padding:24px;background:#fff8ec;font-family:inherit;text-align:center';
+  d.innerHTML = '<div style="max-width:420px"><div style="font-size:48px">🎮</div><h2 dir="rtl" style="margin:8px 0">هذا المتصفّح لا يستطيع تشغيل اللعبة</h2><p dir="rtl">جرّب فتحها في Safari أو Chrome، أو حدّث المتصفّح، وتأكّد من تفعيل «تسريع الرسومات».</p><p dir="ltr" style="opacity:.7">This browser can\'t start the game\'s 3D graphics. Please open it in Safari or Chrome, update the browser, or turn on hardware acceleration.</p></div>';
+  document.body.appendChild(d); }
+const renderer = (() => { try { return new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance' }); } catch (e) { noGL(); throw e; } })();
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+const scene = new THREE.Scene();
+const WATER = 0x1d7fb6;
+scene.background = new THREE.Color(WATER); scene.fog = new THREE.Fog(WATER, 14, 46);
+const camera = new THREE.PerspectiveCamera(50, 1, 0.1, 200);
+scene.add(new THREE.HemisphereLight(0xcff4ff, 0x1a4d6e, 0.85));
+const sunL = new THREE.DirectionalLight(0xffffff, 0.7); sunL.position.set(-6, 20, 10); scene.add(sunL);
+const grad = (() => { const d = new Uint8Array([90, 160, 255]); const tx = new THREE.DataTexture(d, 3, 1, THREE.LuminanceFormat); tx.minFilter = tx.magFilter = THREE.NearestFilter; tx.needsUpdate = true; return tx; })();
+const matCache = {};
+function M(c) { if (!matCache[c]) matCache[c] = new THREE.MeshToonMaterial({ color: c, gradientMap: grad }); return matCache[c]; }
+function mesh(geo, mat) { return new THREE.Mesh(geo, mat); }
+const BOX = new THREE.BoxGeometry(1, 1, 1), SPH = new THREE.SphereGeometry(0.5, 16, 12), CYL = new THREE.CylinderGeometry(0.5, 0.5, 1, 14), CONE = new THREE.ConeGeometry(0.5, 1, 12);
+function box(w, h, d, c, x = 0, y = 0, z = 0) { const m = mesh(BOX, M(c)); m.scale.set(w, h, d); m.position.set(x, y, z); return m; }
+
+// ---------- art assets: Pixar-style 3D models (GLB) + painted backdrops, made in Higgsfield ----------
+// Files live in ./assets next to this page. Anything missing falls back to the simple built-in shapes.
+const ART = 'assets/';
+const GLB = {}, IMG = {};
+function boxOf(obj) { // bounds that also work for skinned (rigged) characters
+  obj.updateMatrixWorld(true);
+  let skinned = null; obj.traverse(o => { if (o.isSkinnedMesh && !skinned) skinned = o; });
+  if (!skinned) return new THREE.Box3().setFromObject(obj);
+  const box = new THREE.Box3(), v = new THREE.Vector3();
+  obj.traverse(o => { if (!o.isSkinnedMesh) return; o.skeleton.update(); const n = o.geometry.attributes.position.count;
+    for (let i = 0; i < n; i += 7) { v.fromBufferAttribute(o.geometry.attributes.position, i); o.boneTransform(i, v); v.applyMatrix4(o.matrixWorld); box.expandByPoint(v); } });
+  return box;
+}
+function fitModel(obj, size, axis) {
+  obj.updateMatrixWorld(true);
+  const b = boxOf(obj), s = new THREE.Vector3(); b.getSize(s);
+  const ref = axis === 'h' ? s.y : axis === 'w' ? s.x : axis === 'l' ? Math.max(s.x, s.z) : Math.max(s.x, s.y, s.z);
+  obj.scale.multiplyScalar(size / (ref || 1)); obj.updateMatrixWorld(true);
+  const b2 = boxOf(obj), c = new THREE.Vector3(); b2.getCenter(c);
+  obj.position.x -= c.x; obj.position.z -= c.z; obj.position.y -= b2.min.y;
+  const g = new THREE.Group(); g.add(obj); return g;
+}
+// Generated models face +x by default; these turns make each one face +z (towards the camera / along the hero)
+const MODEL_YAW = { shop: -Math.PI / 2, chest: -Math.PI / 2, oyster: -Math.PI / 2, tent: -Math.PI / 2, jelly: -Math.PI / 2, trafficCar: -Math.PI / 2, raceCar: -Math.PI / 2, scooter: 0, fish: -Math.PI / 2, boat: Math.PI / 2, stall: -Math.PI / 2 };
+function glb(name, size, axis) {
+  const src = GLB[name]; if (!src) return null;
+  const o = src.userData.skinned && THREE.SkeletonUtils ? THREE.SkeletonUtils.clone(src) : src.clone(true);
+  o.rotation.y = MODEL_YAW[name] || 0; // turn every model so its front faces +z
+  const g = fitModel(o, size, axis); g.userData.model = o; g.userData.clips = src.userData.clips || []; return g;
+}
+function prepModel(s) {
+  s.traverse(o => {
+    if (!o.isMesh) return;
+    o.castShadow = true; o.receiveShadow = true;
+    if (o.isSkinnedMesh) { s.userData.skinned = true; o.frustumCulled = false; }
+    (Array.isArray(o.material) ? o.material : [o.material]).forEach(m => {
+      if (m.map) { m.map.encoding = THREE.LinearEncoding; m.map.needsUpdate = true; } // match the game's colour pipeline
+      if (m.emissiveMap) m.emissiveMap.encoding = THREE.LinearEncoding;
+      if ('metalness' in m) { m.metalness = Math.min(m.metalness, 0.15); m.roughness = Math.max(m.roughness, 0.55); }
+      m.needsUpdate = true;
+    });
+  });
+}
+function imgColor(im, yFrac, k = 1) { // average colour of one row band of an image, as "r,g,b"
+  const c = document.createElement('canvas'); c.width = 32; c.height = 32; const x = c.getContext('2d'); x.drawImage(im, 0, 0, 32, 32);
+  const d = x.getImageData(0, Math.floor(yFrac * 31), 32, 1).data; let r = 0, g = 0, b = 0; for (let i = 0; i < 32; i++) { r += d[i * 4]; g += d[i * 4 + 1]; b += d[i * 4 + 2]; }
+  const f = v => Math.min(255, Math.round(v / 32 * k)); return `${f(r)},${f(g)},${f(b)}`;
+}
+function loadArt(models, images) {
+  const jobs = [];
+  if (THREE.GLTFLoader) {
+    const L = new THREE.GLTFLoader();
+    for (const [k, f] of Object.entries(models)) jobs.push(new Promise(res => L.load(ART + f, g => { const s = g.scene; prepModel(s); s.userData.clips = g.animations; GLB[k] = s; res(); }, undefined, () => res())));
+  }
+  const TL = new THREE.TextureLoader();
+  for (const [k, f] of Object.entries(images)) jobs.push(new Promise(res => TL.load(ART + f, t => { IMG[k] = t; res(); }, undefined, () => res())));
+  return Promise.race([Promise.all(jobs), new Promise(r => setTimeout(r, 45000))]);
+}
+const BED = -14, SURF = 0;
+
+// ---------- the child as a diver ----------
+const headTex = {};
+function cutout(src) { if (!headTex[src]) headTex[src] = new THREE.TextureLoader().load(src); return headTex[src]; }
+function makeKidHead() {
+  const h = new THREE.Group(), s = CHILD.suit, skin = CHILD.skin;
+  if (CHILD.headFront) {
+    const pf = mesh(new THREE.PlaneGeometry(1.15, 1.15), new THREE.MeshBasicMaterial({ map: cutout(CHILD.headFront), transparent: true, alphaTest: 0.1 })); pf.position.z = 0.02; h.add(pf);
+    const pb = mesh(new THREE.PlaneGeometry(1.15, 1.15), new THREE.MeshBasicMaterial({ map: cutout(CHILD.headBack || CHILD.headFront), transparent: true, alphaTest: 0.1 })); pb.rotation.y = Math.PI; pb.position.z = -0.02; h.add(pb);
+    return h;
+  }
+  const face = mesh(SPH, M(skin)); face.scale.set(0.74, 0.76, 0.7); h.add(face);
+  const dark = M(0x2b1d16);
+  [-0.14, 0.14].forEach(x => { const e = mesh(SPH, dark); e.scale.set(0.1, 0.13, 0.06); e.position.set(x, 0.04, 0.33); h.add(e);
+    const w = mesh(SPH, new THREE.MeshBasicMaterial({ color: 0xffffff })); w.scale.setScalar(0.04); w.position.set(x + 0.02, 0.07, 0.37); h.add(w); });
+  const smile = mesh(new THREE.TorusGeometry(0.09, 0.022, 6, 12, Math.PI), M(0x9b3b3b)); smile.rotation.z = Math.PI; smile.position.set(0, -0.15, 0.33); h.add(smile);
+  [-0.24, 0.24].forEach(x => { const c = mesh(SPH, M(0xff9c9c)); c.scale.set(0.1, 0.06, 0.03); c.position.set(x, -0.08, 0.3); h.add(c); });
+  const hairC = CHILD.hair;
+  if (G && CHILD.hijab) {
+    const top = mesh(SPH, M(s.accent)); top.scale.set(0.84, 0.86, 0.8); top.position.set(0, 0.03, -0.05); h.add(top);
+    const fr = mesh(new THREE.TorusGeometry(0.34, 0.07, 8, 20), M(s.accent)); fr.scale.set(1, 1.12, 1); fr.position.set(0, 0, 0.24); h.add(fr);
+    face.position.z = 0.02;
+  } else if (G) {
+    const top = mesh(SPH, M(hairC)); top.scale.set(0.8, 0.5, 0.76); top.position.set(0, 0.2, -0.04); h.add(top);
+    h.add(box(0.74, 0.8, 0.2, hairC, 0, -0.12, -0.28));
+  } else {
+    const top = mesh(SPH, M(hairC)); top.scale.set(0.8, 0.46, 0.78); top.position.set(0, 0.22, -0.05); h.add(top);
+    const fr = box(0.5, 0.12, 0.14, hairC, 0.06, 0.3, 0.28); fr.rotation.z = -0.15; h.add(fr);
+  }
+  // the «فطام» nose clip pearl divers wore
+  h.add(box(0.16, 0.06, 0.06, 0x3a2a1a, 0, -0.04, 0.37));
+  return h;
+}
+function makeDiver() {
+  const art = glb('hero', 3.4, 'max');
+  if (art) { // the child's own 3D character, swimming
+    const g = new THREE.Group(), body = new THREE.Group(); g.add(body); body.add(art); art.position.y = -0.95;
+    const mixer = new THREE.AnimationMixer(art.userData.model); const clip = art.userData.clips.find(c => /swim/i.test(c.name)) || art.userData.clips[0];
+    if (clip) mixer.clipAction(clip).play();
+    g.userData = { body, glb: true, mixer, swimClip: !!(clip && /swim/i.test(clip.name)) }; return g;
+  }
+  const g = new THREE.Group(), body = new THREE.Group(), s = CHILD.suit; g.add(body);
+  body.add(box(0.7, 0.8, 0.45, s.main, 0, 0, 0));
+  body.add(box(0.72, 0.12, 0.47, s.accent, 0, -0.32, 0));
+  const bag = mesh(SPH, M(0xc79a5a)); bag.scale.set(0.42, 0.36, 0.3); bag.position.set(0, -0.12, 0.3); body.add(bag); // ديين (net basket)
+  const head = makeKidHead(); head.scale.setScalar(0.9); head.position.set(0, 0.78, 0); body.add(head);
+  const arms = [], legs = [];
+  [-1, 1].forEach(sd => {
+    const a = new THREE.Group(); a.position.set(sd * 0.45, 0.3, 0); body.add(a);
+    a.add(box(0.18, 0.62, 0.2, s.main, 0, -0.28, 0)); const hand = mesh(SPH, M(CHILD.skin)); hand.scale.setScalar(0.2); hand.position.y = -0.64; a.add(hand); arms.push(a);
+    const l = new THREE.Group(); l.position.set(sd * 0.18, -0.4, 0); body.add(l);
+    l.add(box(0.24, 0.66, 0.26, s.main, 0, -0.33, 0)); const foot = mesh(SPH, M(CHILD.skin)); foot.scale.set(0.24, 0.16, 0.34); foot.position.set(0, -0.7, 0.06); l.add(foot); legs.push(l);
+  });
+  g.userData = { body, head, arms, legs };
+  return g;
+}
+
+// ---------- textures ----------
+const texCache = {};
+function pearlTex(ch, hot) {
+  const key = ch + (hot ? 1 : 0); if (texCache[key]) return texCache[key];
+  const c = document.createElement('canvas'); c.width = c.height = 160; const x = c.getContext('2d');
+  if (hot) { const gl = x.createRadialGradient(80, 80, 30, 80, 80, 80); gl.addColorStop(0, 'rgba(255,240,120,.9)'); gl.addColorStop(1, 'rgba(255,240,120,0)'); x.fillStyle = gl; x.fillRect(0, 0, 160, 160); }
+  const g = x.createRadialGradient(62, 56, 6, 80, 80, 62); g.addColorStop(0, '#ffffff'); g.addColorStop(0.6, '#fbeff6'); g.addColorStop(1, '#d9c6dd');
+  x.fillStyle = g; x.beginPath(); x.arc(80, 80, 60, 0, Math.PI * 2); x.fill(); x.lineWidth = 6; x.strokeStyle = '#10233f'; x.stroke();
+  x.fillStyle = '#10233f'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.font = '800 78px "Baloo Bhaijaan 2", sans-serif'; x.fillText(ch, 80, 86);
+  const tx = new THREE.CanvasTexture(c); texCache[key] = tx; return tx;
+}
+function backdropTex() {
+  const c = document.createElement('canvas'); c.width = 4; c.height = 256; const x = c.getContext('2d');
+  const g = x.createLinearGradient(0, 0, 0, 256);
+  g.addColorStop(0, '#9fdcff'); g.addColorStop(0.3, '#bfeaff'); g.addColorStop(0.305, '#5ec3f0'); g.addColorStop(0.55, '#1d7fb6'); g.addColorStop(1, '#0a3558');
+  x.fillStyle = g; x.fillRect(0, 0, 4, 256); return new THREE.CanvasTexture(c);
+}
+
+// ---------- world ----------
+const world = new THREE.Group(); scene.add(world);
+const ambient = []; // animated scenery
+let boat, rope, ropeLen = 4, R = 22;
+const SITES = [
+  { water: 0x1d8fc0, sand: 0xcdb98a, coral: [0xff7f6b, 0xffb347, 0xb98cff] },
+  { water: 0x1a7fb2, sand: 0xbfae86, coral: [0xff6f91, 0x5fd3c7, 0xffd23f] },
+  { water: 0x155f94, sand: 0xa89a76, coral: [0xff8a5c, 0x9d7bff, 0x4fd18b] }
+];
+function makeBoat() {
+  const art = glb('boat', 12, 'l'); if (art) { art.children[0].position.y -= 0; const g = new THREE.Group(); g.add(art); art.position.y = -2.2; return g; }
+  const g = new THREE.Group();
+  const hull = mesh(SPH, M(0x8a5a32)); hull.scale.set(9, 2.4, 3); hull.position.y = 0.2; g.add(hull);
+  g.add(box(8.4, 0.25, 2.6, 0xb98552, 0, 1.25, 0));
+  const mast = mesh(CYL, M(0x6b4426)); mast.scale.set(0.22, 8, 0.22); mast.position.set(-0.6, 5, 0); mast.rotation.z = 0.08; g.add(mast);
+  const sh = new THREE.Shape(); sh.moveTo(0, 0); sh.lineTo(5.2, 0.4); sh.lineTo(-0.2, 6.2); sh.lineTo(0, 0);
+  const sail = mesh(new THREE.ShapeGeometry(sh), new THREE.MeshToonMaterial({ color: 0xfff6e0, gradientMap: grad, side: THREE.DoubleSide })); sail.position.set(-0.4, 2.2, 0.3); g.add(sail);
+  [-3, -1.5, 1.5, 3].forEach(x => { const oar = box(0.12, 0.12, 4.6, 0x6b4426, x, 0.9, 0); oar.rotation.x = 0.5; g.add(oar); });
+  return g;
+}
+function seaweed() { const g = new THREE.Group(); const n = 4 + Math.floor(Math.random() * 4); for (let i = 0; i < n; i++) { const b = box(0.22, 0.7, 0.08, 0x2fa55a, 0, 0.35 + i * 0.62, 0); g.add(b); } g.userData.sway = Math.random() * 6; ambient.push({ o: g, kind: 'weed' }); return g; }
+function coral(col) {
+  const art = glb('coral', 1.6 + Math.random() * 1.8); if (art) { art.rotation.y = Math.random() * 6.28; return art; }
+  const g = new THREE.Group(); const k = Math.floor(Math.random() * 3);
+  if (k === 0) { for (let i = 0; i < 5; i++) { const b = mesh(CYL, M(col)); b.scale.set(0.22, 1 + Math.random(), 0.22); b.position.set((Math.random() - 0.5) * 1.2, 0.5, (Math.random() - 0.5) * 0.6); b.rotation.z = (Math.random() - 0.5) * 0.7; g.add(b); } }
+  else if (k === 1) { const b = mesh(SPH, M(col)); b.scale.set(1.6, 1, 1.2); b.position.y = 0.3; g.add(b); }
+  else { for (let i = 0; i < 3; i++) { const f = mesh(CONE, M(col)); f.scale.set(0.9, 1.4, 0.3); f.position.set((i - 1) * 0.7, 0.6, 0); f.rotation.z = (i - 1) * 0.35; g.add(f); } }
+  return g;
+}
+function rock(w) { const r = mesh(SPH, M(0x6f7c86)); r.scale.set(w, w * 0.6, 2.4); return r; }
+const FISH_YAW = Math.PI / 2; // turn the fish model to swim along +x (adjust per model)
+function fishSchool(y, dir) {
+  const g = new THREE.Group(); const col = [0xffd23f, 0xff8a5c, 0x7ff9ff, 0xff6fb5][Math.floor(Math.random() * 4)];
+  for (let i = 0; i < 6; i++) { const fa = glb('fish', 0.8); if (fa) { fa.rotation.y = FISH_YAW; fa.position.set((Math.random() - 0.5) * 2.4, (Math.random() - 0.5) * 1.2, -3 - Math.random() * 3); g.add(fa); continue; } const f = new THREE.Group(); const b = mesh(SPH, M(col)); b.scale.set(0.6, 0.32, 0.18); f.add(b); const tl = mesh(CONE, M(col)); tl.scale.set(0.3, 0.3, 0.06); tl.rotation.z = Math.PI / 2; tl.position.x = -0.42; f.add(tl); f.position.set((Math.random() - 0.5) * 2.4, (Math.random() - 0.5) * 1.2, -3 - Math.random() * 3); g.add(f); }
+  g.position.set((Math.random() - 0.5) * 2 * R, y, 0); g.userData.dir = dir; g.scale.x = dir; ambient.push({ o: g, kind: 'fish' }); return g;
+}
+function buildWorld(i) {
+  while (world.children.length) world.remove(world.children[0]); ambient.length = 0;
+  const site = SITES[i]; R = LEVEL_CFG[i].R;
+  scene.background = new THREE.Color(site.water); scene.fog.color.set(site.water);
+  const bgImg = IMG['bg' + i];
+  if (bgImg) { // painted Pixar-style backdrop, slides slowly behind the action (parallax)
+    const a = bgImg.image.width / bgImg.image.height, H = 78;
+    const back = mesh(new THREE.PlaneGeometry(H * a, H), new THREE.MeshBasicMaterial({ map: bgImg, fog: false, depthWrite: false })); back.position.set(0, -8, -55); back.renderOrder = -1; world.add(back); ambient.push({ o: back, kind: 'bg' });
+    scene.fog.near = 22; scene.fog.far = 70;
+  } else {
+    const back = mesh(new THREE.PlaneGeometry(400, 60), new THREE.MeshBasicMaterial({ map: backdropTex(), fog: false })); back.position.set(0, -12, -40); world.add(back);
+    scene.fog.near = 14; scene.fog.far = 46;
+  }
+  if (bgImg) { // sand strip in front, fading into the painted seabed behind it
+    const sc = imgColor(bgImg.image, 0.84, 1.12), c = document.createElement('canvas'); c.width = 4; c.height = 128; const x = c.getContext('2d');
+    const gr = x.createLinearGradient(0, 0, 0, 128); gr.addColorStop(0, `rgba(${sc},0)`); gr.addColorStop(0.45, `rgba(${sc},0.85)`); gr.addColorStop(1, `rgba(${sc},1)`); x.fillStyle = gr; x.fillRect(0, 0, 4, 128);
+    const bed = mesh(new THREE.PlaneGeometry(2 * R + 80, 16), new THREE.MeshBasicMaterial({ map: new THREE.CanvasTexture(c), transparent: true, depthWrite: false, fog: false })); bed.rotation.x = -Math.PI / 2; bed.position.set(0, BED, -3); world.add(bed);
+  } else {
+  const bed = mesh(new THREE.PlaneGeometry(2 * R + 60, 40), M(site.sand)); bed.rotation.x = -Math.PI / 2; bed.position.set(0, BED, -10); world.add(bed); }
+  if (!bgImg) for (let x = -R - 20; x < R + 20; x += 3) { const d = mesh(SPH, M(site.sand)); d.scale.set(5 + Math.random() * 4, 1 + Math.random(), 3); d.position.set(x, BED - 0.2, -4 - Math.random() * 12); world.add(d); }
+  const surf = mesh(new THREE.PlaneGeometry(2 * R + 80, 60), new THREE.MeshBasicMaterial({ color: 0xbff0ff, transparent: true, opacity: bgImg ? 0.25 : 0.55, side: THREE.DoubleSide, fog: false })); surf.rotation.x = Math.PI / 2; surf.position.set(0, SURF + 0.15, -10); world.add(surf); ambient.push({ o: surf, kind: 'surf' });
+  for (let k = 0; k < 9; k++) { const ray = mesh(new THREE.PlaneGeometry(2.4, 26), new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.07, depthWrite: false, fog: false })); ray.position.set(-R + k * (2 * R / 8), -10, -6); ray.rotation.z = 0.25; world.add(ray); ambient.push({ o: ray, kind: 'ray', p: Math.random() * 6 }); }
+  for (let x = -R - 12; x < R + 12; x += 2.2 + Math.random() * 2) {
+    const z = -2 - Math.random() * 7, r = Math.random();
+    if (bgImg && r >= 0.8) continue; // the painting already has rocks
+    const o = r < 0.45 ? seaweed() : r < 0.8 ? coral(site.coral[Math.floor(Math.random() * 3)]) : rock(1.5 + Math.random() * 2);
+    o.position.set(x, BED, z); world.add(o);
+  }
+  for (let k = 0; k < 5; k++) world.add(fishSchool(BED + 3 + Math.random() * 8, Math.random() < 0.5 ? -1 : 1));
+  boat = makeBoat(); boat.position.set(0, SURF + 0.3, -1.5); world.add(boat);
+  rope = mesh(CYL, M(0xd9c08a)); rope.scale.set(0.07, 1, 0.07); world.add(rope);
+}
+
+// ---------- game state ----------
+let state = 'menu', level = 0, cfg = LEVEL_CFG[0];
+let timers = [], runId = 0; function later(s, fn) { timers.push({ t: s, fn }); }
+let diver = null;
+const P = { x: 0, y: -2, vx: 0, vy: 0, face: 1, air: 1, invuln: 0, stun: 0, kick: 0, rescue: 0, idle: 0 };
+let hearts = 3, score = 0, wordsDone = 0, readsDone = 0, tries = 0, correct = 0, learned = [], missed = new Set();
+let gaps = [], gi = 0, word = null, wordPos = 0, wordList = [], readList = [], readQueue = 0, chest = null, lowWarned = false;
+const pearls = [], jellies = [], vents = [];
+const inp = { x: 0, y: 0 }, keys = {};
+
+function shuffle(a) { return a.slice().sort(() => Math.random() - 0.5); }
+function clearPearls() { for (const p of pearls) world.remove(p.g); pearls.length = 0; }
+function oyster() {
+  const art = glb('oyster', 1.7, 'l'); if (art) { art.rotation.y = Math.random() * 0.6 - 0.3; const g = new THREE.Group(); g.add(art); return g; }
+  const g = new THREE.Group(); const sh = 0x8f7f86;
+  const bot = mesh(SPH, M(sh)); bot.scale.set(1.3, 0.4, 1); g.add(bot);
+  const lid = new THREE.Group(); lid.position.set(0, 0.08, -0.45); g.add(lid);
+  const top = mesh(SPH, M(0xa79aa0)); top.scale.set(1.3, 0.35, 1); top.position.set(0, 0, 0.45); lid.add(top); lid.rotation.x = -0.9;
+  const inside = mesh(SPH, M(0xf3d6e4)); inside.scale.set(1.05, 0.2, 0.8); inside.position.y = 0.12; g.add(inside);
+  g.userData.lid = lid; return g;
+}
+function spotsFor(n) {
+  // spread oysters along the seabed and on rock ledges, never too close
+  const out = []; let guard = 0;
+  while (out.length < n && guard++ < 2000) {
+    const x = (Math.random() * 2 - 1) * (R - 2); if (Math.abs(x) < 3) continue;
+    const y = Math.random() < 0.7 ? BED + 0.25 : BED + 3 + Math.random() * 5;
+    if (out.some(p => Math.hypot(p.x - x, p.y - y) < 3.2)) continue; out.push({ x, y });
+  }
+  return out;
+}
+function placePearls() {
+  clearPearls();
+  const W = Array.from(word[0]), need = gaps.map(i => W[i]), decoys = [];
+  need.forEach(ch => lookalikes(ch).forEach(c => { if (!need.includes(c) && !decoys.includes(c)) decoys.push(c); }));
+  while (decoys.length < cfg.decoys) { const c = ALL_L[Math.floor(Math.random() * ALL_L.length)]; if (!need.includes(c) && !decoys.includes(c)) decoys.push(c); }
+  const letters = gaps.map(i => ({ ch: W[i], i })).concat(shuffle(decoys).slice(0, cfg.decoys).map(ch => ({ ch, i: -1 })));
+  const spots = shuffle(spotsFor(letters.length));
+  letters.forEach((L, k) => {
+    const s = spots[k % spots.length]; const g = new THREE.Group(); g.position.set(s.x, s.y, 0);
+    const o = oyster(); g.add(o);
+    if (s.y > BED + 1) { const ledge = rock(2.2); ledge.position.y = -0.55; g.add(ledge); }
+    const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: pearlTex(L.ch, false), fog: false })); sp.scale.setScalar(1.3); sp.position.y = 1.05; g.add(sp);
+    world.add(g); pearls.push({ g, sp, ch: L.ch, idx: L.i, cool: 0, taken: false, bob: Math.random() * 6 });
+  });
+}
+function spawnJellies() {
+  for (const j of jellies) world.remove(j.g); jellies.length = 0;
+  for (let k = 0; k < cfg.jelly; k++) {
+    const g = new THREE.Group(); const col = [0xff9ad5, 0xb99cff, 0x9be7ff][k % 3];
+    const ja = glb('jelly', 1.5, 'h'); if (ja) { ja.position.y = -0.75; g.add(ja); } else {
+    const dome = mesh(new THREE.SphereGeometry(0.6, 16, 10, 0, Math.PI * 2, 0, Math.PI / 2), new THREE.MeshToonMaterial({ color: col, gradientMap: grad, transparent: true, opacity: 0.8 })); g.add(dome);
+    [-0.18, 0.18].forEach(x => { const e = mesh(SPH, M(0x10233f)); e.scale.setScalar(0.09); e.position.set(x, 0.22, 0.5); g.add(e); });
+    for (let i = 0; i < 5; i++) { const tn = box(0.05, 0.9, 0.05, col, -0.36 + i * 0.18, -0.45, 0); g.add(tn); } }
+    const x = (k % 2 ? 1 : -1) * (5 + Math.random() * (R - 7)), y = BED + 4 + Math.random() * 7;
+    g.position.set(x, y, 0); world.add(g); jellies.push({ g, x0: x, y0: y, p: Math.random() * 6, amp: 2 + Math.random() * 2 });
+  }
+}
+function spawnVents() {
+  for (const v of vents) world.remove(v.g); vents.length = 0;
+  for (let k = 0; k < cfg.vents; k++) {
+    const x = (k ? 1 : -1) * (R * 0.55 + Math.random() * R * 0.25); const g = new THREE.Group(); g.position.set(x, BED, 0);
+    const base = mesh(CYL, M(0x5d6a74)); base.scale.set(1.2, 0.6, 1.2); base.position.y = 0.3; g.add(base);
+    const bubbles = []; for (let i = 0; i < 14; i++) { const b = mesh(SPH, new THREE.MeshBasicMaterial({ color: 0xe8fbff, transparent: true, opacity: 0.75 })); b.scale.setScalar(0.2 + Math.random() * 0.25); b.position.set((Math.random() - 0.5) * 0.8, Math.random() * 12, 0.3); g.add(b); bubbles.push(b); }
+    world.add(g); vents.push({ g, x, bubbles });
+  }
+}
+function newWord() { word = wordList[wordsDone % wordList.length]; gaps = pickGaps(word[0]); gi = 0; wordPos = gaps[0]; P.idle = 0; placePearls(); drawCard(); say(word[2]); }
+
+// ---------- HUD ----------
+function drawHearts() { $('hearts').innerHTML = Array.from({ length: 3 }, (_, i) => `<span style="opacity:${i < hearts ? 1 : 0.2}">🫧</span>`).join(''); }
+function drawAir() { const a = $('air'); a.style.width = Math.max(0, P.air * 100) + '%'; a.classList.toggle('low', P.air < 0.28); }
+function drawCard() {
+  if (chest) { $('card').innerHTML = `<span class="tag">🧭</span><div class="clue">${t('chest')}</div>`; return; }
+  if (!word) { $('card').innerHTML = ''; return; }
+  const w = word[0].split('');
+  $('card').innerHTML = `<span class="tag">${spellTag()}</span><div class="clue"><span class="emo">${word[1]}</span>${word[2]}</div>` +
+    `<div class="slots">${w.map((x, i) => { const g = gaps.indexOf(i); return g < 0 ? `<span class="slot given">${x}</span>` : g < gi ? `<span class="slot got">${x}</span>` : `<span class="slot${i === wordPos ? ' next' : ''}"></span>`; }).join('')}</div>`;
+}
+let toastT = 0;
+function toast(m, s = 1.1) { const e = $('toast'); e.textContent = m; e.classList.add('on'); toastT = s; }
+
+// ---------- flow ----------
+function startLevel(i) {
+  setTimeout(musStart, 0);
+  timers = []; runId++;
+  if (!actx) { try { actx = new (window.AudioContext || window.webkitAudioContext)(); } catch (_) {} }
+  if (actx && actx.state === 'suspended') actx.resume();
+  level = i; cfg = LEVEL_CFG[i]; buildWorld(i);
+  if (diver) scene.remove(diver); diver = makeDiver(); scene.add(diver);
+  Object.assign(P, { x: 0, y: -1.5, vx: 0, vy: 0, face: 1, air: 1, invuln: 0, stun: 0, rescue: 0, idle: 0 });
+  hearts = 3; score = 0; wordsDone = 0; readsDone = 0; tries = 0; correct = 0; learned = []; missed = new Set(); chest = null; lowWarned = false;
+  wordList = shuffle(WORDS[band()]).slice(0, wordsFor(cfg.words)); readList = shuffle(READS[band()]).slice(0, cfg.reads); readQueue = 0;
+  spawnJellies(); spawnVents(); newWord();
+  ['menu', 'end', 'read', 'pause'].forEach(s => $(s).classList.add('hidden')); $('hud').classList.remove('hidden'); $('joy').classList.toggle('hidden', !coarse);
+  $('lvlPill').textContent = `${t('lvl')} ${i + 1}`; $('score').textContent = 0;
+  drawHearts(); drawAir();
+  state = 'play'; toast(t('go') + ' ' + kidName() + '!', 1.4);
+}
+function toMenu() { timers = []; runId++; vStop(); state = 'menu'; ['hud', 'joy', 'end', 'pause', 'read', 'pointer'].forEach(s => $(s).classList.add('hidden')); $('menu').classList.remove('hidden'); drawMenu(); }
+// reading scroll after every 2nd word (or before the chest)
+function readsDue() { const N = wordsFor(cfg.words); return readsDone < cfg.reads && (wordsDone >= Math.round((readsDone + 1) * N / (cfg.reads + 0.5)) || wordsDone >= N); }
+function openRead() {
+  const r = readList[readsDone]; state = 'read'; $('read').classList.remove('hidden');
+  $('readT').textContent = '📜 ' + t('scroll'); $('passage').textContent = r[0]; $('question').textContent = r[1]; $('fb').textContent = '';
+  let first = true, solved = false; const rid = runId;
+  $('opts').innerHTML = shuffle(r.slice(2)).map(o => `<button class="opt">${o}</button>`).join('');
+  $('opts').querySelectorAll('.opt').forEach(b => b.onclick = () => {
+    if (solved || b.classList.contains('no') || b.classList.contains('ok')) return;
+    tries++;
+    if (b.textContent === r[2]) {
+      solved = true; $('opts').querySelectorAll('.opt').forEach(o => o.disabled = true);
+      if (first) { correct++; score += 5; } b.classList.add('ok'); sfx.word(); $('fb').textContent = t('right');
+      setTimeout(() => { if (rid !== runId || state !== 'read') return; $('read').classList.add('hidden'); readsDone++; state = 'play'; last = performance.now(); afterWordOrRead(); }, 1100);
+    } else { first = false; b.classList.add('no'); sfx.bad(); $('fb').textContent = t('wrong'); missed.add('📜' + (readsDone + 1)); }
+  });
+  say(r[0]);
+}
+function afterWordOrRead() {
+  if (readsDue()) { openRead(); return; }
+  if (wordsDone >= wordsFor(cfg.words)) { spawnChest(); return; }
+  newWord();
+}
+function spawnChest() {
+  clearPearls(); word = null;
+  const x = (P.x > 0 ? -1 : 1) * (R - 4); const g = new THREE.Group(); g.position.set(x, BED + 0.6, 0);
+  const ca = glb('chest', 2.4, 'w'); let lid;
+  if (ca) { ca.position.y = -0.6; g.add(ca); lid = new THREE.Object3D(); }
+  else { g.add(box(2, 1.1, 1.3, 0x8a5a32)); lid = box(2.05, 0.45, 1.35, 0xa86e3c, 0, 0.75, 0); g.add(lid);
+  g.add(box(0.3, 0.4, 0.1, 0xffd23f, 0, 0.45, 0.7)); [-0.8, 0.8].forEach(xx => g.add(box(0.12, 1.2, 1.36, 0xffd23f, xx, 0.15, 0))); }
+  const glow = new THREE.Sprite(new THREE.SpriteMaterial({ map: pearlTex('✦', true), fog: false, transparent: true })); glow.scale.setScalar(2.6); glow.position.y = 2; g.add(glow);
+  world.add(g); chest = { g, x, lid }; drawCard(); toast(t('chest'), 1.6); ev('chest', true);
+}
+function endLevel(won) {
+  state = 'end'; ['hud', 'joy', 'pointer'].forEach(s => $(s).classList.add('hidden'));
+  const acc = tries ? correct / tries : 1, st = won ? (acc >= 0.85 && hearts === 3 ? 3 : acc >= 0.6 ? 2 : 1) : 0;
+  if (won) { save.stars[level] = Math.max(save.stars[level] || 0, st); save.unlocked = Math.max(save.unlocked, Math.min(2, level + 1)); persist(); sfx.win(); ev('good', true); }
+  $('endTitle').textContent = won ? t('win').replace('{n}', kidName()) : t('over');
+  $('endStars').innerHTML = [0, 1, 2].map(k => `<span class="${k < st ? 'on' : ''}">★</span>`).join('');
+  $('endStats').innerHTML = `<span class="pill">🦪 ${score}</span><span class="pill">${t('accuracy')} ${Math.round(acc * 100)}%</span>`;
+  $('learnedT').textContent = t('learned');
+  $('learned').innerHTML = learned.map(w => `<span class="${missed.has(w) ? 'miss' : ''}">${w}</span>`).join('') || '–';
+  const lastL = level === 2;
+  $('nextBtn').textContent = won && !lastL ? t('next') : t('again');
+  $('nextBtn').onclick = () => startLevel(won && !lastL ? level + 1 : level);
+  $('menuBtn').textContent = t('menu');
+  drawPreview($('endImg'));
+  $('end').classList.remove('hidden');
+}
+
+// ---------- particles ----------
+const parts = [];
+function burst(x, y, n = 14, col = null) { for (let i = 0; i < n; i++) { const m = mesh(SPH, new THREE.MeshBasicMaterial({ color: col || [0xffffff, 0xffd23f, 0x7ff9ff][i % 3], transparent: true })); m.scale.setScalar(0.2); m.position.set(x, y, 0.5); scene.add(m); parts.push({ m, v: new THREE.Vector3((Math.random() - 0.5) * 6, Math.random() * 5, (Math.random() - 0.5) * 2), life: 0.9 }); } }
+const breathBubbles = [];
+
+// ---------- input ----------
+const coarse = matchMedia('(pointer: coarse)').matches;
+addEventListener('keydown', e => {
+  keys[e.key] = 1;
+  if (state === 'play' && (e.key === 'Escape' || e.key === 'p')) pauseGame();
+  else if (state === 'paused' && (e.key === 'Escape' || e.key === 'p')) resumeGame();
+  if (e.key.startsWith('Arrow') || e.key === ' ') e.preventDefault();
+});
+addEventListener('keyup', e => { keys[e.key] = 0; });
+let joyId = null, joyC = null;
+const joy = $('joy'), knob = $('knob');
+joy.addEventListener('pointerdown', e => { joyId = e.pointerId; const r = joy.getBoundingClientRect(); joyC = { x: r.left + r.width / 2, y: r.top + r.height / 2, r: r.width / 2 }; joy.setPointerCapture(e.pointerId); joyMove(e); });
+joy.addEventListener('pointermove', e => { if (e.pointerId === joyId) joyMove(e); });
+const joyEnd = e => { if (e.pointerId !== joyId) return; joyId = null; inp.x = inp.y = 0; knob.style.transform = ''; };
+joy.addEventListener('pointerup', joyEnd); joy.addEventListener('pointercancel', joyEnd);
+function joyMove(e) { let dx = e.clientX - joyC.x, dy = e.clientY - joyC.y; const d = Math.hypot(dx, dy), m = joyC.r * 0.8; if (d > m) { dx *= m / d; dy *= m / d; } knob.style.transform = `translate(${dx}px,${dy}px)`; inp.x = dx / m; inp.y = -dy / m; }
+// also: drag anywhere on the water to swim (tablets / mouse)
+let dragId = null, dragO = null;
+canvas.addEventListener('pointerdown', e => { if (state !== 'play') return; dragId = e.pointerId; dragO = { x: e.clientX, y: e.clientY }; });
+canvas.addEventListener('pointermove', e => { if (e.pointerId !== dragId) return; const dx = e.clientX - dragO.x, dy = e.clientY - dragO.y; inp.x = Math.max(-1, Math.min(1, dx / 60)); inp.y = Math.max(-1, Math.min(1, -dy / 60)); });
+const dragEnd = e => { if (e.pointerId === dragId) { dragId = null; inp.x = inp.y = 0; } };
+canvas.addEventListener('pointerup', dragEnd); canvas.addEventListener('pointercancel', dragEnd);
+function pauseGame() { if (state !== 'play') return; state = 'paused'; $('pause').classList.remove('hidden'); }
+function resumeGame() { state = 'play'; $('pause').classList.add('hidden'); last = performance.now(); }
+$('musicBtn').onclick = toggleMusic; $('pauseBtn').onclick = pauseGame; $('resumeBtn').onclick = resumeGame; $('quitBtn').onclick = toMenu; $('menuBtn').onclick = toMenu;
+
+// ---------- update ----------
+let shake = 0;
+function update(dt) {
+  if (toastT > 0) { toastT -= dt; if (toastT <= 0) $('toast').classList.remove('on'); }
+  for (let i = parts.length - 1; i >= 0; i--) { const p = parts[i]; p.life -= dt; p.v.y -= 4 * dt; p.m.position.addScaledVector(p.v, dt); p.m.material.opacity = Math.max(0, p.life); if (p.life <= 0) { scene.remove(p.m); parts.splice(i, 1); } }
+  if (state !== 'play') return;
+  for (let i = timers.length - 1; i >= 0; i--) { const x = timers[i]; x.t -= dt; if (x.t <= 0) { timers.splice(i, 1); x.fn(); } } // game-time timers: they wait while paused
+  // input
+  let ix = inp.x, iy = inp.y;
+  if (keys.ArrowLeft || keys.a) ix = -1; if (keys.ArrowRight || keys.d) ix = 1;
+  if (keys.ArrowUp || keys.w || keys[' ']) iy = 1; if (keys.ArrowDown || keys.s) iy = -1;
+  if (P.rescue > 0) { // pulled up by the crew
+    P.rescue -= dt; P.x += (0 - P.x) * Math.min(1, 2.2 * dt); P.y += (SURF - 0.4 - P.y) * Math.min(1, 2.2 * dt); P.vx = P.vy = 0;
+    if (P.rescue <= 0) { P.air = 1; P.invuln = 1.5; drawAir(); if (hearts <= 0) endLevel(false); }
+    return;
+  }
+  if (P.stun > 0) { P.stun -= dt; ix *= 0.2; iy *= 0.2; }
+  const acc = 18, maxV = 6.2;
+  P.vx += ix * acc * dt; P.vy += iy * acc * dt;
+  const damp = Math.pow(0.12, dt); P.vx *= damp; P.vy *= damp;
+  const sp = Math.hypot(P.vx, P.vy); if (sp > maxV) { P.vx *= maxV / sp; P.vy *= maxV / sp; }
+  P.x = Math.max(-R, Math.min(R, P.x + P.vx * dt)); P.y = Math.max(BED + 0.9, Math.min(SURF - 0.35, P.y + P.vy * dt));
+  if (Math.abs(ix) > 0.2) P.face = Math.sign(ix);
+  P.kick += dt * (2 + sp * 1.8);
+  if (P.invuln > 0) P.invuln -= dt;
+  // air
+  const atSurface = P.y > SURF - 0.9;
+  let inVent = false; for (const v of vents) if (Math.abs(P.x - v.x) < 1.3) inVent = true;
+  if (atSurface || inVent) { if (P.air < 0.98 && Math.random() < dt * 4) sfx.breath(); P.air = Math.min(1, P.air + dt * (atSurface ? 0.7 : 0.35)); lowWarned = false; }
+  else P.air -= dt / cfg.air;
+  if (P.air < 0.28 && !lowWarned) { lowWarned = true; toast(t('low'), 1.4); ev('low'); }
+  if (P.air <= 0) { P.air = 0; hearts--; drawHearts(); P.rescue = 1.6; toast(t('rope'), 1.6); ev('rope'); sfx.bump(); }
+  drawAir();
+  // pearls
+  P.idle += dt;
+  for (const p of pearls) {
+    if (p.taken || !word) continue; if (p.cool > 0) p.cool -= dt;
+    const px = p.g.position.x, py = p.g.position.y + 1.05;
+    const hot = word && p.idx === wordPos && P.idle > 18; // hint after a long search
+    if (hot !== !!p.hot) { p.hot = hot; p.sp.material.map = pearlTex(p.ch, hot); p.sp.material.needsUpdate = true; }
+    const isNext = word && word[0][wordPos] === p.ch;
+    if (p.cool <= 0 && Math.hypot(P.x - px, P.y - py) < (isNext ? 1.25 : 0.9)) {
+      if (word && word[0][wordPos] === p.ch) {
+        p.taken = true; p.g.remove(p.sp); p.g.userData.closed = true; burst(px, py, 12); sfx.good();
+        gi++; wordPos = gi < gaps.length ? gaps[gi] : -1; correct++; tries++; score++; P.idle = 0; $('score').textContent = score; drawCard();
+        if (gi >= gaps.length) {
+          wordsDone++; score += 5; $('score').textContent = score; learned.push(word[0]); sfx.word(); toast(t('word'), 1.2); say(word[0]);
+          const done = word; word = null; drawCard();
+          later(0.9, afterWordOrRead);
+          void done;
+        }
+      } else {
+        p.cool = 1.6; tries++; missed.add(word ? word[0] : ''); sfx.bad(); toast(t('notNext'), 0.8); ev('notnext'); shake = 0.2; P.air = Math.max(0.02, P.air - 0.06);
+        const dx = P.x - px, dy = P.y - py, d = Math.hypot(dx, dy) || 1; P.vx = dx / d * 5; P.vy = dy / d * 5;
+      }
+    }
+  }
+  // jellyfish
+  for (const j of jellies) {
+    j.p += dt; j.g.position.x = j.x0 + Math.sin(j.p * 0.5) * j.amp; j.g.position.y = j.y0 + Math.sin(j.p * 1.3) * 0.8;
+    if (P.invuln <= 0 && Math.hypot(P.x - j.g.position.x, P.y - j.g.position.y) < 1.1) {
+      P.invuln = 1.5; P.stun = 0.6; P.air = Math.max(0.02, P.air - 0.15); sfx.bump(); toast(t('jelly'), 1); ev('jelly'); shake = 0.3;
+      const dx = P.x - j.g.position.x, dy = P.y - j.g.position.y, d = Math.hypot(dx, dy) || 1; P.vx = dx / d * 7; P.vy = dy / d * 7;
+    }
+  }
+  // treasure
+  if (chest && Math.hypot(P.x - chest.x, P.y - (BED + 1)) < 2.2) {
+    chest.lid.rotation.x = -1; burst(chest.x, BED + 1.5, 30, 0xffd23f); toast(t('found'), 1.6); ev('found'); score += 10; chest = null; state = 'won';
+    const rid = runId; setTimeout(() => { if (rid === runId && state === 'won') endLevel(true); }, 1500);
+  }
+}
+
+// ---------- visuals ----------
+let time = 0;
+function visuals(dt) {
+  time += dt;
+  for (const a of ambient) {
+    if (a.kind === 'weed') a.o.children.forEach((b, i) => { b.rotation.z = Math.sin(time * 1.4 + a.o.userData.sway + i * 0.5) * 0.12 * (i + 1) * 0.4; b.position.x = Math.sin(time * 1.4 + a.o.userData.sway) * 0.06 * i; });
+    else if (a.kind === 'fish') { a.o.position.x += a.o.userData.dir * dt * 1.6; if (a.o.position.x > R + 14) a.o.position.x = -R - 14; if (a.o.position.x < -R - 14) a.o.position.x = R + 14; a.o.children.forEach((f, i) => f.position.y += Math.sin(time * 3 + i) * 0.003); }
+    else if (a.kind === 'ray') a.o.material.opacity = 0.05 + Math.sin(time * 0.7 + a.p) * 0.03;
+    else if (a.kind === 'surf') a.o.material.opacity = (IMG['bg' + level] ? 0.22 : 0.5) + Math.sin(time) * 0.05;
+    else if (a.kind === 'bg') { a.o.position.x = camera.position.x * 0.82; a.o.position.y = -8 + (camera.position.y + 6) * 0.6; }
+  }
+  for (const p of pearls) { if (!p.taken) p.sp.position.y = 1.05 + Math.sin(time * 2 + p.bob) * 0.12; const lid = p.g.children[0].userData.lid; if (lid) lid.rotation.x += ((p.taken || p.cool > 0 ? -0.05 : -0.9) - lid.rotation.x) * Math.min(1, dt * 8); }
+  for (const v of vents) v.bubbles.forEach(b => { b.position.y += dt * (2 + b.scale.x * 4); if (b.position.y > -BED - 0.2) b.position.y = 0.4; });
+  if (boat) { boat.rotation.z = Math.sin(time * 0.8) * 0.03; boat.position.y = SURF + 0.3 + Math.sin(time * 1.1) * 0.08; }
+  if (!diver) return;
+  const u = diver.userData;
+  diver.position.set(P.x, P.y, 0);
+  if (u.glb) { // 3D character: face the swim direction, body level like a real diver
+    u.mixer.update(dt * (0.6 + Math.hypot(P.vx, P.vy) / 5));
+    const yaw = P.face > 0 ? Math.PI / 2 : -Math.PI / 2;
+    u.body.rotation.y += (yaw - u.body.rotation.y) * Math.min(1, dt * 6);
+    if (!u.swimClip) u.body.rotation.x = Math.PI / 2 - 0.25; // run clip only: lay the body flat
+    u.body.rotation.z = Math.max(-0.5, Math.min(0.5, P.vy / 10)) * P.face;
+  } else {
+  // swim pose: lean into the swim direction, stay facing the camera so the child's face is seen
+  const lean = Math.max(-1, Math.min(1, P.vx / 6));
+  u.body.rotation.z += (-lean * 1.05 - u.body.rotation.z) * Math.min(1, dt * 6);
+  u.body.rotation.y += (P.face * 0.35 - u.body.rotation.y) * Math.min(1, dt * 6);
+  u.body.rotation.x = -Math.max(-0.4, Math.min(0.4, P.vy / 10));
+  u.head.rotation.z = -u.body.rotation.z * 0.6;
+  const k = Math.sin(P.kick * 3);
+  u.legs[0].rotation.x = k * 0.55; u.legs[1].rotation.x = -k * 0.55;
+  u.arms[0].rotation.z = -0.4 - Math.abs(Math.sin(P.kick * 1.5)) * 1.2; u.arms[1].rotation.z = 0.4 + Math.abs(Math.sin(P.kick * 1.5)) * 1.2;
+  }
+  diver.visible = !(P.invuln > 0 && Math.floor(time * 12) % 2 === 0 && P.rescue <= 0);
+  // breath bubbles from the diver
+  if (state === 'play' && Math.random() < dt * 2.5 && P.y < SURF - 1) { const b = mesh(SPH, new THREE.MeshBasicMaterial({ color: 0xeefcff, transparent: true, opacity: 0.8 })); b.scale.setScalar(0.12 + Math.random() * 0.1); b.position.set(P.x + 0.2 * P.face, P.y + 0.9, 0.3); scene.add(b); breathBubbles.push(b); }
+  for (let i = breathBubbles.length - 1; i >= 0; i--) { const b = breathBubbles[i]; b.position.y += dt * 2.2; b.position.x += Math.sin(time * 6 + i) * 0.01; if (b.position.y > SURF) { scene.remove(b); breathBubbles.splice(i, 1); } }
+  // rope from the boat: hangs down, or reaches the diver during a rescue
+  if (rope) { const ty = P.rescue > 0 ? P.y + 0.8 : SURF - ropeLen, tx = P.rescue > 0 ? P.x : 0.6; const top = new THREE.Vector3(0.6, SURF + 1.2, -0.6), bot = new THREE.Vector3(tx, ty, 0); const mid = top.clone().add(bot).multiplyScalar(0.5); rope.position.copy(mid); rope.scale.y = top.distanceTo(bot); rope.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), bot.clone().sub(top).normalize()); }
+  // camera follows; shows the surface and boat when near the top
+  const cx = P.x, cy = Math.max(BED + 3.6, Math.min(SURF - 2.2, P.y));
+  camera.position.x += (cx - camera.position.x) * Math.min(1, 4 * dt); camera.position.y += (cy + 2.2 - camera.position.y) * Math.min(1, 4 * dt); camera.position.z = 16;
+  if (shake > 0) { shake -= dt; camera.position.x += (Math.random() - 0.5) * 0.25; camera.position.y += (Math.random() - 0.5) * 0.25; }
+  camera.lookAt(camera.position.x, camera.position.y - 0.6, 0);
+  // off-screen pointer to the chest
+  const ptr = $('pointer');
+  if (chest && state === 'play') { const dx = chest.x - P.x; const off = Math.abs(dx) > 11; ptr.classList.toggle('hidden', !off); if (off) { ptr.style.left = dx > 0 ? '' : '12px'; ptr.style.right = dx > 0 ? '12px' : ''; ptr.style.transform = `translateY(-50%) scaleX(${dx > 0 ? 1 : -1})`; } }
+  else ptr.classList.add('hidden');
+}
+
+
+// ---------- age → content band (the child picks their age once; it can be changed in the menu) ----------
+function band() { const a = save.age || CHILD.age || 8; return a <= 9 ? 0 : a === 10 ? 1 : 2; }
+// how much of each word the child fills in: ages 8–9 → one missing letter, age 10 → two, ages 11–12 → the whole word
+const TRICKY = 'ةءأإؤئىآثذظضطصغقخحجشز';
+function gapCount() { const b = band(); return b === 0 ? 1 : b === 1 ? 2 : 99; }
+function wordsFor(n) { const b = band(); return b === 0 ? Math.round(n * 2.5) : b === 1 ? Math.round(n * 1.5) : n; }
+function pickGaps(w) {
+  const L = Array.from(w), n = gapCount(); if (n >= L.length) return L.map((_, i) => i);
+  const idx = L.map((_, i) => i).sort(() => Math.random() - 0.5).sort((a, b) => (TRICKY.includes(L[b]) ? 1 : 0) - (TRICKY.includes(L[a]) ? 1 : 0));
+  return idx.slice(0, n).sort((a, b) => a - b);
+}
+function spellTag() { const n = gapCount(); return n === 1 ? t('miss1') : n === 2 ? t('miss2') : t('spell'); }
+function drawAges() {
+  if (!save.age && CHILD.age) save.age = CHILD.age;
+  $('ageT').textContent = t('age');
+  $('ages').querySelectorAll('.age').forEach(b => { b.textContent = lang === 'ar' ? '٠١٢٣٤٥٦٧٨٩'[b.dataset.a[0]] + (b.dataset.a[1] ? '٠١٢٣٤٥٦٧٨٩'[b.dataset.a[1]] : '') : b.dataset.a; b.classList.toggle('on', +b.dataset.a === save.age); });
+  $('playBtn').disabled = !save.age; $('playBtn').style.opacity = save.age ? 1 : 0.5;
+}
+document.querySelectorAll('.age').forEach(b => b.onclick = () => { save.age = +b.dataset.a; persist(); drawMenu(); });
+
+// ---------- menu ----------
+function drawPreview(cv) {
+  const r = cv.__r || (cv.__r = new THREE.WebGLRenderer({ canvas: cv, antialias: true, alpha: true, preserveDrawingBuffer: true }));
+  const s = new THREE.Scene(); s.add(new THREE.HemisphereLight(0xffffff, 0x88aacc, 0.95)); const dl = new THREE.DirectionalLight(0xffffff, 0.5); dl.position.set(3, 5, 4); s.add(dl);
+  const d = makeDiver(); s.add(d);
+  if (d.userData.glb) { d.userData.body.rotation.y = 0.5; d.userData.mixer.update(0.3); } else { d.userData.body.rotation.set(0, 0.3, -0.35); d.userData.arms[1].rotation.z = 2.4; d.userData.arms[0].rotation.z = -0.6; d.userData.legs[0].rotation.x = 0.4; d.userData.legs[1].rotation.x = -0.3; }
+  const c = new THREE.PerspectiveCamera(35, 1, 0.1, 50); c.position.set(0, 0.3, 5.4); c.lookAt(0, 0.15, 0);
+  r.setClearColor(0x000000, 0); r.clear(); r.render(s, c);
+}
+let selLevel = Math.min(save.unlocked, 2);
+function ariaL() { const ar = lang !== 'en'; const L = { pauseBtn: ['إيقاف مؤقت', 'Pause'], leftBtn: ['يسار', 'Left'], rightBtn: ['يمين', 'Right'], jumpBtn: ['قفز', 'Jump'] }; for (const id in L) { const e = document.getElementById(id); if (e) e.setAttribute('aria-label', L[id][ar ? 0 : 1]); } }
+function drawMenu() {
+  ariaL();
+  document.documentElement.lang = lang; document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+  $('langAr').classList.toggle('on', lang === 'ar'); $('langEn').classList.toggle('on', lang === 'en');
+  $('title').textContent = t('title'); $('tagline').textContent = t('tagline'); $('meT').textContent = t('me'); $('meName').textContent = kidName();
+  $('levels').innerHTML = T[lang].levels.map(([n, d], i) => `<button class="lvl${i === selLevel ? ' on' : ''}" data-l="${i}" ${i > save.unlocked ? 'disabled' : ''}>${n}<small>${i > save.unlocked ? '🔒 ' + t('locked') : d}</small><span class="st">${'★'.repeat(save.stars[i] || 0)}${'☆'.repeat(3 - (save.stars[i] || 0))}</span></button>`).join('');
+  $('levels').querySelectorAll('.lvl').forEach(b => b.onclick = () => { selLevel = +b.dataset.l; drawMenu(); });
+  drawAges(); $('howto').innerHTML = t('howto'); $('playBtn').textContent = t('play');
+  $('pauseT').textContent = t('pause'); $('resumeBtn').textContent = t('resume'); $('quitBtn').textContent = t('quit'); $('airLbl').textContent = t('air');
+}
+$('langAr').onclick = () => { lang = 'ar'; try { sessionStorage.setItem('abdullahworld.lang', 'ar'); } catch (_) {} drawMenu(); };
+$('langEn').onclick = () => { lang = 'en'; try { sessionStorage.setItem('abdullahworld.lang', 'en'); } catch (_) {} drawMenu(); };
+$('playBtn').onclick = () => { if (save.age) startLevel(selLevel); };
+
+// ---------- loop ----------
+function resize() { const w = innerWidth, h = innerHeight; renderer.setSize(w, h, false); camera.aspect = w / h; camera.fov = w < h ? 68 : 50; camera.updateProjectionMatrix(); }
+addEventListener('resize', resize); resize();
+buildWorld(0); diver = makeDiver(); scene.add(diver);
+camera.position.set(0, -3, 15);
+let last = performance.now();
+function frame(now) {
+  const dt = Math.min(0.05, (now - last) / 1000); last = now;
+  if (state === 'menu') { P.x = Math.sin(now / 3000) * 6; P.y = -4 + Math.sin(now / 1700); P.vx = Math.cos(now / 3000) * 2; P.face = Math.sign(P.vx) || 1; P.kick += dt * 4; }
+  update(dt); visuals(dt);
+  renderer.render(scene, camera);
+  requestAnimationFrame(frame);
+}
+drawPreview($('pvMe'));
+// load the Pixar-style art, then swap it in (the game is playable with the simple shapes meanwhile)
+loadArt(
+  { hero: CHILD.swimModel || 'child-swim.gltf.json', boat: 'boat.gltf.json', oyster: 'oyster.gltf.json', coral: 'coral.gltf.json', jelly: 'jelly.gltf.json', chest: 'chest.gltf.json', fish: 'fish.gltf.json' },
+  { bg0: 'bg-pd-shallow.jpg', bg1: 'bg-pd-reef.jpg', bg2: 'bg-pd-deep.jpg' }
+).then(() => { if (state === 'menu') buildWorld(0); if (diver) scene.remove(diver); diver = makeDiver(); scene.add(diver); drawPreview($('pvMe')); window.__artReady = true; });
+document.fonts && document.fonts.ready.then(() => { for (const k in texCache) delete texCache[k]; for (const p of pearls) { p.sp.material.map = pearlTex(p.ch, !!p.hot); p.sp.material.needsUpdate = true; } });
+drawMenu();
+requestAnimationFrame(frame);
+window.__pd = { get state() { return state; }, P, pauseGame, resumeGame, startLevel, update, visuals, inp, get pearls() { return pearls; }, get word() { return word; }, get wordPos() { return wordPos; }, get chest() { return chest; }, get jellies() { return jellies; }, get stats() { return { score, hearts, wordsDone, readsDone, tries, correct, air: P.air }; } };
+</script>
