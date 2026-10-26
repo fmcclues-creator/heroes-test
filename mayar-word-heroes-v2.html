@@ -1334,16 +1334,17 @@ function openMap() {
   const nextI = CHAPTERS.findIndex((c, i) => !save.ch[i]);
   $('mapPath').innerHTML = `<polyline points="${CHAPTERS.map(c => c.node.join(',')).join(' ')}" fill="none" stroke="#fff" stroke-width="0.8" stroke-dasharray="1.6 1.4" stroke-linecap="round" opacity=".9"/>`;
   CHAPTERS.forEach((c, i) => {
-    const done = !!save.ch[i], now = i === nextI, lock = !done && !now;
-    const b = document.createElement('button'); b.className = 'node' + (done ? ' done' : now ? ' now' : ' lock');
+    const done = !!save.ch[i], now = i === nextI, lock = !done && !now && !UNLOCK;
+    const b = document.createElement('button'); b.className = 'node' + (done ? ' done' : now ? ' now' : lock ? ' lock' : '');
     b.style.left = c.node[0] + '%'; b.style.top = c.node[1] + '%';
     b.innerHTML = (c.finale ? '🎉' : num(i + 1)) + `<small>${c.name[lang === 'en' ? 1 : 0]}</small>` + (done ? `<span class="st">${'★'.repeat(save.ch[i].stars)}</span>` : '');
     b.onclick = () => chCard(i); wrap.appendChild(b);
   });
   chCard(Math.max(0, nextI < 0 ? 0 : nextI));
 }
+const UNLOCK = /[?&]all\b/.test(location.search); // ?all → every chapter open (for testing)
 function chCard(i) {
-  const c = CHAPTERS[i], done = !!save.ch[i], nextI = CHAPTERS.findIndex((_, k) => !save.ch[k]), open = done || i === nextI;
+  const c = CHAPTERS[i], done = !!save.ch[i], nextI = CHAPTERS.findIndex((_, k) => !save.ch[k]), open = done || i === nextI || UNLOCK;
   const sub = c.soon ? t('soon') : !open ? '🔒 ' + t('locked') : c.stages.map(s => s.icon + ' ' + s.title[lang === 'en' ? 1 : 0]).join(' · ');
   $('chCard').innerHTML = `<div style="font-size:40px">${c.finale ? '🎉' : c.stages ? c.stages[0].icon : '🗺️'}</div><div class="tx"><b>${c.finale ? '' : t('chapter') + ' ' + num(i + 1) + ': '}${c.name[lang === 'en' ? 1 : 0]}</b><small>${sub}</small></div>` + (open && !c.soon ? `<button class="go" id="chGo">${done ? t('replay') : t('play')}</button>` : '');
   if (open && !c.soon) $('chGo').onclick = () => { vCtx(); musStart(); startChapter(i); };
