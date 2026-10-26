@@ -1310,7 +1310,7 @@ function storyShow(panels, cb) {
 }
 function storyPanel() {
   const [img, id] = stQ[stI2]; const im = $('stImg');
-  if (im.dataset.src !== img) { im.dataset.src = img; im.src = ART + img; im.style.animation = 'none'; void im.offsetWidth; im.style.animation = ''; }
+  if (im.dataset.src !== img) { im.dataset.src = img; const own = KIDSLUG ? img.replace('wh2-', 'wh2-' + KIDSLUG + '-') : img; im.onerror = () => { im.onerror = null; im.src = ART + img; }; im.src = ART + own; im.style.animation = 'none'; void im.offsetWidth; im.style.animation = ''; }
   $('stText').textContent = lineText(id);
   $('stDots').innerHTML = stQ.map((_, i) => `<i class="${i <= stI2 ? 'on' : ''}"></i>`).join('');
   clearTimeout(stAuto); const my = stI2;
@@ -1366,6 +1366,7 @@ $('langEn').onclick = () => { lang = save.lang = 'en'; persist(); drawTitle(); }
 $('startBtn').onclick = () => { if (!save.age) return; vCtx(); musStart(); if (!save.intro) startChapter(0); else openMap(); };
 function toTitle() { vStop(); runId++; timers = []; if (S && STAGE[S.type].exit) { STAGE[S.type].exit(S); S = null; } clearObjs(); state = 'title'; showOnly('title'); drawTitle(); }
 $('mapBack').onclick = toTitle;
+const KIDSLUG = (CHILD.runModel && /^([\w]+)-run/.test(CHILD.runModel)) ? CHILD.runModel.match(/^([\w]+)-run/)[1] : null; // story pictures with the child drawn in: wh2-<slug>-<scene>.jpg
 const HUB = (CHILD.runModel && /^([\w]+)-run/.test(CHILD.runModel)) ? CHILD.runModel.match(/^([\w]+)-run/)[1] + '.html' : 'index.html';
 $('hubBtn').href = HUB;
 $('stBack').onclick = e => { e.stopPropagation(); clearTimeout(stAuto); stCb = null; openMap(); };
