@@ -91,6 +91,7 @@ h2{margin:4px 0 6px;font-size:24px}
 #read .opt{border:3px solid var(--line);border-radius:16px;background:#fff;font-size:18px;font-weight:700;padding:8px 12px;text-align:right;box-shadow:0 3px 0 var(--line)}
 #read .opt.ok{background:var(--mint);color:#fff}
 #read .opt.no{background:#ffd3dc;opacity:.7}
+#read .opt:disabled{color:inherit}#read .opt.ok:disabled{color:#fff}
 #read .fb{min-height:28px;font-weight:800;margin-top:8px;text-align:center}
 [dir=rtl] .howto{text-align:right}
 </style>
@@ -213,7 +214,7 @@ const WORDS = [
   // Band 0 · ages 8–9
   [['محارة', '🦪', 'صدفةٌ يختبئُ في داخلِها اللّؤلؤ'], ['مرجان', '🪸', 'كائناتٌ بحريّةٌ ملوّنةٌ تبني الشّعابَ في قاعِ البحر'], ['سلحفاة', '🐢', 'حيوانٌ بطيءٌ له درعٌ صلب، تضعُ بيضَها في رمالِ الشّاطئ'], ['شراع', '⛵', 'قماشٌ يدفعُه الهواءُ فتسيرُ السّفينة'], ['موجة', '🌊', 'ماءٌ يرتفعُ وينخفضُ على سطحِ البحر'], ['صياد', '🎣', 'رجلٌ يخرجُ إلى البحرِ ليصطادَ السّمك'], ['رمال', '🏖️', 'حبّاتٌ صغيرةٌ تغطّي الشّاطئ'], ['حبل', '🪢', 'يربطُه الغوّاصُ بجسمِه ويشدُّه ليصعدَ إلى السّفينة'], ['سمكة', '🐟', 'حيوانٌ يعيشُ في الماءِ ويتنفّسُ بالخياشيم'], ['قارب', '🛶', 'سفينةٌ صغيرةٌ نحرّكُها بالمجاديف'], ['شمس', '☀️', 'نجمٌ يضيءُ النّهارَ ويُدفئُ البحرَ في الصّيف']],
   // Band 1 · age 10
-  [['لؤلؤة', '⚪', 'حبّةٌ ثمينةٌ لامعةٌ تتكوّنُ داخلَ المحارة'], ['غواص', '🤿', 'ينزلُ إلى قاعِ البحرِ ليجمعَ المحار'], ['مرساة', '⚓', 'نُلقيها في الماءِ لتثبتَ السّفينةُ في مكانِها'], ['أخطبوط', '🐙', 'حيوانٌ بحريٌّ له ثماني أذرعٍ طويلة'], ['ميناء', '🚢', 'مكانٌ على الشّاطئ تقفُ فيه السّفن'], ['دلفين', '🐬', 'حيوانٌ ذكيٌّ يسبحُ ويقفزُ فوقَ الموج'], ['بحارة', '🚣', 'الرّجالُ الذين يعملونَ على ظهرِ السّفينة'], ['سرطان', '🦀', 'حيوانٌ بحريٌّ يمشي على جانبِه وله مِلقطان'], ['خياشيم', '🐟', 'أعضاءٌ تتنفّسُ بها الأسماكُ تحتَ الماء'], ['مجداف', '🛶', 'خشبةٌ طويلةٌ يحرّكُ بها البحّارةُ القارب'], ['بوصلة', '🧭', 'أداةٌ تدلُّ البحّارَ على الاتّجاهات']],
+  [['لؤلؤة', '⚪', 'حبّةٌ ثمينةٌ لامعةٌ تتكوّنُ داخلَ المحارة'], ['غواص', '🤿', 'ينزلُ إلى قاعِ البحرِ ليجمعَ المحار'], ['مرساة', '⚓', 'نُلقيها في الماءِ لتثبتَ السّفينةُ في مكانِها'], ['أخطبوط', '🐙', 'حيوانٌ بحريٌّ له ثماني أذرعٍ طويلة'], ['ميناء', '🚢', 'مكانٌ على الشّاطئ تقفُ فيه السّفن'], ['دلفين', '🐬', 'حيوانٌ ذكيٌّ يسبحُ ويقفزُ فوقَ الموج'], ['بحارة', '🚣', 'الرّجالُ الذين يعملونَ على ظهرِ السّفينة'], ['سرطان', '🦀', 'حيوانٌ بحريٌّ يتحرّكُ جانبيًّا وله مِلقطان'], ['خياشيم', '🐟', 'أعضاءٌ تتنفّسُ بها الأسماكُ تحتَ الماء'], ['مجداف', '🛶', 'خشبةٌ طويلةٌ يحرّكُ بها البحّارةُ القارب'], ['بوصلة', '🧭', 'أداةٌ تدلُّ البحّارَ على الاتّجاهات']],
   // Band 2 · ages 11–12
   [['أعماق', '🌊', 'الأماكنُ البعيدةُ في أسفلِ البحر'], ['تراث', '🏺', 'عاداتُ الآباءِ والأجدادِ التي نحافظُ عليها'], ['شعاب', '🪸', 'صخورٌ مرجانيّةٌ تعيشُ فيها الأسماكُ الصّغيرة'], ['استكشاف', '🔦', 'البحثُ عن أماكنَ وأشياءَ لا نعرفُها'], ['نوخذة', '⛵', 'قائدُ سفينةِ الغوصِ في الكويتِ قديمًا'], ['ثروة', '💰', 'مالٌ وخيراتٌ كثيرةٌ يملكُها الإنسانُ أو الوطن'], ['مخلوقات', '🐠', 'كائناتٌ حيّةٌ خلقَها الله'], ['صبر', '⏳', 'أن نتحمّلَ التّعبَ ولا نستسلمَ حتّى ننجح'], ['تعاون', '🤝', 'أن يعملَ الجميعُ معًا ليصلوا إلى هدفٍ واحد'], ['مغامرة', '🧗', 'عملٌ جريءٌ فيه خطرٌ وتشويق'], ['تجارة', '🏪', 'بيعُ البضائعِ وشراؤها لكسبِ الرّبح']]
 ];
@@ -229,7 +230,7 @@ const READS = [
    ['يقفُ «السّيبُ» على ظهرِ السّفينةِ ممسكًا الحبلَ المربوطَ بالغوّاص. فإذا شدَّ الغوّاصُ الحبل، سحبَه السّيبُ بسرعةٍ إلى السّطح.', 'مَن يسحبُ الغوّاصَ إلى السّطح؟', 'السّيب', 'النّوخذة', 'النّهّام']],
   [['كانَ الغوّاصُ يضعُ قدمَه على حجرٍ ثقيلٍ مربوطٍ بحبلٍ ليهبطَ بسرعةٍ إلى القاع، ثمّ يتركُه فيسحبُه «السّيبُ» إلى السّفينة.', 'لماذا كانَ الغوّاصُ يستعملُ الحجرَ الثّقيل؟', 'ليهبطَ بسرعةٍ إلى القاع', 'ليحميَ قدمَه من الصّخور', 'ليصطادَ به السّمك'],
    ['بعدَ أشهرٍ طويلةٍ في البحر، تعودُ السّفنُ إلى الكويت، ويُسمّى يومُ عودتِها «القفّال». وتنتظرُ العائلاتُ على الشّاطئِ فرِحةً بعودةِ الرّجال.', 'ماذا يعني «القفّال»؟', 'يومُ عودةِ سفنِ الغوصِ إلى الكويت', 'بدايةُ موسمِ الغوص', 'اسمُ لؤلؤةٍ كبيرة'],
-   ['في ثلاثينيّاتِ القرنِ العشرين ظهرَ اللّؤلؤُ المُستزرَعُ في اليابان، وكانَ أرخصَ ثمنًا، فقلَّ الطّلبُ على اللّؤلؤِ الطّبيعيّ، وتركَ كثيرٌ من الكويتيّينَ مهنةَ الغوص.', 'لماذا تركَ كثيرٌ من الكويتيّينَ مهنةَ الغوص؟', 'لأنَّ اللّؤلؤَ المستزرعَ الأرخصَ قلّلَ الطّلبَ على الطّبيعيّ', 'لأنَّ البحرَ أصبحَ باردًا', 'لأنَّ السّفنَ أصبحت قليلة'], ['لم يكنِ الغوّاصُ يأخذُ أجرًا ثابتًا، بل يأخذُ نصيبًا من ثمنِ اللّؤلؤِ بعدَ بيعِه في نهايةِ الموسم.', 'إذا قلَّ اللّؤلؤُ في الموسم، ماذا يحدثُ لنصيبِ الغوّاص؟', 'يقلُّ نصيبُه', 'يزيدُ نصيبُه', 'يبقى نصيبُه كما هو']]
+   ['انتشرَ اللّؤلؤُ المُستزرَعُ القادمُ من اليابان، وكانَ أرخصَ ثمنًا، فقلَّ الطّلبُ على اللّؤلؤِ الطّبيعيّ، وتركَ كثيرٌ من الكويتيّينَ مهنةَ الغوص.', 'لماذا تركَ كثيرٌ من الكويتيّينَ مهنةَ الغوص؟', 'لأنَّ اللّؤلؤَ المستزرعَ الأرخصَ قلّلَ الطّلبَ على الطّبيعيّ', 'لأنَّ البحرَ أصبحَ باردًا', 'لأنَّ السّفنَ أصبحت قليلة'], ['لم يكنِ الغوّاصُ يأخذُ أجرًا ثابتًا، بل يأخذُ نصيبًا من ثمنِ اللّؤلؤِ بعدَ بيعِه في نهايةِ الموسم.', 'إذا قلَّ اللّؤلؤُ في الموسم، ماذا يحدثُ لنصيبِ الغوّاص؟', 'يقلُّ نصيبُه', 'يزيدُ نصيبُه', 'يبقى نصيبُه كما هو']]
 ];
 const LEVEL_CFG = [
   { words: 4, reads: 2, R: 22, air: 42, jelly: 2, decoys: 6, vents: 2 },
@@ -255,13 +256,51 @@ const sfx = {
   bump() { beep(150, 0.25, 'sine', 0.2, -60); },
   win() { [523, 659, 784, 659, 784, 1047].forEach((f, i) => setTimeout(() => beep(f, 0.18, 'triangle', 0.16), i * 120)); }
 };
-function say(text) {
-  try { const ss = window.speechSynthesis; if (!ss) return; ss.cancel(); const u = new SpeechSynthesisUtterance(text); u.lang = 'ar-SA'; u.rate = 0.9; const v = ss.getVoices().find(v => v.lang && v.lang.toLowerCase().startsWith('ar')); if (v) u.voice = v; ss.speak(u); } catch (_) {}
+// ---------- voice (Hasan, ElevenLabs) — recorded clips keyed by text; the child's name is {n} ----------
+const VOICE_FILE = 'assets/voice-pd.json';
+let VOICE = null, vBuf = {}, vSrc = null, vQueue = [], vMiss = [];
+fetch(VOICE_FILE).then(r => r.ok ? r.json() : null).then(j => { VOICE = j; }).catch(() => {});
+function vCtx() { if (!actx) { try { actx = new (window.AudioContext || window.webkitAudioContext)(); } catch (_) {} } if (actx && actx.state === 'suspended') actx.resume(); return actx; }
+function vKey(text) { let k = String(text).trim(); const nm = CHILD.name && CHILD.name.ar; if (nm) k = k.split(nm).join('{n}'); return k; }
+async function vDecode(k) {
+  if (vBuf[k]) return vBuf[k]; const b64 = VOICE && VOICE[k]; const c = vCtx(); if (!b64 || !c) return null;
+  const bin = atob(b64), u8 = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) u8[i] = bin.charCodeAt(i);
+  vBuf[k] = await new Promise((res, rej) => c.decodeAudioData(u8.buffer, res, rej)).catch(() => null); return vBuf[k];
 }
+function vStop() { vQueue = []; if (vSrc) { try { vSrc.onended = null; vSrc.stop(); } catch (_) {} vSrc = null; } }
+async function vPlay(k) {
+  const buf = await vDecode(k); if (!buf) { vNext(); return false; }
+  const c = vCtx(), s = c.createBufferSource(), g = c.createGain(); g.gain.value = 1; s.buffer = buf; s.connect(g); g.connect(c.destination);
+  vSrc = s; s.onended = () => { if (vSrc === s) { vSrc = null; vNext(); } }; s.start(); return true;
+}
+function vNext() { if (vSrc || !vQueue.length) return; vPlay(vQueue.shift()); }
+// say(text, queued): play the recorded clip; English mode falls back to the browser voice
+function say(text, queued) {
+  if (!text) return;
+  if (typeof lang !== 'undefined' && lang === 'en') { try { const ss = window.speechSynthesis; if (!ss) return; ss.cancel(); const u = new SpeechSynthesisUtterance(text); u.lang = 'en-US'; u.rate = 0.95; ss.speak(u); } catch (_) {} return; }
+  const k = vKey(text); if (!(VOICE && VOICE[k]) && VOICE) { vMiss.push(k); return; }
+  if (queued && (vSrc || vQueue.length)) { vQueue.push(k); return; }
+  vStop(); vQueue = []; vPlay(k);
+}
+// voice line for a game event; gendered lines pick the boy/girl take
+function ev(name, queued) {
+  if (typeof lang !== 'undefined' && lang === 'en') return;
+  const girl = CHILD.gender === 'girl'; let k = 'ev_' + name;
+  if (VOICE && !VOICE[k]) k = 'ev_' + name + (girl ? '_g' : '_b');
+  if (name === 'clue' && girl) k = 'ev_clue_g';
+  if (!VOICE || !VOICE[k]) return;
+  if (queued && (vSrc || vQueue.length)) { vQueue.push(k); return; }
+  vStop(); vPlay(k);
+}
+function praise(q) { ev(['great1', 'great2', 'right', 'good'][Math.floor(Math.random() * 4)], q); }
+window.__voice = { get loaded() { return !!VOICE; }, get miss() { return vMiss; }, get playing() { return !!vSrc; } };
 
 // ---------- three.js ----------
 const canvas = $('c');
-const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance' });
+function noGL() { const d = document.createElement('div'); d.style.cssText = 'position:fixed;inset:0;z-index:99;display:flex;align-items:center;justify-content:center;padding:24px;background:#fff8ec;font-family:inherit;text-align:center';
+  d.innerHTML = '<div style="max-width:420px"><div style="font-size:48px">🎮</div><h2 dir="rtl" style="margin:8px 0">هذا المتصفّح لا يستطيع تشغيل اللعبة</h2><p dir="rtl">جرّب فتحها في Safari أو Chrome، أو حدّث المتصفّح، وتأكّد من تفعيل «تسريع الرسومات».</p><p dir="ltr" style="opacity:.7">This browser can\'t start the game\'s 3D graphics. Please open it in Safari or Chrome, update the browser, or turn on hardware acceleration.</p></div>';
+  document.body.appendChild(d); }
+const renderer = (() => { try { return new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance' }); } catch (e) { noGL(); throw e; } })();
 renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
 const scene = new THREE.Scene();
 const WATER = 0x1d7fb6;
@@ -481,6 +520,7 @@ function buildWorld(i) {
 
 // ---------- game state ----------
 let state = 'menu', level = 0, cfg = LEVEL_CFG[0];
+let timers = [], runId = 0; function later(s, fn) { timers.push({ t: s, fn }); }
 let diver = null;
 const P = { x: 0, y: -2, vx: 0, vy: 0, face: 1, air: 1, invuln: 0, stun: 0, kick: 0, rescue: 0, idle: 0 };
 let hearts = 3, score = 0, wordsDone = 0, readsDone = 0, tries = 0, correct = 0, learned = [], missed = new Set();
@@ -562,6 +602,7 @@ function toast(m, s = 1.1) { const e = $('toast'); e.textContent = m; e.classLis
 
 // ---------- flow ----------
 function startLevel(i) {
+  timers = []; runId++;
   if (!actx) { try { actx = new (window.AudioContext || window.webkitAudioContext)(); } catch (_) {} }
   if (actx && actx.state === 'suspended') actx.resume();
   level = i; cfg = LEVEL_CFG[i]; buildWorld(i);
@@ -575,20 +616,21 @@ function startLevel(i) {
   drawHearts(); drawAir();
   state = 'play'; toast(t('go') + ' ' + kidName() + '!', 1.4);
 }
-function toMenu() { state = 'menu'; ['hud', 'joy', 'end', 'pause', 'read', 'pointer'].forEach(s => $(s).classList.add('hidden')); $('menu').classList.remove('hidden'); drawMenu(); }
+function toMenu() { timers = []; runId++; vStop(); state = 'menu'; ['hud', 'joy', 'end', 'pause', 'read', 'pointer'].forEach(s => $(s).classList.add('hidden')); $('menu').classList.remove('hidden'); drawMenu(); }
 // reading scroll after every 2nd word (or before the chest)
 function readsDue() { const N = wordsFor(cfg.words); return readsDone < cfg.reads && (wordsDone >= Math.round((readsDone + 1) * N / (cfg.reads + 0.5)) || wordsDone >= N); }
 function openRead() {
   const r = readList[readsDone]; state = 'read'; $('read').classList.remove('hidden');
   $('readT').textContent = '📜 ' + t('scroll'); $('passage').textContent = r[0]; $('question').textContent = r[1]; $('fb').textContent = '';
-  let first = true;
+  let first = true, solved = false; const rid = runId;
   $('opts').innerHTML = shuffle(r.slice(2)).map(o => `<button class="opt">${o}</button>`).join('');
   $('opts').querySelectorAll('.opt').forEach(b => b.onclick = () => {
-    if (b.classList.contains('no') || b.classList.contains('ok')) return;
+    if (solved || b.classList.contains('no') || b.classList.contains('ok')) return;
     tries++;
     if (b.textContent === r[2]) {
+      solved = true; $('opts').querySelectorAll('.opt').forEach(o => o.disabled = true);
       if (first) { correct++; score += 5; } b.classList.add('ok'); sfx.word(); $('fb').textContent = t('right');
-      setTimeout(() => { $('read').classList.add('hidden'); readsDone++; state = 'play'; last = performance.now(); afterWordOrRead(); }, 1100);
+      setTimeout(() => { if (rid !== runId || state !== 'read') return; $('read').classList.add('hidden'); readsDone++; state = 'play'; last = performance.now(); afterWordOrRead(); }, 1100);
     } else { first = false; b.classList.add('no'); sfx.bad(); $('fb').textContent = t('wrong'); missed.add('📜' + (readsDone + 1)); }
   });
   say(r[0]);
@@ -606,12 +648,12 @@ function spawnChest() {
   else { g.add(box(2, 1.1, 1.3, 0x8a5a32)); lid = box(2.05, 0.45, 1.35, 0xa86e3c, 0, 0.75, 0); g.add(lid);
   g.add(box(0.3, 0.4, 0.1, 0xffd23f, 0, 0.45, 0.7)); [-0.8, 0.8].forEach(xx => g.add(box(0.12, 1.2, 1.36, 0xffd23f, xx, 0.15, 0))); }
   const glow = new THREE.Sprite(new THREE.SpriteMaterial({ map: pearlTex('✦', true), fog: false, transparent: true })); glow.scale.setScalar(2.6); glow.position.y = 2; g.add(glow);
-  world.add(g); chest = { g, x, lid }; drawCard(); toast(t('chest'), 1.6); say(T.ar.chest);
+  world.add(g); chest = { g, x, lid }; drawCard(); toast(t('chest'), 1.6); ev('chest', true);
 }
 function endLevel(won) {
   state = 'end'; ['hud', 'joy', 'pointer'].forEach(s => $(s).classList.add('hidden'));
   const acc = tries ? correct / tries : 1, st = won ? (acc >= 0.85 && hearts === 3 ? 3 : acc >= 0.6 ? 2 : 1) : 0;
-  if (won) { save.stars[level] = Math.max(save.stars[level] || 0, st); save.unlocked = Math.max(save.unlocked, Math.min(2, level + 1)); persist(); sfx.win(); }
+  if (won) { save.stars[level] = Math.max(save.stars[level] || 0, st); save.unlocked = Math.max(save.unlocked, Math.min(2, level + 1)); persist(); sfx.win(); ev('good', true); }
   $('endTitle').textContent = won ? t('win').replace('{n}', kidName()) : t('over');
   $('endStars').innerHTML = [0, 1, 2].map(k => `<span class="${k < st ? 'on' : ''}">★</span>`).join('');
   $('endStats').innerHTML = `<span class="pill">🦪 ${score}</span><span class="pill">${t('accuracy')} ${Math.round(acc * 100)}%</span>`;
@@ -662,6 +704,7 @@ function update(dt) {
   if (toastT > 0) { toastT -= dt; if (toastT <= 0) $('toast').classList.remove('on'); }
   for (let i = parts.length - 1; i >= 0; i--) { const p = parts[i]; p.life -= dt; p.v.y -= 4 * dt; p.m.position.addScaledVector(p.v, dt); p.m.material.opacity = Math.max(0, p.life); if (p.life <= 0) { scene.remove(p.m); parts.splice(i, 1); } }
   if (state !== 'play') return;
+  for (let i = timers.length - 1; i >= 0; i--) { const x = timers[i]; x.t -= dt; if (x.t <= 0) { timers.splice(i, 1); x.fn(); } } // game-time timers: they wait while paused
   // input
   let ix = inp.x, iy = inp.y;
   if (keys.ArrowLeft || keys.a) ix = -1; if (keys.ArrowRight || keys.d) ix = 1;
@@ -685,13 +728,13 @@ function update(dt) {
   let inVent = false; for (const v of vents) if (Math.abs(P.x - v.x) < 1.3) inVent = true;
   if (atSurface || inVent) { if (P.air < 0.98 && Math.random() < dt * 4) sfx.breath(); P.air = Math.min(1, P.air + dt * (atSurface ? 0.7 : 0.35)); lowWarned = false; }
   else P.air -= dt / cfg.air;
-  if (P.air < 0.28 && !lowWarned) { lowWarned = true; toast(t('low'), 1.4); }
-  if (P.air <= 0) { P.air = 0; hearts--; drawHearts(); P.rescue = 1.6; toast(t('rope'), 1.6); sfx.bump(); }
+  if (P.air < 0.28 && !lowWarned) { lowWarned = true; toast(t('low'), 1.4); ev('low'); }
+  if (P.air <= 0) { P.air = 0; hearts--; drawHearts(); P.rescue = 1.6; toast(t('rope'), 1.6); ev('rope'); sfx.bump(); }
   drawAir();
   // pearls
   P.idle += dt;
   for (const p of pearls) {
-    if (p.taken) continue; if (p.cool > 0) p.cool -= dt;
+    if (p.taken || !word) continue; if (p.cool > 0) p.cool -= dt;
     const px = p.g.position.x, py = p.g.position.y + 1.05;
     const hot = word && p.idx === wordPos && P.idle > 18; // hint after a long search
     if (hot !== !!p.hot) { p.hot = hot; p.sp.material.map = pearlTex(p.ch, hot); p.sp.material.needsUpdate = true; }
@@ -703,11 +746,11 @@ function update(dt) {
         if (gi >= gaps.length) {
           wordsDone++; score += 5; $('score').textContent = score; learned.push(word[0]); sfx.word(); toast(t('word'), 1.2); say(word[0]);
           const done = word; word = null; drawCard();
-          setTimeout(() => { if (state === 'play' || state === 'read') afterWordOrRead(); }, 900);
+          later(0.9, afterWordOrRead);
           void done;
         }
       } else {
-        p.cool = 1.6; tries++; missed.add(word ? word[0] : ''); sfx.bad(); toast(t('notNext'), 0.8); shake = 0.2; P.air = Math.max(0.02, P.air - 0.06);
+        p.cool = 1.6; tries++; missed.add(word ? word[0] : ''); sfx.bad(); toast(t('notNext'), 0.8); ev('notnext'); shake = 0.2; P.air = Math.max(0.02, P.air - 0.06);
         const dx = P.x - px, dy = P.y - py, d = Math.hypot(dx, dy) || 1; P.vx = dx / d * 5; P.vy = dy / d * 5;
       }
     }
@@ -716,14 +759,14 @@ function update(dt) {
   for (const j of jellies) {
     j.p += dt; j.g.position.x = j.x0 + Math.sin(j.p * 0.5) * j.amp; j.g.position.y = j.y0 + Math.sin(j.p * 1.3) * 0.8;
     if (P.invuln <= 0 && Math.hypot(P.x - j.g.position.x, P.y - j.g.position.y) < 1.1) {
-      P.invuln = 1.5; P.stun = 0.6; P.air = Math.max(0.02, P.air - 0.15); sfx.bump(); toast(t('jelly'), 1); shake = 0.3;
+      P.invuln = 1.5; P.stun = 0.6; P.air = Math.max(0.02, P.air - 0.15); sfx.bump(); toast(t('jelly'), 1); ev('jelly'); shake = 0.3;
       const dx = P.x - j.g.position.x, dy = P.y - j.g.position.y, d = Math.hypot(dx, dy) || 1; P.vx = dx / d * 7; P.vy = dy / d * 7;
     }
   }
   // treasure
   if (chest && Math.hypot(P.x - chest.x, P.y - (BED + 1)) < 2.2) {
-    chest.lid.rotation.x = -1; burst(chest.x, BED + 1.5, 30, 0xffd23f); toast(t('found'), 1.6); score += 10; chest = null; state = 'won';
-    setTimeout(() => endLevel(true), 1500);
+    chest.lid.rotation.x = -1; burst(chest.x, BED + 1.5, 30, 0xffd23f); toast(t('found'), 1.6); ev('found'); score += 10; chest = null; state = 'won';
+    const rid = runId; setTimeout(() => { if (rid === runId && state === 'won') endLevel(true); }, 1500);
   }
 }
 
@@ -809,7 +852,9 @@ function drawPreview(cv) {
   r.setClearColor(0x000000, 0); r.clear(); r.render(s, c);
 }
 let selLevel = Math.min(save.unlocked, 2);
+function ariaL() { const ar = lang !== 'en'; const L = { pauseBtn: ['إيقاف مؤقت', 'Pause'], leftBtn: ['يسار', 'Left'], rightBtn: ['يمين', 'Right'], jumpBtn: ['قفز', 'Jump'] }; for (const id in L) { const e = document.getElementById(id); if (e) e.setAttribute('aria-label', L[id][ar ? 0 : 1]); } }
 function drawMenu() {
+  ariaL();
   document.documentElement.lang = lang; document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
   $('langAr').classList.toggle('on', lang === 'ar'); $('langEn').classList.toggle('on', lang === 'en');
   $('title').textContent = t('title'); $('tagline').textContent = t('tagline'); $('meT').textContent = t('me'); $('meName').textContent = kidName();
@@ -844,5 +889,5 @@ loadArt(
 document.fonts && document.fonts.ready.then(() => { for (const k in texCache) delete texCache[k]; for (const p of pearls) { p.sp.material.map = pearlTex(p.ch, !!p.hot); p.sp.material.needsUpdate = true; } });
 drawMenu();
 requestAnimationFrame(frame);
-window.__pd = { get state() { return state; }, P, startLevel, update, visuals, inp, get pearls() { return pearls; }, get word() { return word; }, get wordPos() { return wordPos; }, get chest() { return chest; }, get jellies() { return jellies; }, get stats() { return { score, hearts, wordsDone, readsDone, tries, correct, air: P.air }; } };
+window.__pd = { get state() { return state; }, P, pauseGame, resumeGame, startLevel, update, visuals, inp, get pearls() { return pearls; }, get word() { return word; }, get wordPos() { return wordPos; }, get chest() { return chest; }, get jellies() { return jellies; }, get stats() { return { score, hearts, wordsDone, readsDone, tries, correct, air: P.air }; } };
 </script>

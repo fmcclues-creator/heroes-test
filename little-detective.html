@@ -91,6 +91,7 @@ h2{margin:4px 0 6px;font-size:24px}
 #read .opt{border:3px solid var(--line);border-radius:16px;background:#fff;font-size:18px;font-weight:700;padding:8px 12px;text-align:right;box-shadow:0 3px 0 var(--line)}
 #read .opt.ok{background:var(--mint);color:#fff}
 #read .opt.no{background:#ffd3dc;opacity:.7}
+#read .opt:disabled{color:inherit}#read .opt.ok:disabled{color:#fff}
 #read .fb{min-height:28px;font-weight:800;margin-top:8px;text-align:center}
 [dir=rtl] .howto{text-align:right}
 
@@ -174,7 +175,7 @@ const T = {
     levels: [['القطّة الضائعة', 'القضيّة ١'], ['الرّسالة الغامضة', 'القضيّة ٢'], ['اللّؤلؤة المفقودة', 'القضيّة ٣']],
     howto: '<b>امشِ</b> بالأسهم أو المس الأرض أو عصا التحكّم<br><b>تحدّث</b> اقترب من الشّخص واضغط الزّر أو المسافة<br><b>حلّ</b> اجمع كلّ الأدلّة ثمّ اختر الجواب',
     play: 'ابدأ التّحقيق!', talk: 'تحدّث', inspect: 'افحص', notebook: 'دفتر الأدلّة', clues: 'الأدلّة', solve: 'حلّ القضيّة', lvl: 'القضيّة',
-    right: 'إجابة صحيحة! حصلت على دليل', rightG: 'إجابة صحيحة! حصلتِ على دليل', wrong: 'اقرأ مرّة أخرى وحاول', cont: 'تابع',
+    right: 'إجابة صحيحة! حصلت على دليل', rightG: 'إجابة صحيحة! حصلتِ على دليل', rightSolve: 'إجابة صحيحة! توجّه إلى المكان الذي اخترته.', rightSolveG: 'إجابة صحيحة! توجّهي إلى المكان الذي اخترتِه.', wrong: 'اقرأ مرّة أخرى وحاول', cont: 'تابع',
     find: 'ابحث عن الأدلّة', allClues: 'جمعت كلّ الأدلّة! اضغط «حلّ القضيّة»', allCluesG: 'جمعتِ كلّ الأدلّة! اضغطي «حلّ القضيّة»',
     solveQ: 'فكّر في الأدلّة', goThere: 'اذهب إلى هناك!', goThereG: 'اذهبي إلى هناك!', notYet: 'لم تجمع كلّ الأدلّة بعد', notYetG: 'لم تجمعي كلّ الأدلّة بعد',
     solved: 'حُلّت القضيّة!', win: 'أحسنت يا {n}!', winG: 'أحسنتِ يا {n}!', accuracy: 'الدّقّة', learned: 'الأدلّة التي جمعتها', next: 'القضيّة التالية', again: 'العب مرّة أخرى', menu: 'القائمة', locked: 'مقفلة',
@@ -187,7 +188,7 @@ const T = {
     levels: [['The Lost Cat', 'Case 1'], ['The Mystery Letter', 'Case 2'], ['The Missing Pearl', 'Case 3']],
     howto: '<b>Walk</b> arrow keys, tap the ground or use the joystick<br><b>Talk</b> walk up to someone and press the button or Space<br><b>Solve</b> collect every clue, then choose the answer',
     play: 'Start the case!', talk: 'Talk', inspect: 'Inspect', notebook: 'Clue notebook', clues: 'Clues', solve: 'Solve the case', lvl: 'Case',
-    right: 'Correct! You got a clue', rightG: 'Correct! You got a clue', wrong: 'Read it again and try', cont: 'Continue',
+    right: 'Correct! You got a clue', rightG: 'Correct! You got a clue', rightSolve: 'Correct! Head to the place you chose.', rightSolveG: 'Correct! Head to the place you chose.', wrong: 'Read it again and try', cont: 'Continue',
     find: 'Find the clues', allClues: 'You have every clue! Press "Solve the case"', allCluesG: 'You have every clue! Press "Solve the case"',
     solveQ: 'Think about the clues', goThere: 'Go there!', goThereG: 'Go there!', notYet: "You don't have every clue yet", notYetG: "You don't have every clue yet",
     solved: 'Case solved!', win: 'Well done, {n}!', winG: 'Well done, {n}!', accuracy: 'Accuracy', learned: 'Clues you collected', next: 'Next case', again: 'Play again', menu: 'Menu', locked: 'Locked',
@@ -247,7 +248,7 @@ const CASES = [
         l: ['في الصّباحِ اشترت أمُّ فهد منّي تمرًا كثيرًا، ثمّ رأيتُها تشتري شموعًا وكعكةً كبيرةً، وكانت تبتسمُ وتهمسُ: «لا تُخبِر أحدًا».', 'ما الذي يدلُّ على أنّ أمَّ فهد تُخفي سرًّا؟', 'قالت: «لا تُخبِر أحدًا»', 'اشترت تمرًا كثيرًا', 'كانت تمشي بسرعة'] }],
       ['fisher', 'sea', {
         s: ['ساعدتُ في حملِ صندوقِ بالونات إلى دكّانِ العطور.', 'إلى أين حملَ حمد الصّندوق؟', 'إلى دكّانِ العطور', 'إلى البحر', 'إلى بسطةِ التّمر'],
-        l: ['طلبت منّي أمُّ فهد أن أحملَ صندوقًا خفيفًا مليئًا بالبالونات إلى دكّانِها، وقالت إنّ اليومَ يومٌ مميّزٌ لصديقٍ عزيز.', 'لماذا اليومُ مميّزٌ بحسبِ كلامِ حمد؟', 'لأنّه يومٌ مميّزٌ لصديقٍ عزيز', 'لأنّ البحرَ هادئ', 'لأنّ السّوقَ مغلق'] }],
+        l: ['طلبت منّي أمُّ فهد أن أحملَ صندوقًا خفيفًا مليئًا بالبالونات إلى دكّانِها، وقالت إنّ اليومَ يومٌ مميّزٌ لصديقٍ عزيز.', 'ماذا قالت أمُّ فهد عن هذا اليوم؟', 'إنّه يومٌ مميّزٌ لصديقٍ عزيز', 'إنّ البحرَ هادئ', 'إنّ السّوقَ مغلق'] }],
       ['perfume', 'perfume', {
         s: ['أنا مشغولةٌ جدًّا اليوم! لا تسألني الآن.', 'كيف كانت أمّ فهد؟', 'مشغولةً جدًّا', 'نائمة', 'حزينة'],
         l: ['أهلًا يا {n}! أنا مشغولةٌ جدًّا اليوم بترتيبِ الدّكّانِ وتنظيفِه. ولا، لا أعرفُ شيئًا عن أيِّ رسالة!', 'بماذا كانت أمّ فهد مشغولة؟', 'بترتيبِ الدّكّانِ وتنظيفِه', 'ببيعِ السّمك', 'بخياطةِ ثوب'] }]
@@ -284,7 +285,10 @@ const CASES = [
   }
 ];
 function txt(o) { const v = band() === 0 ? o.s : o.l; return typeof v === 'string' ? fill(v) : v.map(fill); }
-function fill(s) { s = s.replace(/\{n\}/g, kidName()); if (G) s = s.replace('وجدتَ', 'وجدتِ'); return s; }
+// girl variant: direct address to the child switches to the feminine form
+const GIRL_FORMS = [['وجدتَ', 'وجدتِ'], ['هل تساعدني', 'هل تساعدينني'], ['ساعدني', 'ساعديني'], ['لا تسألني', 'لا تسأليني'], ['يشكرُك ', 'يشكرُكِ ']];
+function girlForm(s) { for (const [a, b] of GIRL_FORMS) s = s.split(a).join(b); return s; }
+function fill(s) { s = s.replace(/\{n\}/g, kidName()); if (G) s = girlForm(s); return s; }
 
 // ---------- audio ----------
 let actx = null;
@@ -300,13 +304,51 @@ const sfx = {
   open() { beep(500, 0.08, 'sine', 0.1, 200); },
   win() { [523, 659, 784, 659, 784, 1047].forEach((f, i) => setTimeout(() => beep(f, 0.18, 'triangle', 0.16), i * 120)); }
 };
-function say(text) {
-  try { const ss = window.speechSynthesis; if (!ss) return; ss.cancel(); const u = new SpeechSynthesisUtterance(text); u.lang = 'ar-SA'; u.rate = 0.9; const v = ss.getVoices().find(v => v.lang && v.lang.toLowerCase().startsWith('ar')); if (v) u.voice = v; ss.speak(u); } catch (_) {}
+// ---------- voice (Hasan, ElevenLabs) — recorded clips keyed by text; the child's name is {n} ----------
+const VOICE_FILE = 'assets/voice-ld.json';
+let VOICE = null, vBuf = {}, vSrc = null, vQueue = [], vMiss = [];
+fetch(VOICE_FILE).then(r => r.ok ? r.json() : null).then(j => { VOICE = j; }).catch(() => {});
+function vCtx() { if (!actx) { try { actx = new (window.AudioContext || window.webkitAudioContext)(); } catch (_) {} } if (actx && actx.state === 'suspended') actx.resume(); return actx; }
+function vKey(text) { let k = String(text).trim(); const nm = CHILD.name && CHILD.name.ar; if (nm) k = k.split(nm).join('{n}'); return k; }
+async function vDecode(k) {
+  if (vBuf[k]) return vBuf[k]; const b64 = VOICE && VOICE[k]; const c = vCtx(); if (!b64 || !c) return null;
+  const bin = atob(b64), u8 = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) u8[i] = bin.charCodeAt(i);
+  vBuf[k] = await new Promise((res, rej) => c.decodeAudioData(u8.buffer, res, rej)).catch(() => null); return vBuf[k];
 }
+function vStop() { vQueue = []; if (vSrc) { try { vSrc.onended = null; vSrc.stop(); } catch (_) {} vSrc = null; } }
+async function vPlay(k) {
+  const buf = await vDecode(k); if (!buf) { vNext(); return false; }
+  const c = vCtx(), s = c.createBufferSource(), g = c.createGain(); g.gain.value = 1; s.buffer = buf; s.connect(g); g.connect(c.destination);
+  vSrc = s; s.onended = () => { if (vSrc === s) { vSrc = null; vNext(); } }; s.start(); return true;
+}
+function vNext() { if (vSrc || !vQueue.length) return; vPlay(vQueue.shift()); }
+// say(text, queued): play the recorded clip; English mode falls back to the browser voice
+function say(text, queued) {
+  if (!text) return;
+  if (typeof lang !== 'undefined' && lang === 'en') { try { const ss = window.speechSynthesis; if (!ss) return; ss.cancel(); const u = new SpeechSynthesisUtterance(text); u.lang = 'en-US'; u.rate = 0.95; ss.speak(u); } catch (_) {} return; }
+  const k = vKey(text); if (!(VOICE && VOICE[k]) && VOICE) { vMiss.push(k); return; }
+  if (queued && (vSrc || vQueue.length)) { vQueue.push(k); return; }
+  vStop(); vQueue = []; vPlay(k);
+}
+// voice line for a game event; gendered lines pick the boy/girl take
+function ev(name, queued) {
+  if (typeof lang !== 'undefined' && lang === 'en') return;
+  const girl = CHILD.gender === 'girl'; let k = 'ev_' + name;
+  if (VOICE && !VOICE[k]) k = 'ev_' + name + (girl ? '_g' : '_b');
+  if (name === 'clue' && girl) k = 'ev_clue_g';
+  if (!VOICE || !VOICE[k]) return;
+  if (queued && (vSrc || vQueue.length)) { vQueue.push(k); return; }
+  vStop(); vPlay(k);
+}
+function praise(q) { ev(['great1', 'great2', 'right', 'good'][Math.floor(Math.random() * 4)], q); }
+window.__voice = { get loaded() { return !!VOICE; }, get miss() { return vMiss; }, get playing() { return !!vSrc; } };
 
 // ---------- three.js ----------
 const canvas = $('c');
-const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance' });
+function noGL() { const d = document.createElement('div'); d.style.cssText = 'position:fixed;inset:0;z-index:99;display:flex;align-items:center;justify-content:center;padding:24px;background:#fff8ec;font-family:inherit;text-align:center';
+  d.innerHTML = '<div style="max-width:420px"><div style="font-size:48px">🎮</div><h2 dir="rtl" style="margin:8px 0">هذا المتصفّح لا يستطيع تشغيل اللعبة</h2><p dir="rtl">جرّب فتحها في Safari أو Chrome، أو حدّث المتصفّح، وتأكّد من تفعيل «تسريع الرسومات».</p><p dir="ltr" style="opacity:.7">This browser can\'t start the game\'s 3D graphics. Please open it in Safari or Chrome, update the browser, or turn on hardware acceleration.</p></div>';
+  document.body.appendChild(d); }
+const renderer = (() => { try { return new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance' }); } catch (e) { noGL(); throw e; } })();
 renderer.setPixelRatio(Math.min(devicePixelRatio, 2)); renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 const scene = new THREE.Scene(); scene.background = new THREE.Color(0xf3d7a4); scene.fog = new THREE.Fog(0xf3d7a4, 40, 110);
 const camera = new THREE.PerspectiveCamera(48, 1, 0.1, 400);
@@ -520,11 +562,12 @@ function placePeople() {
 // ---------- state ----------
 let state = 'menu', level = 0, det = null;
 const P = { x: 0, z: 2, vx: 0, vz: 0, face: Math.PI, walk: 0 };
-let clues = [], tries = 0, correct = 0, wrongSolve = 0, solvedPick = false, near = null, revealT = 0, prize = null;
+let ldRun = 0, clues = [], tries = 0, correct = 0, wrongSolve = 0, solvedPick = false, near = null, revealT = 0, prize = null;
 const keys = {}, inp = { x: 0, z: 0 };
 const coarse = matchMedia('(pointer: coarse)').matches;
 
 function startLevel(i) {
+  ldRun++; vStop();
   if (!actx) { try { actx = new (window.AudioContext || window.webkitAudioContext)(); } catch (_) {} }
   if (actx && actx.state === 'suspended') actx.resume();
   level = i; buildWorld(); placePeople();
@@ -536,7 +579,7 @@ function startLevel(i) {
   state = 'play';
   const C = CASES[i]; openText(PEOPLE[C.client].name, txt(C.intro), null);
 }
-function toMenu() { state = 'menu'; ['hud', 'joy', 'end', 'pause', 'read', 'book', 'actBtn'].forEach(s => $(s).classList.add('hidden')); $('menu').classList.remove('hidden'); drawMenu(); }
+function toMenu() { ldRun++; vStop(); state = 'menu'; ['hud', 'joy', 'end', 'pause', 'read', 'book', 'actBtn'].forEach(s => $(s).classList.add('hidden')); $('menu').classList.remove('hidden'); drawMenu(); }
 function cluesNeeded() { const C = CASES[level]; return C.witnesses.length + C.hidden.length; }
 function drawHud() {
   $('clueCount').textContent = `${clues.length} / ${cluesNeeded()}`;
@@ -549,18 +592,18 @@ function openText(who, text, quiz, onDone) {
   state = 'read'; $('read').classList.remove('hidden'); $('rWho').textContent = who; $('rText').textContent = text; $('rFb').textContent = '';
   say(text); sfx.open();
   if (!quiz) { $('rQ').textContent = ''; $('rOpts').innerHTML = `<button class="go" id="rOk">${t('cont')}</button>`; $('rOk').onclick = () => { closeRead(); onDone && onDone(); }; return; }
-  $('rQ').textContent = quiz[0]; let first = true;
+  $('rQ').textContent = quiz[0]; let first = true, solved = false; const final = who === t('solveQ'), rid = ldRun;
   const opts = quiz.slice(1).map((o, k) => ({ o, ok: k === 0 })).sort(() => Math.random() - 0.5);
   $('rOpts').innerHTML = opts.map((x, k) => `<button class="opt" data-k="${k}">${x.o}</button>`).join('');
   $('rOpts').querySelectorAll('.opt').forEach(b => b.onclick = () => {
-    if (b.classList.contains('no') || b.classList.contains('ok')) return;
+    if (solved || b.classList.contains('no') || b.classList.contains('ok')) return;
     const x = opts[+b.dataset.k]; tries++;
-    if (x.ok) { if (first) correct++; b.classList.add('ok'); sfx.good(); $('rFb').textContent = onDone ? t('right') : ''; setTimeout(() => { closeRead(); onDone && onDone(first); }, 1100); }
-    else { first = false; b.classList.add('no'); sfx.bad(); $('rFb').textContent = t('wrong'); }
+    if (x.ok) { solved = true; $('rOpts').querySelectorAll('.opt').forEach(o => o.disabled = true); if (first) correct++; b.classList.add('ok'); sfx.good(); $('rFb').textContent = !onDone ? '' : final ? t('rightSolve') : t('right'); if (onDone && !final) ev('clue'); setTimeout(() => { if (rid !== ldRun) return; closeRead(); onDone && onDone(first); }, 1100); }
+    else { first = false; b.classList.add('no'); sfx.bad(); $('rFb').textContent = t('wrong'); ev('try'); }
   });
 }
 function closeRead() { $('read').classList.add('hidden'); if (state === 'read') state = 'play'; last = performance.now(); }
-function addClue(text) { clues.push(text); sfx.clue(); toastMsg('🔎 +1'); drawHud(); if (clues.length >= cluesNeeded()) setTimeout(() => toastMsg(t('allClues'), 2.2), 600); }
+function addClue(text) { clues.push(text); sfx.clue(); toastMsg('🔎 +1'); drawHud(); if (clues.length >= cluesNeeded()) { const rid = ldRun; setTimeout(() => { if (rid !== ldRun) return; toastMsg(t('allClues'), 2.2); ev('clues', true); }, 600); } }
 function interact() {
   if (state !== 'play' || !near) return;
   const C = CASES[level];
@@ -581,7 +624,7 @@ function openSolve() {
   if (state !== 'play' || solvedPick) return;
   if (clues.length < cluesNeeded()) { toastMsg(t('notYet'), 1.6); return; }
   const C = CASES[level], q = txt(C.solve);
-  openText(t('solveQ'), clues.join('\n'), q, () => { solvedPick = true; drawHud(); toastMsg(t('goThere'), 1.8); markAnswer(); });
+  openText(t('solveQ'), clues.join('\n'), q, () => { solvedPick = true; drawHud(); toastMsg(t('goThere'), 1.8); ev('there'); markAnswer(); });
   // a wrong final answer costs a star
   $('rOpts').querySelectorAll('.opt').forEach(b => b.addEventListener('click', () => { if (b.classList.contains('no')) wrongSolve++; }));
 }
@@ -596,15 +639,15 @@ function reveal() {
   if (C.item === 'cat') prize = glb('cat', 1.1, 'h') || (() => { const g = new THREE.Group(); const b = mesh(SPH, M(0xf0a050)); b.scale.set(1, 0.7, 1.3); b.position.y = 0.4; g.add(b); return g; })();
   else if (C.item === 'pearl') { prize = new THREE.Group(); const pr = mesh(SPH, new THREE.MeshToonMaterial({ color: 0xfff6fb, gradientMap: grad, emissive: 0x332233 })); pr.scale.setScalar(0.6); prize.add(pr); }
   else { prize = new THREE.Group(); for (let k = 0; k < 9; k++) { const b = mesh(SPH, M([0xff5f8f, 0xffd23f, 0x2fd39a, 0x7fb6ff][k % 4])); b.scale.set(0.6, 0.75, 0.6); b.position.set((Math.random() - 0.5) * 3, 2 + Math.random() * 1.5, (Math.random() - 0.5) * 2); prize.add(b); } }
-  prize.position.set(p.x, 0, p.z); world.add(prize); world.remove(marker); burst(p.x, 1.5, p.z, 40); sfx.win();
+  prize.position.set(p.x, 0, p.z); world.add(prize); world.remove(marker); burst(p.x, 1.5, p.z, 40); sfx.win(); ev('solved');
   // the client and the witnesses gather round
   npcs.forEach((n, k) => { n.home = n.g.position.clone(); n.dest = new THREE.Vector3(p.x + Math.cos(k * 1.7) * 2.6, 0, p.z + Math.sin(k * 1.7) * 2.6); });
-  setTimeout(() => openText(t('solved'), txt(C.reveal), null, () => endLevel()), 1600);
+  const rid = ldRun; setTimeout(() => { if (rid === ldRun) openText(t('solved'), txt(C.reveal), null, () => endLevel()); }, 1600);
 }
 function endLevel() {
   state = 'end'; ['hud', 'joy', 'actBtn'].forEach(s => $(s).classList.add('hidden'));
   const acc = tries ? correct / tries : 1, st = wrongSolve === 0 && acc >= 0.8 ? 3 : acc >= 0.5 ? 2 : 1;
-  save.stars[level] = Math.max(save.stars[level] || 0, st); save.unlocked = Math.max(save.unlocked, Math.min(2, level + 1)); persist();
+  save.stars[level] = Math.max(save.stars[level] || 0, st); save.unlocked = Math.max(save.unlocked, Math.min(2, level + 1)); persist(); ev('good');
   $('endTitle').textContent = t('win').replace('{n}', kidName());
   $('endStars').innerHTML = [0, 1, 2].map(k => `<span class="${k < st ? 'on' : ''}">★</span>`).join('');
   $('endStats').innerHTML = `<span class="pill">🔎 ${clues.length}</span><span class="pill">${t('accuracy')} ${Math.round(acc * 100)}%</span>`;
@@ -702,7 +745,9 @@ function drawPreview(cv) {
   r.setClearColor(0x000000, 0); r.clear(); r.render(s, c);
 }
 let selLevel = Math.min(save.unlocked, 2);
+function ariaL() { const ar = lang !== 'en'; const L = { pauseBtn: ['إيقاف مؤقت', 'Pause'], leftBtn: ['يسار', 'Left'], rightBtn: ['يمين', 'Right'], jumpBtn: ['قفز', 'Jump'] }; for (const id in L) { const e = document.getElementById(id); if (e) e.setAttribute('aria-label', L[id][ar ? 0 : 1]); } }
 function drawMenu() {
+  ariaL();
   document.documentElement.lang = lang; document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
   $('langAr').classList.toggle('on', lang === 'ar'); $('langEn').classList.toggle('on', lang === 'en');
   $('title').textContent = t('title'); $('tagline').textContent = t('tagline'); $('meT').textContent = t('me'); $('meName').textContent = kidName();
@@ -736,5 +781,5 @@ loadArt(
     npcDates: 'npc-dates.gltf.json', npcPerfume: 'npc-perfume.gltf.json', npcFisher: 'npc-fisher.gltf.json', npcTailor: 'npc-tailor.gltf.json' },
   { bg: 'bg-wh-souq.jpg' }
 ).then(() => { if (state === 'menu') buildWorld(); drawPreview($('pvMe')); window.__artReady = true; });
-window.__ld = { get state() { return state; }, P, startLevel, update, visuals, interact, openSolve, get npcs() { return npcs; }, get spots() { return spots; }, get marker() { return marker; }, get near() { return near; }, set target(v) { target = v; }, get stats() { return { clues: clues.length, need: cluesNeeded(), tries, correct, wrongSolve, solvedPick }; } };
+window.__ld = { get state() { return state; }, P, toMenu, startLevel, update, visuals, interact, openSolve, get npcs() { return npcs; }, get spots() { return spots; }, get marker() { return marker; }, get near() { return near; }, set target(v) { target = v; }, get stats() { return { clues: clues.length, need: cluesNeeded(), tries, correct, wrongSolve, solvedPick }; } };
 </script>

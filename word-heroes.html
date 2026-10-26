@@ -191,7 +191,7 @@ const t = k => T[lang][k];
 // Spelling: [word, emoji, clue]
 const WORDS = [
   // Band 0 · ages 8–9: 4–5 letters, everyday words with ة and long vowels
-  [['سفينة', '🚢', 'سفينةٌ كبيرةٌ تحملُ الرُّكّابَ عبرَ البحار'], ['حديقة', '🌳', 'مكانٌ فيه أشجارٌ وأزهارٌ نلعبُ فيه'], ['نخلة', '🌴', 'شجرةٌ تُعطينا التَّمر'], ['قارب', '🚤', 'سفينةٌ صغيرةٌ يصطادُ بها الصّيّادون'], ['مطبخ', '🍳', 'غرفةٌ نطبخُ فيها الطَّعام'], ['فراشة', '🦋', 'حشرةٌ لها أجنحةٌ ملوَّنة'], ['جزيرة', '🏝️', 'أرضٌ يُحيطُ بها الماءُ من كلِّ جانب'], ['مظلة', '☂️', 'نحملُها فوقَ رؤوسِنا لتحمينا من المطر'], ['مكتبة', '📚', 'مكانٌ فيه كتبٌ كثيرةٌ نستعيرُها ونقرؤها'], ['مسجد', '🕌', 'نُصلّي فيه مع الجماعة'], ['سمكة', '🐟', 'تعيشُ في الماءِ وتسبحُ بزعانفها'], ['ساعة', '⌚', 'نعرفُ بها الوقت']],
+  [['سفينة', '🚢', 'وسيلةُ نقلٍ بحريّةٌ كبيرةٌ تحملُ الرُّكّابَ عبرَ البحار'], ['حديقة', '🌳', 'مكانٌ فيه أشجارٌ وأزهارٌ نلعبُ فيه'], ['نخلة', '🌴', 'شجرةٌ تُعطينا التَّمر'], ['قارب', '🚤', 'سفينةٌ صغيرةٌ يصطادُ بها الصّيّادون'], ['مطبخ', '🍳', 'غرفةٌ نطبخُ فيها الطَّعام'], ['فراشة', '🦋', 'حشرةٌ لها أجنحةٌ ملوَّنة'], ['جزيرة', '🏝️', 'أرضٌ يُحيطُ بها الماءُ من كلِّ جانب'], ['مظلة', '☂️', 'نحملُها فوقَ رؤوسِنا لتحمينا من المطر'], ['مكتبة', '📚', 'مكانٌ فيه كتبٌ كثيرةٌ نستعيرُها ونقرؤها'], ['مسجد', '🕌', 'نُصلّي فيه مع الجماعة'], ['سمكة', '🐟', 'تعيشُ في الماءِ وتسبحُ بزعانفها'], ['ساعة', '⌚', 'نعرفُ بها الوقت']],
   // Band 1 · age 10: 4–6 letters, hamza words and less common vocabulary
   [['شاطئ', '🏖️', 'المكانُ الذي يلتقي فيه البحرُ بالرَّمل'], ['لؤلؤ', '🦪', 'كانَ الغوّاصونَ يجمعونَه من قاعِ البحر'], ['مستشفى', '🏥', 'يُعالِجُ فيه الأطبّاءُ المرضى'], ['مسافر', '🧳', 'شخصٌ ينتقلُ من بلدٍ إلى بلد'], ['طائرة', '✈️', 'تنقلُ المسافرينَ في السَّماء'], ['رسالة', '✉️', 'نكتبُها ونُرسلُها إلى صديق'], ['مختبر', '🧪', 'يُجري فيه العلماءُ التَّجارب'], ['بوصلة', '🧭', 'أداةٌ تدلُّنا على الاتِّجاهات'], ['صحراء', '🏜️', 'أرضٌ واسعةٌ رمالُها كثيرةٌ ومطرُها قليل'], ['سؤال', '❓', 'نطرحُه عندما نريدُ أن نعرفَ شيئًا'], ['بئر', '🪣', 'حفرةٌ عميقةٌ نستخرجُ منها الماء'], ['مؤذن', '🕌', 'يرفعُ الأذانَ في المسجد'], ['أصدقاء', '🧑‍🤝‍🧑', 'جمعُ كلمةِ صديق']],
   // Band 2 · ages 11–12: 5–7 letters, harder spelling (ؤ، ا، ة) and abstract words
@@ -200,7 +200,7 @@ const WORDS = [
 // Driving challenges: [skill, prompt, correct, wrong, wrong]
 const CHALLENGES = [
   [['حرف جرّ', 'ذهبَ أحمدُ ___ المدرسة', 'إلى', 'على', 'عن'], ['جمع', 'جمعُ كلمة «كتاب»', 'كُتُب', 'كتابون', 'كاتِب'], ['مؤنّث', 'مؤنّثُ كلمة «طالب»', 'طالبة', 'طُلّاب', 'مطلوب'], ['ضدّ', 'ضدُّ كلمة «سريع»', 'بطيء', 'قويّ', 'جميل'], ['أكمل', 'الأطفالُ ___ في الحديقة', 'يلعبون', 'يلعبُ', 'تلعبين'], ['اسم إشارة', '___ بنتٌ مجتهدة', 'هذه', 'هذا', 'هؤلاء'], ['مرادف', 'معنى كلمة «سعيد»', 'مسرور', 'حزين', 'غاضب'], ['ضدّ', 'ضدُّ كلمة «طويل»', 'قصير', 'كبير', 'عالٍ'], ['اسم إشارة', '___ ولدٌ مؤدَّب', 'هذا', 'هذه', 'هاتان']],
-  [['جمع', 'جمعُ كلمة «سفينة»', 'سُفُن', 'سفينات', 'سفينون'], ['مثنّى', 'مثنّى كلمة «طالب»', 'طالبان', 'طُلّاب', 'طالبون'], ['الماضي', 'الفعلُ الماضي من «يكتبُ»', 'كَتَبَ', 'اُكتُبْ', 'كاتِب'], ['أكمل', 'الطّالبتانِ ___ الدَّرس', 'تكتبان', 'يكتبُ', 'يكتبون'], ['ضمير', '___ يلعبونَ كرةَ القدم', 'هم', 'هما', 'نحن'], ['مثنّى', 'مثنّى كلمة «شجرة»', 'شجرتان', 'شجرات', 'أشجار'], ['همزة', 'اكتبِ الكلمةَ الصحيحة', 'سماء', 'سماأ', 'سمائ'], ['مرادف', 'معنى كلمة «شجاع»', 'جريء', 'خائف', 'كسول'], ['ضدّ', 'ضدُّ كلمة «نجحَ»', 'رسبَ', 'فازَ', 'قرأَ']],
+  [['جمع', 'جمعُ التّكسيرِ لكلمةِ «سفينة»', 'سُفُن', 'سفينات', 'سفينون'], ['مثنّى', 'مثنّى كلمة «طالب»', 'طالبان', 'طُلّاب', 'طالبون'], ['الماضي', 'الفعلُ الماضي من «يكتبُ»', 'كَتَبَ', 'اُكتُبْ', 'كاتِب'], ['أكمل', 'الطّالبتانِ ___ الدَّرس', 'تكتبان', 'يكتبُ', 'يكتبون'], ['ضمير', '___ يلعبونَ كرةَ القدم', 'هم', 'هما', 'نحن'], ['مثنّى', 'مثنّى كلمة «شجرة»', 'شجرتان', 'شجرات', 'أشجار'], ['همزة', 'اكتبِ الكلمةَ الصحيحة', 'سماء', 'سماأ', 'سمائ'], ['مرادف', 'معنى كلمة «شجاع»', 'جريء', 'خائف', 'كسول'], ['ضدّ', 'ضدُّ كلمة «نجحَ»', 'رسبَ', 'فازَ', 'قرأَ']],
   [['الأمر', 'فعلُ الأمر من «يقرأُ»', 'اِقرأْ', 'قرأَ', 'قارئ'], ['جمع', 'جمعُ كلمة «وزير»', 'وزراء', 'وزيرون', 'أوزار'], ['جمع مذكر سالم', 'رأيتُ ___ في الملعب', 'اللاعبين', 'اللاعبون', 'اللاعبان'], ['إنّ', 'إنَّ ___ واسعٌ', 'البحرَ', 'البحرُ', 'البحرِ'], ['كان', 'كانَ الجوُّ ___', 'جميلًا', 'جميلٌ', 'جميلٍ'], ['حرف جرّ', 'اعتمدتُ ___ نفسي', 'على', 'في', 'إلى'], ['مرادف', 'معنى كلمة «شاسع»', 'واسعٌ جدًّا', 'مرتفعٌ جدًّا', 'بعيدٌ جدًّا'], ['ضدّ', 'ضدُّ كلمة «الصِّدق»', 'الكذب', 'الوفاء', 'الصَّبر'], ['أكمل', 'هؤلاءِ ___ مجتهدون', 'طُلّابٌ', 'طالبٌ', 'طالبتان']]
 ];
 const LEVEL_CFG = [
@@ -234,13 +234,51 @@ const sfx = {
   transform() { for (let i = 0; i < 8; i++) setTimeout(() => beep(300 + i * 90, 0.08, 'square', 0.07), i * 45); setTimeout(() => beep(1400, 0.3, 'triangle', 0.15, -400), 400); },
   win() { [523, 659, 784, 659, 784, 1047].forEach((f, i) => setTimeout(() => beep(f, 0.18, 'triangle', 0.16), i * 120)); }
 };
-function say(text) {
-  try { const ss = window.speechSynthesis; if (!ss) return; ss.cancel(); const u = new SpeechSynthesisUtterance(text); u.lang = 'ar-SA'; u.rate = 0.9; const v = ss.getVoices().find(v => v.lang && v.lang.toLowerCase().startsWith('ar')); if (v) u.voice = v; ss.speak(u); } catch (_) {}
+// ---------- voice (Hasan, ElevenLabs) — recorded clips keyed by text; the child's name is {n} ----------
+const VOICE_FILE = 'assets/voice-wh.json';
+let VOICE = null, vBuf = {}, vSrc = null, vQueue = [], vMiss = [];
+fetch(VOICE_FILE).then(r => r.ok ? r.json() : null).then(j => { VOICE = j; }).catch(() => {});
+function vCtx() { if (!actx) { try { actx = new (window.AudioContext || window.webkitAudioContext)(); } catch (_) {} } if (actx && actx.state === 'suspended') actx.resume(); return actx; }
+function vKey(text) { let k = String(text).trim(); const nm = CHILD.name && CHILD.name.ar; if (nm) k = k.split(nm).join('{n}'); return k; }
+async function vDecode(k) {
+  if (vBuf[k]) return vBuf[k]; const b64 = VOICE && VOICE[k]; const c = vCtx(); if (!b64 || !c) return null;
+  const bin = atob(b64), u8 = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) u8[i] = bin.charCodeAt(i);
+  vBuf[k] = await new Promise((res, rej) => c.decodeAudioData(u8.buffer, res, rej)).catch(() => null); return vBuf[k];
 }
+function vStop() { vQueue = []; if (vSrc) { try { vSrc.onended = null; vSrc.stop(); } catch (_) {} vSrc = null; } }
+async function vPlay(k) {
+  const buf = await vDecode(k); if (!buf) { vNext(); return false; }
+  const c = vCtx(), s = c.createBufferSource(), g = c.createGain(); g.gain.value = 1; s.buffer = buf; s.connect(g); g.connect(c.destination);
+  vSrc = s; s.onended = () => { if (vSrc === s) { vSrc = null; vNext(); } }; s.start(); return true;
+}
+function vNext() { if (vSrc || !vQueue.length) return; vPlay(vQueue.shift()); }
+// say(text, queued): play the recorded clip; English mode falls back to the browser voice
+function say(text, queued) {
+  if (!text) return;
+  if (typeof lang !== 'undefined' && lang === 'en') { try { const ss = window.speechSynthesis; if (!ss) return; ss.cancel(); const u = new SpeechSynthesisUtterance(text); u.lang = 'en-US'; u.rate = 0.95; ss.speak(u); } catch (_) {} return; }
+  const k = vKey(text); if (!(VOICE && VOICE[k]) && VOICE) { vMiss.push(k); return; }
+  if (queued && (vSrc || vQueue.length)) { vQueue.push(k); return; }
+  vStop(); vQueue = []; vPlay(k);
+}
+// voice line for a game event; gendered lines pick the boy/girl take
+function ev(name, queued) {
+  if (typeof lang !== 'undefined' && lang === 'en') return;
+  const girl = CHILD.gender === 'girl'; let k = 'ev_' + name;
+  if (VOICE && !VOICE[k]) k = 'ev_' + name + (girl ? '_g' : '_b');
+  if (name === 'clue' && girl) k = 'ev_clue_g';
+  if (!VOICE || !VOICE[k]) return;
+  if (queued && (vSrc || vQueue.length)) { vQueue.push(k); return; }
+  vStop(); vPlay(k);
+}
+function praise(q) { ev(['great1', 'great2', 'right', 'good'][Math.floor(Math.random() * 4)], q); }
+window.__voice = { get loaded() { return !!VOICE; }, get miss() { return vMiss; }, get playing() { return !!vSrc; } };
 
 // ---------- three.js setup ----------
 const canvas = $('c');
-const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance' });
+function noGL() { const d = document.createElement('div'); d.style.cssText = 'position:fixed;inset:0;z-index:99;display:flex;align-items:center;justify-content:center;padding:24px;background:#fff8ec;font-family:inherit;text-align:center';
+  d.innerHTML = '<div style="max-width:420px"><div style="font-size:48px">🎮</div><h2 dir="rtl" style="margin:8px 0">هذا المتصفّح لا يستطيع تشغيل اللعبة</h2><p dir="rtl">جرّب فتحها في Safari أو Chrome، أو حدّث المتصفّح، وتأكّد من تفعيل «تسريع الرسومات».</p><p dir="ltr" style="opacity:.7">This browser can\'t start the game\'s 3D graphics. Please open it in Safari or Chrome, update the browser, or turn on hardware acceleration.</p></div>';
+  document.body.appendChild(d); }
+const renderer = (() => { try { return new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance' }); } catch (e) { noGL(); throw e; } })();
 renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
 renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 const scene = new THREE.Scene();
@@ -520,6 +558,7 @@ function spawnScenery(z) {
 
 // ---------- game state ----------
 let state = 'menu', level = 0, cfg = LEVEL_CFG[0];
+let timers = [], runId = 0; function later(s, fn) { timers.push({ t: s, fn }); }
 let hero = null, heroKind = 'boy', vehKind = 'car';
 const P = { lane: 1, x: 0, y: 0, vy: 0, mode: 'foot', tf: 0, tfDir: 0, run: 0, invuln: 0, stumble: 0 };
 let speed = 0, dist = 0, score = 0, hearts = 5, energy = 0, wordsDone = 0, chalDone = 0, tries = 0, correct = 0;
@@ -564,6 +603,7 @@ function toast(m, s = 1.1) { const e = $('toast'); e.textContent = m; e.classLis
 
 // ---------- flow ----------
 function startLevel(i) {
+  timers = []; runId++;
   if (!actx) { try { actx = new (window.AudioContext || window.webkitAudioContext)(); } catch (_) {} }
   if (actx && actx.state === 'suspended') actx.resume();
   level = i; cfg = LEVEL_CFG[i]; buildWorld(i); clearObjs();
@@ -575,13 +615,13 @@ function startLevel(i) {
   $('menu').classList.add('hidden'); $('end').classList.add('hidden'); $('hud').classList.remove('hidden'); $('touch').classList.toggle('hidden', !coarse);
   $('lvlPill').textContent = `${t('lvl')} ${i + 1}`;
   drawHearts(); drawEnergy(); $('score').textContent = 0;
-  state = 'play'; toast(t('go') + ' ' + kidName() + '!', 1.4); say(word[2]);
+  state = 'play'; toast(t('go') + ' ' + kidName() + '!', 1.4); ev('go'); say(word[2], true);
 }
-function toMenu() { state = 'menu'; $('hud').classList.add('hidden'); $('touch').classList.add('hidden'); $('end').classList.add('hidden'); $('pause').classList.add('hidden'); $('menu').classList.remove('hidden'); drawMenu(); }
+function toMenu() { timers = []; runId++; vStop(); state = 'menu'; $('hud').classList.add('hidden'); $('touch').classList.add('hidden'); $('end').classList.add('hidden'); $('pause').classList.add('hidden'); $('menu').classList.remove('hidden'); drawMenu(); }
 function endLevel(won) {
   state = 'end'; $('hud').classList.add('hidden'); $('touch').classList.add('hidden');
   const acc = tries ? correct / tries : 1, st = won ? (acc >= 0.9 && hearts >= cfg.hearts - 1 ? 3 : acc >= 0.7 ? 2 : 1) : 0;
-  if (won) { save.stars[level] = Math.max(save.stars[level] || 0, st); save.unlocked = Math.max(save.unlocked, Math.min(2, level + 1)); persist(); sfx.win(); }
+  if (won) { save.stars[level] = Math.max(save.stars[level] || 0, st); save.unlocked = Math.max(save.unlocked, Math.min(2, level + 1)); persist(); sfx.win(); ev('good', true); }
   $('endTitle').textContent = won ? (heroKind === 'girl' ? t('winG') : t('win')).replace('{n}', kidName()) : t('over');
   $('endStars').innerHTML = [0, 1, 2].map(k => `<span class="${k < st ? 'on' : ''}">★</span>`).join('');
   $('endStats').innerHTML = `<span class="pill">⭐ ${score}</span><span class="pill">${t('accuracy')} ${Math.round(acc * 100)}%</span>`;
@@ -600,11 +640,11 @@ function hurt() {
 }
 function doTransform() {
   if (state !== 'play' || P.mode !== 'foot' || energy < 1 || P.tfDir || finishSpawned) return;
-  P.tfDir = 1; sfx.transform(); toast(t('transformed'), 1); burst(hero.position, 30);
+  P.tfDir = 1; sfx.transform(); toast(t('transformed'), 1); ev('transform'); burst(hero.position, 30);
 }
 function finishTransform() {
-  if (P.tfDir > 0) { P.mode = 'car'; speed = cfg.car; carChalLeft = 2; energy = 0; clearObjs(); needGate = true; newChal(); say(chal[1].replace('___', '...')); }
-  else { P.mode = 'foot'; speed = cfg.foot; clearObjs(); needGate = true; toast(t('back'), 0.9); if (!finishSpawned) { newWord(); say(word[2]); } }
+  if (P.tfDir > 0) { P.mode = 'car'; speed = cfg.car; carChalLeft = 2; energy = 0; clearObjs(); needGate = true; newChal(); say(chal[1].replace('___', '...'), true); }
+  else { P.mode = 'foot'; speed = cfg.foot; clearObjs(); needGate = true; toast(t('back'), 0.9); if (!finishSpawned) { newWord(); say(word[2], true); } }
   P.tfDir = 0; drawEnergy(); drawCard();
 }
 function levelDone() { return wordsDone >= wordsFor(cfg.words) && chalDone >= cfg.chal; }
@@ -643,6 +683,7 @@ function update(dt) {
   if (toastT > 0) { toastT -= dt; if (toastT <= 0) $('toast').classList.remove('on'); }
   for (let i = parts.length - 1; i >= 0; i--) { const p = parts[i]; p.life -= dt; p.v.y -= 18 * dt; p.m.position.addScaledVector(p.v, dt); p.m.rotation.x += dt * 6; if (p.life <= 0) { scene.remove(p.m); p.m.material.dispose(); parts.splice(i, 1); } }
   if (state !== 'play') return;
+  for (let i = timers.length - 1; i >= 0; i--) { const x = timers[i]; x.t -= dt; if (x.t <= 0) { timers.splice(i, 1); x.fn(); } } // game-time timers: they wait while paused
   // transform animation
   if (P.tfDir) { P.tf += dt / 0.8 * P.tfDir; if (P.tf >= 1 || P.tf <= 0) { P.tf = Math.max(0, Math.min(1, P.tf)); finishTransform(); } }
   const sp = (P.tfDir ? speed * 0.5 : speed) * (P.stumble > 0 ? 0.55 : 1);
@@ -704,22 +745,22 @@ function onLetter(ob) {
     correct++; gi++; wordPos = gi < gaps.length ? gaps[gi] : -1; score += 2; sfx.good(); $('score').textContent = score;
     if (gi >= gaps.length) {
       wordsDone++; score += 5; energy = Math.min(1, energy + (gapCount() === 1 ? 0.34 : 0.5)); sfx.word(); toast(t('word'), 1); learned.push(word[0]); say(word[0]); burst(hero.position, 22);
-      if (levelDone() && !finishSpawned) { finishSpawned = true; spawnFinish(-90); toast(t('finish'), 1.4); word = null; }
-      else if (energy >= 1) { toast(t('ready'), 1.6); word = null; setTimeout(() => { if (state === 'play' && P.mode === 'foot' && energy >= 1 && !P.tfDir) doTransform(); }, 4500); }
+      if (levelDone() && !finishSpawned) { finishSpawned = true; spawnFinish(-90); toast(t('finish'), 1.4); ev('finish', true); word = null; }
+      else if (energy >= 1) { toast(t('ready'), 1.6); ev('ready', true); word = null; later(4.5, () => { if (P.mode === 'foot' && energy >= 1 && !P.tfDir) doTransform(); }); }
       else newWord();
     }
-  } else { sfx.bad(); toast(t('no'), 0.8); missed.add(word[0]); shake = 0.2; }
+  } else { sfx.bad(); toast(t('no'), 0.8); ev('notnext'); missed.add(word[0]); shake = 0.2; }
   removeGate('letter'); needGate = true; drawCard(); drawEnergy();
 }
 function onBoard(ob) {
   tries++;
-  if (ob.data.good) { correct++; score += 5; chalDone++; sfx.word(); toast(t('yes'), 0.9); learned.push(ob.data.w); }
-  else { sfx.bad(); toast(t('no') + '\n' + chal[2], 1.3); missed.add(chal[2]); learned.push(chal[2]); shake = 0.2; }
+  if (ob.data.good) { correct++; score += 5; chalDone++; sfx.word(); toast(t('yes'), 0.9); praise(); learned.push(ob.data.w); }
+  else { sfx.bad(); toast(t('no') + '\n' + chal[2], 1.3); ev('try'); missed.add(chal[2]); learned.push(chal[2]); shake = 0.2; }
   $('score').textContent = score; removeGate('board'); needGate = true;
   carChalLeft--;
-  if (levelDone() && !finishSpawned) { finishSpawned = true; spawnFinish(-110); toast(t('finish'), 1.4); chal = null; drawCard(); return; }
-  if (carChalLeft > 0) { newChal(); say(chal[1].replace('___', '...')); }
-  else { chal = null; drawCard(); setTimeout(() => { if (state === 'play' && P.mode === 'car' && !P.tfDir) { P.tfDir = -1; sfx.transform(); burst(hero.position, 20); } }, 1200); }
+  if (levelDone() && !finishSpawned) { finishSpawned = true; spawnFinish(-110); toast(t('finish'), 1.4); ev('finish', true); chal = null; drawCard(); return; }
+  if (carChalLeft > 0) { newChal(); say(chal[1].replace('___', '...'), true); }
+  else { chal = null; drawCard(); later(1.2, () => { if (P.mode === 'car' && !P.tfDir) { P.tfDir = -1; sfx.transform(); burst(hero.position, 20); } }); }
 }
 
 // ---------- visuals ----------
@@ -789,7 +830,9 @@ function drawPreview(cv, kind, which, vk = save.vehicle) {
   const c = new THREE.PerspectiveCamera(35, cv.width / cv.height, 0.1, 50); c.position.set(0, which === 'veh' ? 2.6 : 1.9, which === 'veh' ? 7 : 6.4); c.lookAt(0, which === 'veh' ? 0.8 : 1.45, 0);
   r.setClearColor(0x000000, 0); r.clear(); r.render(s, c);
 }
+function ariaL() { const ar = lang !== 'en'; const L = { pauseBtn: ['إيقاف مؤقت', 'Pause'], leftBtn: ['يسار', 'Left'], rightBtn: ['يمين', 'Right'], jumpBtn: ['قفز', 'Jump'] }; for (const id in L) { const e = document.getElementById(id); if (e) e.setAttribute('aria-label', L[id][ar ? 0 : 1]); } }
 function drawMenu() {
+  ariaL();
   document.documentElement.lang = lang; document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
   $('langAr').classList.toggle('on', lang === 'ar'); $('langEn').classList.toggle('on', lang === 'en');
   $('title').textContent = t('title'); $('tagline').textContent = t('tagline'); $('meT').textContent = CHILD.gender === 'girl' ? t('meG') : t('me'); $('meName').textContent = kidName();
@@ -835,5 +878,5 @@ loadArt(
 document.fonts && document.fonts.ready.then(() => { for (const k in texCache) delete texCache[k]; });
 drawMenu();
 requestAnimationFrame(frame);
-window.__wh = { get state() { return state; }, P, startLevel, update, visuals, doTransform, move, jump, get objs() { return objs; }, get word() { return word; }, get chal() { return chal; }, get stats() { return { score, hearts, energy, wordsDone, chalDone, tries, correct, needGate, carChalLeft, finishSpawned }; } };
+window.__wh = { get state() { return state; }, P, pauseGame, resumeGame, startLevel, update, visuals, doTransform, move, jump, get objs() { return objs; }, get word() { return word; }, get chal() { return chal; }, get stats() { return { score, hearts, energy, wordsDone, chalDone, tries, correct, needGate, carChalLeft, finishSpawned }; } };
 </script>
