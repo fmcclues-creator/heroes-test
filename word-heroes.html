@@ -102,7 +102,7 @@ h2{margin:4px 0 6px;font-size:24px}
 <div id="hud" class="hidden">
   <div class="topbar">
     <div class="pills"><span class="pill" id="hearts"></span><span class="pill">⭐ <span id="score">0</span></span><span class="pill" id="lvlPill"></span></div>
-    <button class="iconbtn" id="pauseBtn" aria-label="Pause">⏸</button>
+    <div style="display:flex;gap:8px;pointer-events:none"><button class="iconbtn hidden" id="musicBtn" aria-label="Music">🎵</button><button class="iconbtn" id="pauseBtn" aria-label="Pause">⏸</button></div>
   </div>
   <div id="energyWrap"><b id="energyLbl"></b><div class="bar"><div id="energy"></div></div></div>
   <div id="card"></div>
@@ -272,6 +272,23 @@ function ev(name, queued) {
 }
 function praise(q) { ev(['great1', 'great2', 'right', 'good'][Math.floor(Math.random() * 4)], q); }
 window.__voice = { get loaded() { return !!VOICE; }, get miss() { return vMiss; }, get playing() { return !!vSrc; } };
+
+// ---------- background music: loops quietly, dips under the voice, mute button remembered ----------
+let musBuf = null, musSrc = null, musGain = null, musOn = true;
+try { musOn = localStorage.getItem('heroes.music') !== 'off'; } catch (_) {}
+fetch('assets/music-wh.mp3').then(r => r.ok ? r.arrayBuffer() : null).then(ab => { if (!ab) return; window.__musAB = ab; const b = document.getElementById('musicBtn'); if (b) b.classList.remove('hidden'); drawMusicBtn(); }).catch(() => {});
+async function musStart() {
+  if (!musOn || musSrc || !window.__musAB) return; const c = vCtx(); if (!c) return;
+  if (!musBuf) musBuf = await new Promise((res, rej) => c.decodeAudioData(window.__musAB.slice(0), res, rej)).catch(() => null);
+  if (!musBuf || musSrc || !musOn) return;
+  musGain = c.createGain(); musGain.gain.value = 0; musGain.connect(c.destination);
+  musSrc = c.createBufferSource(); musSrc.buffer = musBuf; musSrc.loop = true; musSrc.connect(musGain); musSrc.start();
+}
+function musStop() { if (musSrc) { try { musSrc.stop(); } catch (_) {} musSrc = null; } }
+function drawMusicBtn() { const b = document.getElementById('musicBtn'); if (!b) return; b.textContent = musOn ? '🎵' : '🔇'; b.setAttribute('aria-label', (typeof lang !== 'undefined' && lang === 'en') ? (musOn ? 'Music on' : 'Music off') : (musOn ? 'الموسيقى تعمل' : 'الموسيقى مطفأة')); }
+function toggleMusic() { musOn = !musOn; try { localStorage.setItem('heroes.music', musOn ? 'on' : 'off'); } catch (_) {} if (musOn) musStart(); else musStop(); drawMusicBtn(); }
+setInterval(() => { if (!musGain || !actx) return; const target = (state === 'paused' || state === 'menu') ? 0.05 : vSrc ? 0.07 : 0.2; musGain.gain.setTargetAtTime(target, actx.currentTime, 0.25); }, 150);
+document.addEventListener('pointerdown', () => { if (state !== 'menu') musStart(); }, { capture: true });
 
 // ---------- three.js setup ----------
 const canvas = $('c');
@@ -603,6 +620,7 @@ function toast(m, s = 1.1) { const e = $('toast'); e.textContent = m; e.classLis
 
 // ---------- flow ----------
 function startLevel(i) {
+  setTimeout(musStart, 0);
   timers = []; runId++;
   if (!actx) { try { actx = new (window.AudioContext || window.webkitAudioContext)(); } catch (_) {} }
   if (actx && actx.state === 'suspended') actx.resume();
@@ -674,7 +692,7 @@ const hold = (id, fn) => $(id).addEventListener('pointerdown', e => { e.preventD
 hold('leftBtn', () => move(-1)); hold('rightBtn', () => move(1)); hold('jumpBtn', jump); hold('transformBtn', doTransform);
 function pauseGame() { if (state !== 'play') return; state = 'paused'; $('pause').classList.remove('hidden'); }
 function resumeGame() { state = 'play'; $('pause').classList.add('hidden'); last = performance.now(); }
-$('pauseBtn').onclick = pauseGame; $('resumeBtn').onclick = resumeGame; $('quitBtn').onclick = toMenu;
+$('musicBtn').onclick = toggleMusic; $('pauseBtn').onclick = pauseGame; $('resumeBtn').onclick = resumeGame; $('quitBtn').onclick = toMenu;
 $('menuBtn').onclick = toMenu;
 
 // ---------- update ----------
