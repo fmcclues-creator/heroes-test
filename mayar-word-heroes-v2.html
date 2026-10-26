@@ -143,6 +143,7 @@ h2{margin:4px 0 6px;font-size:24px}
 #scGoal{font-size:18px;line-height:1.5;margin:0 0 12px}
 #scIcon{font-size:54px;line-height:1}
 .ctrl{font-size:13px;opacity:.8;margin-top:8px}
+@media print{body *{visibility:hidden}#end,#end *{visibility:visible}#end{position:absolute;inset:0;background:#fff}#end .row{display:none}}
 </style>
 
 <canvas id="c"></canvas>
@@ -245,7 +246,7 @@ const AR_D = '٠١٢٣٤٥٦٧٨٩';
 const num = n => lang === 'ar' ? String(n).split('').map(d => AR_D[d] || d).join('') : String(n);
 
 // ---------- every spoken line (text + the narrator's recording) ----------
-const LINES = {"i1":["صباحُ الخير! اليومَ يومُ مهرجانِ الحروفِ على شاطئِ الكويت.","Good morning! Today is the Letter Festival on the Kuwait seafront."],"i2":["الأعلامُ ترفرف، والبالوناتُ في كلِّ مكان، وفي وسطِ المهرجانِ بوّابةٌ عملاقةٌ من حروفٍ ملوّنةٍ لامعة.","Flags are flying, balloons are everywhere, and in the middle stands a giant gate made of shiny coloured letters."],"i3_b":["لكنْ… انظرْ! إنّه نورس، طائرُ النّورسِ المشاغب! خطفَ الحروفَ وطارَ بها بعيدًا!","But… look! It's Nawras, the cheeky seagull! He grabbed the letters and flew away!"],"i3_g":["لكنْ… انظري! إنّه نورس، طائرُ النّورسِ المشاغب! خطفَ الحروفَ وطارَ بها بعيدًا!","But… look! It's Nawras, the cheeky seagull! He grabbed the letters and flew away!"],"i4":["طارَ نورس فوقَ الكويتِ كلِّها، وخبّأَ الحروفَ في أماكنَ كثيرة. وبدونِ الحروفِ لن يبدأَ المهرجان!","Nawras flew all over Kuwait and hid the letters in lots of places. Without the letters, the festival can't begin!"],"i5_b":["أنتَ البطلُ الوحيدُ الذي يستطيعُ إعادتَها. هيّا بنا!","You are the only hero who can bring them back. Let's go!"],"i5_g":["أنتِ البطلةُ الوحيدةُ التي تستطيعُ إعادتَها. هيّا بنا!","You are the only hero who can bring them back. Let's go!"],"c1_a":["الفصلُ الأوّل: الكورنيش. رآهُ الأطفالُ هنا قبلَ قليل!","Chapter one: the Corniche. The children saw him here a moment ago!"],"c1_b":["لكنّ الأطفالَ ينتظرونَ الآيسكريمَ عندَ الألعاب، ولن يتكلّموا قبلَ أن يأكلوا!","But the children are waiting for ice cream by the playground, and they won't talk until they've eaten!"],"s11_b":["اركضْ إلى محلِّ الآيسكريم، واقرأِ اللّوحاتِ لتعرفَ الطّريق!","Run to the ice cream shop, and read the signs to find the way!"],"s11_g":["اركضي إلى محلِّ الآيسكريم، واقرئي اللّوحاتِ لتعرفي الطّريق!","Run to the ice cream shop, and read the signs to find the way!"],"f_beach":["أينَ الطّريقُ إلى الشّاطئ؟","Which way to the beach?"],"f_beach_d":["المكانُ الذي يلتقي فيه البحرُ بالرّمل.","The place where the sea meets the sand."],"f_play":["أينَ الطّريقُ إلى الألعاب؟","Which way to the playground?"],"f_play_d":["مكانٌ فيه أراجيحُ وزحاليقُ للأطفال.","A place with swings and slides for children."],"f_ice":["أينَ محلُّ الآيسكريم؟","Where is the ice cream shop?"],"f_ice_d":["حلوى باردةٌ نأكلُها في الصّيف.","A cold sweet we eat in summer."],"wrong_way":["هذا ليسَ الطّريقَ الصّحيح! لنرجعْ ونقرأْ مرّةً أخرى.","That's not the right way! Let's go back and read again."],"s12_b":["أهلًا يا بطل! أنا العمُّ سالم. الآيسكريمُ جاهز، لكنّ الجسرَ الصّغيرَ إلى الألعابِ مكسور!","Hello, hero! I'm Uncle Salem. The ice cream is ready, but the little bridge to the playground is broken!"],"s12_g":["أهلًا يا بطلة! أنا العمُّ سالم. الآيسكريمُ جاهز، لكنّ الجسرَ الصّغيرَ إلى الألعابِ مكسور!","Hello, hero! I'm Uncle Salem. The ice cream is ready, but the little bridge to the playground is broken!"],"s12h_b":["كلُّ حرفٍ صحيحٍ يضعُ لوحًا خشبيًّا في الجسر. اخترِ الحرفَ الصّحيح!","Every right letter puts a wooden plank on the bridge. Pick the right letter!"],"s12h_g":["كلُّ حرفٍ صحيحٍ يضعُ لوحًا خشبيًّا في الجسر. اختاري الحرفَ الصّحيح!","Every right letter puts a wooden plank on the bridge. Pick the right letter!"],"bridge_ok":["الجسرُ جاهز! هيّا نعبُر!","The bridge is ready! Let's cross!"],"s13_b":["خذِ الآيسكريم! إنّه يذوبُ في الشّمس، والنّوارسُ تحبُّ الآيسكريم. لا توقِعْه!","Take the ice cream! It melts in the sun, and seagulls love ice cream. Don't drop it!"],"s13_g":["خذي الآيسكريم! إنّه يذوبُ في الشّمس، والنّوارسُ تحبُّ الآيسكريم. لا توقِعيه!","Take the ice cream! It melts in the sun, and seagulls love ice cream. Don't drop it!"],"melt_b":["أسرعْ، الآيسكريمُ يذوب!","Hurry, the ice cream is melting!"],"melt_g":["أسرعي، الآيسكريمُ يذوب!","Hurry, the ice cream is melting!"],"gull_b":["انتبهْ! نورسٌ جائعٌ فوقَك!","Watch out! A hungry seagull above you!"],"gull_g":["انتبهي! نورسٌ جائعٌ فوقَكِ!","Watch out! A hungry seagull above you!"],"melted":["أوه! ذابَ الآيسكريم. لا بأس، العمُّ سالم أعطانا واحدًا جديدًا!","Oh! The ice cream melted. Never mind, Uncle Salem gave us a new one!"],"s13_ok":["يا سلام! شكرًا! رأينا نورسَ فوقَ المراجيح، ومعه حروفٌ لامعة!","Yay! Thank you! We saw Nawras over the swings, carrying shiny letters!"],"s14_b":["ها هو نورس! إنّه يُسقطُ الحروفَ والأشياء. التقطِ الحرفينِ الصّحيحين فقط!","There's Nawras! He's dropping letters and junk. Catch only the two right letters!"],"s14_g":["ها هو نورس! إنّه يُسقطُ الحروفَ والأشياء. التقطي الحرفينِ الصّحيحين فقط!","There's Nawras! He's dropping letters and junk. Catch only the two right letters!"],"n1":["قالَ نورس: هاهاها! لن تمسكَني أبدًا!","Nawras said: Ha ha ha! You'll never catch me!"],"got_letter_b":["أمسكتَ حرفًا من بوّابةِ المهرجان!","You caught a letter from the festival gate!"],"got_letter_g":["أمسكتِ حرفًا من بوّابةِ المهرجان!","You caught a letter from the festival gate!"],"wrong_letter":["هذا ليسَ من حروفِ البوّابة!","That letter isn't from the gate!"],"junk":["أوه! هذه علبةٌ قديمة!","Oops! That's an old can!"],"c1_end_b":["رائع! استعدتَ أوّلَ حرفين من بوّابةِ المهرجان: الميمَ والهاء! لكنّ نورسَ طارَ نحوَ السّوقِ القديم…","Amazing! You got back the first two letters of the festival gate: Meem and Haa! But Nawras flew off towards the old souq…"],"c1_end_g":["رائع! استعدتِ أوّلَ حرفين من بوّابةِ المهرجان: الميمَ والهاء! لكنّ نورسَ طارَ نحوَ السّوقِ القديم…","Amazing! You got back the first two letters of the festival gate: Meem and Haa! But Nawras flew off towards the old souq…"],"ouch":["آخ!","Ouch!"],"stage_fail":["لا بأس! لنحاولْ هذه المرحلةَ مرّةً أخرى.","That's okay! Let's try this part again."],"chapter_done_b":["أحسنت! أنهيتَ الفصل!","Well done! You finished the chapter!"],"chapter_done_g":["أحسنتِ! أنهيتِ الفصل!","Well done! You finished the chapter!"]};
+const LINES = {"i1":["صباحُ الخير! اليومَ يومُ مهرجانِ الحروفِ على شاطئِ الكويت.","Good morning! Today is the Letter Festival on the Kuwait seafront."],"i2":["الأعلامُ ترفرف، والبالوناتُ في كلِّ مكان، وفي وسطِ المهرجانِ بوّابةٌ عملاقةٌ من حروفٍ ملوّنةٍ لامعة.","Flags are flying, balloons are everywhere, and in the middle stands a giant gate made of shiny coloured letters."],"i3_b":["لكنْ… انظرْ! إنّه نورس، طائرُ النّورسِ المشاغب! خطفَ الحروفَ وطارَ بها بعيدًا!","But… look! It's Nawras, the cheeky seagull! He grabbed the letters and flew away!"],"i3_g":["لكنْ… انظري! إنّه نورس، طائرُ النّورسِ المشاغب! خطفَ الحروفَ وطارَ بها بعيدًا!","But… look! It's Nawras, the cheeky seagull! He grabbed the letters and flew away!"],"i4":["طارَ نورس فوقَ الكويتِ كلِّها، وخبّأَ الحروفَ في أماكنَ كثيرة. وبدونِ الحروفِ لن يبدأَ المهرجان!","Nawras flew all over Kuwait and hid the letters in lots of places. Without the letters, the festival can't begin!"],"i5_b":["أنتَ البطلُ الوحيدُ الذي يستطيعُ إعادتَها. هيّا بنا!","You are the only hero who can bring them back. Let's go!"],"i5_g":["أنتِ البطلةُ الوحيدةُ التي تستطيعُ إعادتَها. هيّا بنا!","You are the only hero who can bring them back. Let's go!"],"c1_a":["الفصلُ الأوّل: الكورنيش. رآهُ الأطفالُ هنا قبلَ قليل!","Chapter one: the Corniche. The children saw him here a moment ago!"],"c1_b":["لكنّ الأطفالَ ينتظرونَ الآيسكريمَ عندَ الألعاب، ولن يتكلّموا قبلَ أن يأكلوا!","But the children are waiting for ice cream by the playground, and they won't talk until they've eaten!"],"s11_b":["اركضْ إلى محلِّ الآيسكريم، واقرأِ اللّوحاتِ لتعرفَ الطّريق!","Run to the ice cream shop, and read the signs to find the way!"],"s11_g":["اركضي إلى محلِّ الآيسكريم، واقرئي اللّوحاتِ لتعرفي الطّريق!","Run to the ice cream shop, and read the signs to find the way!"],"f_beach":["أينَ الطّريقُ إلى الشّاطئ؟","Which way to the beach?"],"f_beach_d":["المكانُ الذي يلتقي فيه البحرُ بالرّمل.","The place where the sea meets the sand."],"f_play":["أينَ الطّريقُ إلى الألعاب؟","Which way to the playground?"],"f_play_d":["مكانٌ فيه أراجيحُ وزحاليقُ للأطفال.","A place with swings and slides for children."],"f_ice":["أينَ محلُّ الآيسكريم؟","Where is the ice cream shop?"],"f_ice_d":["حلوى باردةٌ نأكلُها في الصّيف.","A cold sweet we eat in summer."],"wrong_way":["هذا ليسَ الطّريقَ الصّحيح! لنرجعْ ونقرأْ مرّةً أخرى.","That's not the right way! Let's go back and read again."],"s12_b":["أهلًا يا بطل! أنا العمُّ سالم. الآيسكريمُ جاهز، لكنّ الجسرَ الصّغيرَ إلى الألعابِ مكسور!","Hello, hero! I'm Uncle Salem. The ice cream is ready, but the little bridge to the playground is broken!"],"s12_g":["أهلًا يا بطلة! أنا العمُّ سالم. الآيسكريمُ جاهز، لكنّ الجسرَ الصّغيرَ إلى الألعابِ مكسور!","Hello, hero! I'm Uncle Salem. The ice cream is ready, but the little bridge to the playground is broken!"],"s12h_b":["كلُّ حرفٍ صحيحٍ يضعُ لوحًا خشبيًّا في الجسر. اخترِ الحرفَ الصّحيح!","Every right letter puts a wooden plank on the bridge. Pick the right letter!"],"s12h_g":["كلُّ حرفٍ صحيحٍ يضعُ لوحًا خشبيًّا في الجسر. اختاري الحرفَ الصّحيح!","Every right letter puts a wooden plank on the bridge. Pick the right letter!"],"bridge_ok":["الجسرُ جاهز! هيّا نعبُر!","The bridge is ready! Let's cross!"],"s13_b":["خذِ الآيسكريم! إنّه يذوبُ في الشّمس، والنّوارسُ تحبُّ الآيسكريم. لا توقِعْه!","Take the ice cream! It melts in the sun, and seagulls love ice cream. Don't drop it!"],"s13_g":["خذي الآيسكريم! إنّه يذوبُ في الشّمس، والنّوارسُ تحبُّ الآيسكريم. لا توقِعيه!","Take the ice cream! It melts in the sun, and seagulls love ice cream. Don't drop it!"],"melt_b":["أسرعْ، الآيسكريمُ يذوب!","Hurry, the ice cream is melting!"],"melt_g":["أسرعي، الآيسكريمُ يذوب!","Hurry, the ice cream is melting!"],"gull_b":["انتبهْ! نورسٌ جائعٌ فوقَك!","Watch out! A hungry seagull above you!"],"gull_g":["انتبهي! نورسٌ جائعٌ فوقَكِ!","Watch out! A hungry seagull above you!"],"melted":["أوه! ذابَ الآيسكريم. لا بأس، العمُّ سالم أعطانا واحدًا جديدًا!","Oh! The ice cream melted. Never mind, Uncle Salem gave us a new one!"],"s13_ok":["يا سلام! شكرًا! رأينا نورسَ فوقَ المراجيح، ومعه حروفٌ لامعة!","Yay! Thank you! We saw Nawras over the swings, carrying shiny letters!"],"s14_b":["ها هو نورس! إنّه يُسقطُ الحروفَ والأشياء. التقطِ الحرفينِ الصّحيحين فقط!","There's Nawras! He's dropping letters and junk. Catch only the two right letters!"],"s14_g":["ها هو نورس! إنّه يُسقطُ الحروفَ والأشياء. التقطي الحرفينِ الصّحيحين فقط!","There's Nawras! He's dropping letters and junk. Catch only the two right letters!"],"n1":["قالَ نورس: هاهاها! لن تمسكَني أبدًا!","Nawras said: Ha ha ha! You'll never catch me!"],"got_letter_b":["أمسكتَ حرفًا من بوّابةِ المهرجان!","You caught a letter from the festival gate!"],"got_letter_g":["أمسكتِ حرفًا من بوّابةِ المهرجان!","You caught a letter from the festival gate!"],"wrong_letter":["هذا ليسَ من حروفِ البوّابة!","That letter isn't from the gate!"],"junk":["أوه! هذه علبةٌ قديمة!","Oops! That's an old can!"],"c1_end_b":["رائع! استعدتَ أوّلَ حرفين من بوّابةِ المهرجان: الميمَ والهاء! لكنّ نورسَ طارَ نحوَ السّوقِ القديم…","Amazing! You got back the first two letters of the festival gate: Meem and Haa! But Nawras flew off towards the old souq…"],"c1_end_g":["رائع! استعدتِ أوّلَ حرفين من بوّابةِ المهرجان: الميمَ والهاء! لكنّ نورسَ طارَ نحوَ السّوقِ القديم…","Amazing! You got back the first two letters of the festival gate: Meem and Haa! But Nawras flew off towards the old souq…"],"c2_a":["الفصلُ الثّاني: السّوقُ القديم. شمَّ نورس رائحةَ الخبزِ والتّوابل، فطارَ إليه!","Chapter two: the old souq. Nawras smelled bread and spices, and flew straight there!"],"c2_b":["وفي السّوقِ يعيشُ العمُّ أبو خالد، صاحبُ أقدمِ دكّانٍ هناك. لعلّه رأى نورس!","Uncle Abu Khaled has the oldest shop in the souq. Maybe he saw Nawras!"],"s21_b":["اركضْ في أزقّةِ السّوق! انحنِ تحتَ السّجّاد، واقفزْ فوقَ القطط، واقرأِ اللّوحاتِ لتصلَ إلى دكّانِ أبي خالد.","Run through the souq alleys! Duck under the carpets, jump over the cats, and read the signs to reach Abu Khaled's shop."],"s21_g":["اركضي في أزقّةِ السّوق! انحني تحتَ السّجّاد، واقفزي فوقَ القطط، واقرئي اللّوحاتِ لتصلي إلى دكّانِ أبي خالد.","Run through the souq alleys! Duck under the carpets, jump over the cats, and read the signs to reach Abu Khaled's shop."],"f_spice":["أينَ سوقُ التّوابل؟","Where is the spice market?"],"f_spice_d":["أشياءُ نضعُها في الطّعامِ لتعطيَه طعمًا ورائحة.","Things we put in food to give it taste and smell."],"f_cloth":["أينَ سوقُ الأقمشة؟","Where is the fabric market?"],"f_cloth_d":["نصنعُ منها الملابسَ والسّتائر.","We make clothes and curtains from it."],"f_dates":["أينَ دكّانُ التّمور؟","Where is the dates shop?"],"f_dates_d":["ثمرُ النّخلةِ الحلو.","The sweet fruit of the palm tree."],"s21_done_b":["آه، أهلًا بك! أنا أبو خالد. طارَ نورس فوقَ دكّاني فأسقطَ كيسَ أغراضي، وكلُّ شيءٍ يتدحرجُ في الطّريق!","Ah, welcome! I'm Abu Khaled. Nawras flew over my shop and knocked my shopping bag, and everything is rolling down the street!"],"s21_done_g":["آه، أهلًا بكِ! أنا أبو خالد. طارَ نورس فوقَ دكّاني فأسقطَ كيسَ أغراضي، وكلُّ شيءٍ يتدحرجُ في الطّريق!","Ah, welcome! I'm Abu Khaled. Nawras flew over my shop and knocked my shopping bag, and everything is rolling down the street!"],"s22_b":["التقطِ الأغراضَ المتدحرجةَ قبلَ أن تضيع!","Catch the rolling shopping before it gets lost!"],"s22_g":["التقطي الأغراضَ المتدحرجةَ قبلَ أن تضيع!","Catch the rolling shopping before it gets lost!"],"too_many":["أوه! ضاعتْ أغراضٌ كثيرة. هيّا نجمعُها من جديد!","Oh! Too many things got away. Let's collect them again!"],"s22_done_b":["شكرًا! لكنْ… انظرْ! عربتي تتدحرجُ وحدَها في الطّريق!","Thank you! But… look! My cart is rolling away on its own!"],"s22_done_g":["شكرًا! لكنْ… انظري! عربتي تتدحرجُ وحدَها في الطّريق!","Thank you! But… look! My cart is rolling away on its own!"],"s23_b":["الحقْ بالعربة! كلُّ جوابٍ صحيحٍ يقرّبُك منها. اقرأِ السّؤالَ واخترِ الجواب!","Chase the cart! Every right answer brings you closer. Read the question and pick the answer!"],"s23_g":["الحقي بالعربة! كلُّ جوابٍ صحيحٍ يقرّبُكِ منها. اقرئي السّؤالَ واختاري الجواب!","Chase the cart! Every right answer brings you closer. Read the question and pick the answer!"],"cart_away":["العربةُ تبتعد! لنجرّبْ سؤالًا آخر.","The cart is getting away! Let's try another question."],"s23_done_b":["أمسكتَ العربة! أحسنت!","You caught the cart! Well done!"],"s23_done_g":["أمسكتِ العربة! أحسنتِ!","You caught the cart! Well done!"],"s24_b":["ساعدْ أبا خالد في شراءِ ما ينقصُه. اقرأِ القائمة، والتقطِ الأشياءَ المكتوبةَ فيها فقط.","Help Abu Khaled buy what he's missing. Read the list and pick up only the things written on it."],"s24_g":["ساعدي أبا خالد في شراءِ ما ينقصُه. اقرئي القائمة، والتقطي الأشياءَ المكتوبةَ فيها فقط.","Help Abu Khaled buy what he's missing. Read the list and pick up only the things written on it."],"not_list":["هذا ليسَ في القائمة!","That's not on the list!"],"s24_done_b":["شكرًا يا بطل! وهذه هديّتي: وجدتُ حرفينِ لامعينِ في دكّاني بعدَ أن طارَ نورس، الرّاءَ والجيم!","Thank you, hero! And here's my gift: I found two shiny letters in my shop after Nawras flew off, Raa and Jeem!"],"s24_done_g":["شكرًا يا بطلة! وهذه هديّتي: وجدتُ حرفينِ لامعينِ في دكّاني بعدَ أن طارَ نورس، الرّاءَ والجيم!","Thank you, hero! And here's my gift: I found two shiny letters in my shop after Nawras flew off, Raa and Jeem!"],"c2_end_b":["رائع! صارَ عندَك أربعةُ حروف! لكنّ نورسَ طارَ نحوَ المدينة، بينَ الأبراجِ العالية…","Brilliant! You have four letters now! But Nawras flew towards the city, between the tall towers…"],"c2_end_g":["رائع! صارَ عندَكِ أربعةُ حروف! لكنّ نورسَ طارَ نحوَ المدينة، بينَ الأبراجِ العالية…","Brilliant! You have four letters now! But Nawras flew towards the city, between the tall towers…"],"c3_a":["الفصلُ الثّالث: المدينة. بينَ الأبراجِ العاليةِ والرّافعاتِ الكبيرة، اختبأَ نورس!","Chapter three: the city. Nawras is hiding among the tall towers and the big cranes!"],"c3_b":["لكنّ عمّالَ البناءِ يحتاجونَ إلى مساعدةٍ عاجلة. هيّا إلى موقعِ البناء!","But the builders need help, fast. Let's go to the building site!"],"s31_b":["اركضْ في شوارعِ المدينة، وانتبهْ من الأقماعِ والسّكوترات، واقرأِ اللّوحات!","Run through the city streets, watch out for cones and scooters, and read the signs!"],"s31_g":["اركضي في شوارعِ المدينة، وانتبهي من الأقماعِ والسّكوترات، واقرئي اللّوحات!","Run through the city streets, watch out for cones and scooters, and read the signs!"],"f_hosp":["أينَ المستشفى؟","Where is the hospital?"],"f_hosp_d":["مكانٌ يعالجُ فيه الأطبّاءُ المرضى.","A place where doctors treat sick people."],"f_lib":["أينَ المكتبة؟","Where is the library?"],"f_lib_d":["مكانٌ فيه كتبٌ كثيرةٌ نستعيرُها ونقرؤها.","A place with lots of books to borrow and read."],"f_site":["أينَ موقعُ البناء؟","Where is the building site?"],"f_site_d":["مكانٌ يبني فيه العمّالُ عمارةً جديدة.","A place where builders make a new building."],"s31_done_b":["النّجدة! قطّةٌ صغيرةٌ صعدتْ فوقَ الرّافعة ولا تستطيعُ النّزول! تحوّلْ وطِرْ إليها!","Help! A little kitten climbed up the crane and can't get down! Transform and fly up to her!"],"s31_done_g":["النّجدة! قطّةٌ صغيرةٌ صعدتْ فوقَ الرّافعة ولا تستطيعُ النّزول! تحوّلي وطيري إليها!","Help! A little kitten climbed up the crane and can't get down! Transform and fly up to her!"],"s32_b":["حلّقْ بينَ الأبراج! انتبهْ من الرّياحِ والحمام، واجمعِ النّجوم!","Fly between the towers! Watch out for the wind and the pigeons, and collect the stars!"],"s32_g":["حلّقي بينَ الأبراج! انتبهي من الرّياحِ والحمام، واجمعي النّجوم!","Fly between the towers! Watch out for the wind and the pigeons, and collect the stars!"],"wind":["ريحٌ قويّة!","Strong wind!"],"s32_done":["وصلْنا إلى قمرةِ الرّافعة، لكنّ بابَها مقفل!","We reached the crane cabin, but its door is locked!"],"s33_b":["تهجَّ الكلمةَ السّرّيّةَ لتفتحَ الباب!","Spell the secret word to open the door!"],"s33_g":["تهجَّي الكلمةَ السّرّيّةَ لتفتحي الباب!","Spell the secret word to open the door!"],"door_ok":["انفتحَ الباب! ها هي القطّة!","The door is open! There's the kitten!"],"s34_b":["احملِ القطّةَ وانزلْ بها بحذر. كلُّ اصطدامٍ يخيفُها!","Carry the kitten down carefully. Every bump scares her!"],"s34_g":["احملي القطّةَ وانزلي بها بحذر. كلُّ اصطدامٍ يخيفُها!","Carry the kitten down carefully. Every bump scares her!"],"cat_scared_b":["القطّةُ خائفة! تمهّلْ وانتبهْ!","The kitten is scared! Easy, careful!"],"cat_scared_g":["القطّةُ خائفة! تمهّلي وانتبهي!","The kitten is scared! Easy, careful!"],"cat_fail":["قفزتِ القطّةُ من الخوف! لنحاولْ مرّةً أخرى بهدوء.","The kitten jumped away in fright! Let's try again, gently."],"s34_done_b":["شكرًا يا بطل! انظرْ، كانتِ القطّةُ تلعبُ بحرفينِ لامعين: الألفِ والنّون!","Thank you, hero! Look, the kitten was playing with two shiny letters: Alif and Noon!"],"s34_done_g":["شكرًا يا بطلة! انظري، كانتِ القطّةُ تلعبُ بحرفينِ لامعين: الألفِ والنّون!","Thank you, hero! Look, the kitten was playing with two shiny letters: Alif and Noon!"],"c3_end":["ستّةُ حروف! عادَ نصفُ البوّابة! لكنّ نورسَ طارَ بعيدًا نحوَ الصّحراء…","Six letters! Half of the gate is back! But Nawras flew far away towards the desert…"],"c4_a":["الفصلُ الرّابع: مخيّمُ البرّ. طارَ نورس فوقَ الكثبانِ الذّهبيّة، وهبطَ قربَ خيمةٍ كبيرة.","Chapter four: the desert camp. Nawras flew over the golden dunes and landed near a big tent."],"c4_b":["لكنّ عاصفةً رمليّةً مرّتْ بالمخيّم، وتركتْ كلَّ شيءٍ مبعثرًا!","But a sandstorm swept through the camp and scattered everything!"],"s41_b":["اركضْ فوقَ الرّمال، واقفزْ فوقَ الكثبان، وانحنِ تحتَ حبالِ الخيام. واقرأِ اللّوحاتِ لتصلَ إلى المخيّم!","Run across the sand, jump the dunes and duck under the tent ropes. Read the signs to reach the camp!"],"s41_g":["اركضي فوقَ الرّمال، واقفزي فوقَ الكثبان، وانحني تحتَ حبالِ الخيام. واقرئي اللّوحاتِ لتصلي إلى المخيّم!","Run across the sand, jump the dunes and duck under the tent ropes. Read the signs to reach the camp!"],"f_tent":["أينَ الخيمة؟","Where is the tent?"],"f_tent_d":["بيتٌ من القماشِ نسكنُه في البرّ.","A house made of cloth that we live in, in the desert."],"f_well":["أينَ البئر؟","Where is the well?"],"f_well_d":["حفرةٌ عميقةٌ نستخرجُ منها الماء.","A deep hole we get water from."],"f_camel":["أينَ الإبل؟","Where are the camels?"],"f_camel_d":["حيواناتٌ صبورةٌ تعيشُ في الصّحراءِ ولها سنام.","Patient animals that live in the desert and have a hump."],"s41_done_b":["أهلًا يا بطل! أنا الجدّةُ مريم. العاصفةُ بعثرتْ أوتادَ خيمتي وفوانيسي في كلِّ مكان. ساعدني في جمعِها!","Welcome, hero! I'm Grandma Maryam. The storm scattered my tent pegs and lanterns everywhere. Help me collect them!"],"s41_done_g":["أهلًا يا بطلة! أنا الجدّةُ مريم. العاصفةُ بعثرتْ أوتادَ خيمتي وفوانيسي في كلِّ مكان. ساعدِيني في جمعِها!","Welcome, hero! I'm Grandma Maryam. The storm scattered my tent pegs and lanterns everywhere. Help me collect them!"],"s42_b":["التقطِ الأوتادَ والفوانيسَ قبلَ أن تدفنَها الرّمال!","Catch the pegs and lanterns before the sand buries them!"],"s42_g":["التقطي الأوتادَ والفوانيسَ قبلَ أن تدفنَها الرّمال!","Catch the pegs and lanterns before the sand buries them!"],"sand_lost":["دفنتِ الرّمالُ أشياءَ كثيرة. لنجمعْها من جديد!","The sand buried too many things. Let's collect them again!"],"s42_done":["رائع! والآن نرفعُ الخيمةَ من جديد.","Well done! Now let's put the tent back up."],"s43_b":["كلُّ حرفٍ صحيحٍ يشدُّ حبلًا من حبالِ الخيمة. تهجَّ الكلمة!","Every right letter pulls one of the tent ropes tight. Spell the word!"],"s43_g":["كلُّ حرفٍ صحيحٍ يشدُّ حبلًا من حبالِ الخيمة. تهجَّي الكلمة!","Every right letter pulls one of the tent ropes tight. Spell the word!"],"tent_ok":["ارتفعتِ الخيمة! ما أجملَها!","The tent is up! How beautiful!"],"s44_b":["الحُوارُ الصّغيرُ ضاعَ في العاصفة! خذْه إلى أمّه، وانتبهْ: إنّه يخافُ إذا اصطدمت.","The little baby camel got lost in the storm! Take him back to his mother, and be careful: bumps scare him."],"s44_g":["الحُوارُ الصّغيرُ ضاعَ في العاصفة! خذيه إلى أمّه، وانتبهي: إنّه يخافُ إذا اصطدمتِ.","The little baby camel got lost in the storm! Take him back to his mother, and be careful: bumps scare him."],"camel_scared":["الحُوارُ خائف! بهدوء…","The baby camel is scared! Gently…"],"camel_fail":["هربَ الحُوارُ من الخوف! لنحاولْ مرّةً أخرى.","The baby camel ran off in fright! Let's try again."],"s44_done_b":["شكرًا يا بطل! انظرْ ماذا وجدتُ في الرّمل: الألفَ واللّام!","Thank you, hero! Look what I found in the sand: Alif and Laam!"],"s44_done_g":["شكرًا يا بطلة! انظري ماذا وجدتُ في الرّمل: الألفَ واللّام!","Thank you, hero! Look what I found in the sand: Alif and Laam!"],"c4_end":["ثمانيةُ حروف! لكنّ نورسَ طارَ فوقَ البحرِ نحوَ جزيرةِ فيلكا…","Eight letters! But Nawras flew across the sea towards Failaka Island…"],"c5_a":["الفصلُ الخامس: جزيرةُ فيلكا. وصلْنا بالقاربِ إلى الجزيرةِ الهادئة.","Chapter five: Failaka Island. We reached the quiet island by boat."],"c5_b":["والصّيّادُ أبو يوسف يلوّحُ لنا من الميناء. يبدو أنّه يحتاجُ إلى مساعدة!","Abu Yousef the fisherman is waving at us from the harbour. He looks like he needs help!"],"s51_b":["اركضْ على رصيفِ الميناء! انتبهْ من الصّناديقِ والشّباك، واقرأِ اللّوحات!","Run along the harbour! Watch out for the crates and the nets, and read the signs!"],"s51_g":["اركضي على رصيفِ الميناء! انتبهي من الصّناديقِ والشّباك، واقرئي اللّوحات!","Run along the harbour! Watch out for the crates and the nets, and read the signs!"],"f_light":["أينَ المنارة؟","Where is the lighthouse?"],"f_light_d":["برجٌ عالٍ يضيءُ للسّفنِ في اللّيل.","A tall tower that shines for ships at night."],"f_museum":["أينَ المتحف؟","Where is the museum?"],"f_museum_d":["مكانٌ نرى فيه أشياءَ قديمةً من الماضي.","A place where we see old things from the past."],"f_boat":["أينَ القارب؟","Where is the boat?"],"f_boat_d":["سفينةٌ صغيرةٌ يصطادُ بها الصّيّادون.","A small ship that fishermen fish from."],"s51_done":["النّجدة! نورس قطعَ شبكتي، والأسماكُ تقفزُ في كلِّ مكان!","Help! Nawras tore my net, and the fish are jumping everywhere!"],"s52_b":["التقطِ الأسماكَ وأعِدْها إلى السّلّة!","Catch the fish and put them back in the basket!"],"s52_g":["التقطي الأسماكَ وأعيديها إلى السّلّة!","Catch the fish and put them back in the basket!"],"fish_lost":["هربتْ أسماكٌ كثيرة! لنحاولْ مرّةً أخرى.","Too many fish got away! Let's try again."],"s52_done":["شكرًا! رأيتُ نورسَ يطيرُ إلى أعلى المنارة، لكنّ بابَها مقفل.","Thank you! I saw Nawras fly to the top of the lighthouse, but its door is locked."],"s53_b":["تهجَّ الكلمةَ لتفتحَ بابَ المنارة!","Spell the word to open the lighthouse door!"],"s53_g":["تهجَّي الكلمةَ لتفتحي بابَ المنارة!","Spell the word to open the lighthouse door!"],"door_ok2":["انفتحَ الباب! هيّا نصعد!","The door is open! Let's go up!"],"s54_b":["نورس فوقَ المنارة يرمي الحروف! التقطِ الحرفينِ الصّحيحين!","Nawras is on top of the lighthouse throwing letters! Catch the two right ones!"],"s54_g":["نورس فوقَ المنارة يرمي الحروف! التقطي الحرفينِ الصّحيحين!","Nawras is on top of the lighthouse throwing letters! Catch the two right ones!"],"n2":["قالَ نورس: ما زالَ عندي حرفان! الحقْني إلى الأبراج!","Nawras said: I still have two letters! Follow me to the towers!"],"c5_end":["عشرةُ حروف! بقيَ حرفانِ فقط… ونورسُ عندَ أبراجِ الكويت!","Ten letters! Only two left… and Nawras is at the Kuwait Towers!"],"c6_a":["الفصلُ السّادس: أبراجُ الكويت. هنا يخبّئُ نورس آخرَ حرفين!","Chapter six: the Kuwait Towers. This is where Nawras hides the last two letters!"],"c6_b":["إنّها المواجهةُ الأخيرة. هيّا يا أبطال!","It's the final showdown. Come on, heroes!"],"s61_b":["اركضْ على الكورنيشِ إلى الأبراج! كلُّ شيءٍ أسرعُ الآن، فانتبهْ!","Run along the Corniche to the towers! Everything is faster now, so be careful!"],"s61_g":["اركضي على الكورنيشِ إلى الأبراج! كلُّ شيءٍ أسرعُ الآن، فانتبهي!","Run along the Corniche to the towers! Everything is faster now, so be careful!"],"f_towers":["أينَ الأبراج؟","Where are the towers?"],"f_towers_d":["مبانٍ عاليةٌ جدًّا تلمسُ السّحاب.","Very tall buildings that touch the clouds."],"f_lift":["أينَ المصعد؟","Where is the lift?"],"f_lift_d":["غرفةٌ صغيرةٌ تصعدُ بنا وتنزل.","A little room that takes us up and down."],"f_sea":["أينَ البحر؟","Where is the sea?"],"f_sea_d":["ماءٌ مالحٌ واسعٌ تعيشُ فيه الأسماك.","Wide salty water where fish live."],"s61_done":["ها هو نورس يطيرُ حولَ البرج! هيّا نلحقْ به!","There's Nawras flying around the tower! After him!"],"s62_b":["الحقْ بنورس! كلُّ جوابٍ صحيحٍ يقرّبُك منه.","Chase Nawras! Every right answer brings you closer."],"s62_g":["الحقي بنورس! كلُّ جوابٍ صحيحٍ يقرّبُكِ منه.","Chase Nawras! Every right answer brings you closer."],"naw_away":["نورس يبتعد! سؤالٌ آخر!","Nawras is getting away! Another question!"],"s62_done_b":["كدتَ تمسكُه! لكنّه طارَ إلى الكرةِ الكبيرة!","You nearly caught him! But he flew up to the big sphere!"],"s62_done_g":["كدتِ تمسكينَه! لكنّه طارَ إلى الكرةِ الكبيرة!","You nearly caught him! But he flew up to the big sphere!"],"s63_b":["تحوّلْ وحلّقْ حولَ البرجِ العالي! اجمعِ النّجومَ وتجنّبِ الطّيور!","Transform and fly around the tall tower! Collect the stars and dodge the birds!"],"s63_g":["تحوّلي وحلّقي حولَ البرجِ العالي! اجمعي النّجومَ وتجنّبي الطّيور!","Transform and fly around the tall tower! Collect the stars and dodge the birds!"],"s63_done":["وصلْنا إلى القمّة! نورس محاصَر!","We reached the top! Nawras is trapped!"],"s64_b":["آخرُ حرفين! التقطْهما ولا تلتقطِ الحروفَ الخاطئة!","The last two letters! Catch them, and don't catch the wrong ones!"],"s64_g":["آخرُ حرفين! التقطيهما ولا تلتقطي الحروفَ الخاطئة!","The last two letters! Catch them, and don't catch the wrong ones!"],"n3_b":["قالَ نورس: حسنًا، حسنًا! أنتَ أسرعُ منّي. كنتُ أريدُ فقط أن ألعبَ معكم…","Nawras said: Okay, okay! You're faster than me. I only wanted to play with you all…"],"n3_g":["قالَ نورس: حسنًا، حسنًا! أنتِ أسرعُ منّي. كنتُ أريدُ فقط أن ألعبَ معكم…","Nawras said: Okay, okay! You're faster than me. I only wanted to play with you all…"],"c6_end":["اثنا عشرَ حرفًا! كلُّ الحروفِ عادت! هيّا نرجعْ إلى المهرجان!","Twelve letters! All the letters are back! Let's go back to the festival!"],"c7_a":["الخاتمة: المهرجان. النّاسُ ينتظرون، والبوّابةُ تنتظرُ حروفَها!","The finale: the festival. Everyone is waiting, and the gate is waiting for its letters!"],"s71_b":["اركضْ إلى المهرجانِ بكلِّ الحروف! النّاسُ يشجّعونك!","Run to the festival with all the letters! Everyone is cheering for you!"],"s71_g":["اركضي إلى المهرجانِ بكلِّ الحروف! النّاسُ يشجّعونكِ!","Run to the festival with all the letters! Everyone is cheering for you!"],"s71_done":["وصلْنا! والآن نعيدُ الحروفَ إلى البوّابة، حرفًا حرفًا.","We made it! Now let's put the letters back on the gate, one by one."],"s72_b":["اخترِ الحرفَ التّالي لتكتبَ: مهرجان الحروف!","Pick the next letter to spell: The Letter Festival!"],"s72_g":["اختاري الحرفَ التّالي لتكتبي: مهرجان الحروف!","Pick the next letter to spell: The Letter Festival!"],"gate_ok":["اكتملتِ البوّابة! مهرجانُ الحروف!","The gate is complete! The Letter Festival!"],"fin1":["أضاءتِ البوّابة، وانطلقتِ الألعابُ النّاريّة، وبدأ المهرجان!","The gate lit up, the fireworks went off, and the festival began!"],"fin2":["وحتّى نورس اعتذرَ وصارَ صديقًا للجميع. ووعدَ ألّا يخطفَ الحروفَ مرّةً أخرى!","Even Nawras said sorry and became everyone's friend. He promised never to steal letters again!"],"fin3_b":["شكرًا يا بطلَ الكلمات! لقد أنقذتَ المهرجان!","Thank you, Word Hero! You saved the festival!"],"fin3_g":["شكرًا يا بطلةَ الكلمات! لقد أنقذتِ المهرجان!","Thank you, Word Hero! You saved the festival!"],"ouch":["آخ!","Ouch!"],"stage_fail":["لا بأس! لنحاولْ هذه المرحلةَ مرّةً أخرى.","That's okay! Let's try this part again."],"chapter_done_b":["أحسنت! أنهيتَ الفصل!","Well done! You finished the chapter!"],"chapter_done_g":["أحسنتِ! أنهيتِ الفصل!","Well done! You finished the chapter!"]};
 
 // ---------- UI text ----------
 const T = {
@@ -285,6 +286,12 @@ const WORDS = [
   // Band 2 · ages 11–12: 5–7 letters, harder spelling (ؤ، ا، ة) and abstract words
   [['اختراع', '💡', 'شيءٌ جديدٌ يصنعُه الإنسانُ لأوَّلِ مرّة'], ['مغامرة', '🧗', 'رحلةٌ مليئةٌ بالمفاجآتِ والتَّحدِّيات'], ['تلسكوب', '🔭', 'جهازٌ نرى به النُّجومَ البعيدة'], ['مهندس', '👷', 'يُصمِّمُ المبانيَ والجسور'], ['استئذان', '🚪', 'طلبُ الإذنِ قبلَ الدّخول'], ['مكافأة', '🏆', 'شيءٌ نحصلُ عليه جزاءً على عملٍ جيّد'], ['تفاؤل', '🌅', 'أن نتوقّعَ الخيرَ دائمًا'], ['مسؤولية', '🧑‍⚖️', 'أن يقومَ الإنسانُ بواجباتِه ويتحمّلَ نتائجَ أفعالِه'], ['مستقبل', '🔮', 'الزّمنُ الذي سيأتي بعدَ اليوم'], ['تعاون', '🤝', 'أن نعملَ معًا لننجزَ عملًا واحدًا'], ['حاسوب', '💻', 'جهازٌ يُعالِجُ المعلوماتِ بسرعة']]
 ];
+// Driving challenges: [skill, prompt, correct, wrong, wrong]
+const CHALLENGES = [
+  [['حرف جرّ', 'ذهبَ أحمدُ ___ المدرسة', 'إلى', 'على', 'عن'], ['جمع', 'جمعُ كلمة «كتاب»', 'كُتُب', 'كتابون', 'كاتِب'], ['مؤنّث', 'مؤنّثُ كلمة «طالب»', 'طالبة', 'طُلّاب', 'مطلوب'], ['ضدّ', 'ضدُّ كلمة «سريع»', 'بطيء', 'قويّ', 'جميل'], ['أكمل', 'الأطفالُ ___ في الحديقة', 'يلعبون', 'يلعبُ', 'تلعبين'], ['اسم إشارة', '___ بنتٌ مجتهدة', 'هذه', 'هذا', 'هؤلاء'], ['مرادف', 'معنى كلمة «سعيد»', 'مسرور', 'حزين', 'غاضب'], ['ضدّ', 'ضدُّ كلمة «طويل»', 'قصير', 'كبير', 'عالٍ'], ['اسم إشارة', '___ ولدٌ مؤدَّب', 'هذا', 'هذه', 'هاتان']],
+  [['جمع', 'جمعُ التّكسيرِ لكلمةِ «سفينة»', 'سُفُن', 'سفينات', 'سفينون'], ['مثنّى', 'مثنّى كلمة «طالب»', 'طالبان', 'طُلّاب', 'طالبون'], ['الماضي', 'الفعلُ الماضي من «يكتبُ»', 'كَتَبَ', 'اُكتُبْ', 'كاتِب'], ['أكمل', 'الطّالبتانِ ___ الدَّرس', 'تكتبان', 'يكتبُ', 'يكتبون'], ['ضمير', '___ يلعبونَ كرةَ القدم', 'هم', 'هما', 'نحن'], ['مثنّى', 'مثنّى كلمة «شجرة»', 'شجرتان', 'شجرات', 'أشجار'], ['همزة', 'اكتبِ الكلمةَ الصحيحة', 'سماء', 'سماأ', 'سمائ'], ['مرادف', 'معنى كلمة «شجاع»', 'جريء', 'خائف', 'كسول'], ['ضدّ', 'ضدُّ كلمة «نجحَ»', 'رسبَ', 'فازَ', 'قرأَ']],
+  [['الأمر', 'فعلُ الأمر من «يقرأُ»', 'اِقرأْ', 'قرأَ', 'قارئ'], ['جمع', 'جمعُ كلمة «وزير»', 'وزراء', 'وزيرون', 'أوزار'], ['جمع مذكر سالم', 'رأيتُ ___ في الملعب', 'اللاعبين', 'اللاعبون', 'اللاعبان'], ['إنّ', 'إنَّ ___ واسعٌ', 'البحرَ', 'البحرُ', 'البحرِ'], ['كان', 'كانَ الجوُّ ___', 'جميلًا', 'جميلٌ', 'جميلٍ'], ['حرف جرّ', 'اعتمدتُ ___ نفسي', 'على', 'في', 'إلى'], ['مرادف', 'معنى كلمة «شاسع»', 'واسعٌ جدًّا', 'مرتفعٌ جدًّا', 'بعيدٌ جدًّا'], ['ضدّ', 'ضدُّ كلمة «الصِّدق»', 'الكذب', 'الوفاء', 'الصَّبر'], ['أكمل', 'هؤلاءِ ___ مجتهدون', 'طُلّابٌ', 'طالبٌ', 'طالبتان']]
+];
 const LOOKALIKE = [['ب', 'ت', 'ث', 'ن', 'ي'], ['ج', 'ح', 'خ'], ['د', 'ذ'], ['ر', 'ز', 'و'], ['س', 'ش'], ['ص', 'ض'], ['ط', 'ظ'], ['ع', 'غ'], ['ف', 'ق'], ['ك', 'ل'], ['م', 'ه'], ['ة', 'ه', 'ت'], ['ا', 'أ', 'إ', 'آ', 'ل'], ['ي', 'ى', 'ئ'], ['ء', 'ئ', 'ؤ', 'أ']];
 const ALL_L = 'ابتثجحخدذرزسشصضطظعغفقكلمنهويةءئأى'.split('');
 function distractors(ch) {
@@ -301,8 +308,29 @@ const GATE_COL = ['#ff5f8f', '#ff8a30', '#ffc93c', '#2fd39a', '#2f7de1', '#8a63f
 const FORKS = {
   beach: ['f_beach', 'f_beach_d', 'الشّاطئ', [['المكتبة', 'المطار'], ['الشّارع', 'الشّاطر'], ['الميناء', 'الحديقة']]],
   play: ['f_play', 'f_play_d', 'الألعاب', [['المسجد', 'السّوق'], ['الأعلام', 'الأقلام'], ['المدرسة', 'المطعم']]],
-  ice: ['f_ice', 'f_ice_d', 'الآيسكريم', [['المخبز', 'الصّيدليّة'], ['الآيباد', 'الكريم'], ['العصير', 'الحلويّات']]]
+  ice: ['f_ice', 'f_ice_d', 'الآيسكريم', [['المخبز', 'الصّيدليّة'], ['الآيباد', 'الكريم'], ['العصير', 'الحلويّات']]],
+  spice: ['f_spice', 'f_spice_d', 'التّوابل', [['الألعاب', 'الكتب'], ['التّماثيل', 'الطّوابع'], ['الأقمشة', 'العطور']]],
+  cloth: ['f_cloth', 'f_cloth_d', 'الأقمشة', [['السّمك', 'الذّهب'], ['الأقلام', 'الأغنام'], ['التّوابل', 'الأحذية']]],
+  hosp: ['f_hosp', 'f_hosp_d', 'المستشفى', [['المسبح', 'المتحف'], ['المستودع', 'المسرح'], ['الصّيدليّة', 'المدرسة']]],
+  lib: ['f_lib', 'f_lib_d', 'المكتبة', [['الملعب', 'المطبخ'], ['المكتب', 'المكنسة'], ['المدرسة', 'الجامعة']]],
+  site: ['f_site', 'f_site_d', 'موقع البناء', [['الملعب', 'المطار'], ['موقف السّيّارات', 'مركز البريد'], ['المصنع', 'المتجر']]],
+  tent: ['f_tent', 'f_tent_d', 'الخيمة', [['المدرسة', 'السّيّارة'], ['الخيمات', 'الحكمة'], ['البيت', 'المظلّة']]],
+  well: ['f_well', 'f_well_d', 'البئر', [['البحر', 'الجبل'], ['البرّ', 'البئس'], ['النّهر', 'البحيرة']]],
+  camel: ['f_camel', 'f_camel_d', 'الإبل', [['الأسود', 'الطّيور'], ['الأبل', 'الإبر'], ['الخيول', 'الغزلان']]],
+  light: ['f_light', 'f_light_d', 'المنارة', [['المدرسة', 'المزرعة'], ['المغارة', 'المنازل'], ['المئذنة', 'البرج']]],
+  museum: ['f_museum', 'f_museum_d', 'المتحف', [['الملعب', 'المطبخ'], ['المصحف', 'المتجر'], ['المكتبة', 'المسرح']]],
+  boat: ['f_boat', 'f_boat_d', 'القارب', [['القطار', 'الدّرّاجة'], ['القارئ', 'العقارب'], ['الطّائرة', 'السّيّارة']]],
+  towers: ['f_towers', 'f_towers_d', 'الأبراج', [['الأشجار', 'الحدائق'], ['الأدراج', 'الأمواج'], ['البيوت', 'الخيام']]],
+  lift: ['f_lift', 'f_lift_d', 'المصعد', [['المسبح', 'المطعم'], ['المقعد', 'المسجد'], ['الدّرج', 'السّلّم']]],
+  sea: ['f_sea', 'f_sea_d', 'البحر', [['الجبل', 'الصّحراء'], ['البحث', 'البئر'], ['النّهر', 'البحيرة']]],
+  dates: ['f_dates', 'f_dates_d', 'التّمور', [['الخضار', 'السّاعات'], ['النّمور', 'التّماثيل'], ['الحلويّات', 'العسل']]]
 };
+// shopping lists (stage «قائمة المشتريات»): words on the list, and look-alike decoys
+const LISTS = [
+  { need: ['خبز', 'تمر', 'حليب'], decoy: ['خيط', 'ثمر', 'حلوى', 'قلم', 'خبر', 'بيض'] },
+  { need: ['برتقال', 'طماطم', 'زعفران'], decoy: ['بركان', 'طائرة', 'زيتون', 'بطاطا', 'زعتر', 'طابع'] },
+  { need: ['هيل', 'قرفة', 'كركم'], decoy: ['هلال', 'قرية', 'كرسي', 'ليمون', 'فلفل', 'زنجبيل'] }
+];
 // ---------- the chapters ----------
 const CHAPTERS = [
   { name: ['الكورنيش', 'The Corniche'], theme: 1, letters: [0, 1], node: [44, 80],
@@ -314,12 +342,58 @@ const CHAPTERS = [
       { type: 'catch', icon: '🔤', title: ['أمسكْ بالحروف', 'Catch the letters'], goal: 's14', obst: ['bench'], shell: true }
     ],
     outro: [['wh2-c1end.jpg', 'c1_end']] },
-  { name: ['السّوق القديم', 'The old souq'], theme: 0, letters: [2, 3], node: [24, 50], soon: true },
-  { name: ['المدينة', 'The city'], theme: 1, letters: [4, 5], node: [50, 24], soon: true },
-  { name: ['مخيّم البرّ', 'Desert camp'], theme: 2, letters: [7, 8], node: [14, 17], soon: true },
-  { name: ['جزيرة فيلكا', 'Failaka Island'], theme: 1, letters: [9, 10], node: [82, 31], soon: true },
-  { name: ['أبراج الكويت', 'Kuwait Towers'], theme: 1, letters: [11, 12], node: [73, 62], soon: true },
-  { name: ['المهرجان', 'The festival'], theme: 1, letters: [], node: [11, 84], soon: true, finale: true }
+  { name: ['السّوق القديم', 'The old souq'], theme: 0, letters: [2, 3], node: [24, 50],
+    intro: [['wh2-c2a.jpg', 'c2_a'], ['wh2-c2b.jpg', 'c2_b']],
+    stages: [
+      { type: 'run', icon: '🏃', title: ['إلى دكّانِ أبي خالد', "To Abu Khaled's shop"], goal: 's21', len: 360, forks: ['spice', 'cloth', 'dates'], obst: ['carpet', 'cat', 'sack', 'barrel', 'carpet'], dest: 'shop', done: 's21_done', shell: true },
+      { type: 'gather', icon: '🍊', title: ['الأغراضُ المتدحرجة', 'The rolling shopping'], goal: 's22', obst: ['sack', 'cat'], done: 's22_done', shell: true },
+      { type: 'quiz', icon: '🛒', title: ['العربةُ الهاربة', 'The runaway cart'], goal: 's23', obst: ['sack', 'carpet'], done: 's23_done' },
+      { type: 'list', icon: '📝', title: ['قائمةُ المشتريات', 'The shopping list'], goal: 's24', obst: ['cat'], done: 's24_done', shell: true }
+    ],
+    outro: [['wh2-c2end.jpg', 'c2_end']] },
+  { name: ['المدينة', 'The city'], theme: 3, letters: [4, 5], node: [50, 24],
+    intro: [['wh2-c3a.jpg', 'c3_a'], ['wh2-c3a.jpg', 'c3_b']],
+    stages: [
+      { type: 'run', icon: '🏃', title: ['إلى موقعِ البناء', 'To the building site'], goal: 's31', len: 360, forks: ['hosp', 'lib', 'site'], obst: ['cone', 'scooterX', 'cone', 'lamp', 'roadblock'], dest: 'site', done: 's31_done', shell: true },
+      { type: 'fly', icon: '🛸', title: ['طِرْ إلى الرّافعة', 'Fly up to the crane'], goal: 's32', len: 380, done: 's32_done', shell: true },
+      { type: 'bridge', variant: 'door', icon: '🔐', title: ['البابُ المقفل', 'The locked door'], goal: 's33' },
+      { type: 'carry', item: 'kitten', icon: '🐱', title: ['أنزِلِ القطّة', 'Bring the kitten down'], goal: 's34', len: 340, obst: ['cone', 'swing', 'roadblock', 'swing'], dest: 'site', done: 's34_done', shell: true }
+    ],
+    outro: [['wh2-c3end.jpg', 'c3_end']] },
+  { name: ['مخيّم البرّ', 'Desert camp'], theme: 2, letters: [7, 8], node: [14, 17],
+    intro: [['wh2-c4a.jpg', 'c4_a'], ['wh2-c4a.jpg', 'c4_b']],
+    stages: [
+      { type: 'run', icon: '🏃', title: ['إلى المخيّم', 'To the camp'], goal: 's41', len: 380, forks: ['tent', 'well', 'camel'], obst: ['dune', 'rope', 'camelX', 'bush', 'dune'], dest: 'camp', done: 's41_done', shell: true },
+      { type: 'gather', items: 'camp', lost: 'sand_lost', icon: '🏮', title: ['أوتادُ الخيمة', 'The tent pegs'], goal: 's42', obst: ['bush', 'dune'], done: 's42_done', shell: true },
+      { type: 'bridge', variant: 'tent', icon: '⛺', title: ['ارفعِ الخيمة', 'Raise the tent'], goal: 's43', doorLine: 'tent_ok' },
+      { type: 'carry', item: 'babycamel', icon: '🐪', title: ['الحُوارُ الضّائع', 'The lost baby camel'], goal: 's44', len: 360, obst: ['bush', 'rope', 'dune', 'camelX'], dest: 'camp', done: 's44_done', shell: true }
+    ],
+    outro: [['wh2-c4end.jpg', 'c4_end']] },
+  { name: ['جزيرة فيلكا', 'Failaka Island'], theme: 1, letters: [9, 10], node: [82, 31],
+    intro: [['wh2-c5a.jpg', 'c5_a'], ['wh2-c5a.jpg', 'c5_b']],
+    stages: [
+      { type: 'run', icon: '🏃', title: ['إلى الميناء', 'To the harbour'], goal: 's51', len: 380, forks: ['light', 'museum', 'boat'], obst: ['crate', 'net', 'crab', 'barrel', 'crate'], dest: 'harbor', done: 's51_done', shell: true },
+      { type: 'gather', items: 'fish', lost: 'fish_lost', icon: '🐟', title: ['الأسماكُ القافزة', 'The jumping fish'], goal: 's52', obst: ['crate', 'crab'], done: 's52_done', shell: true },
+      { type: 'bridge', variant: 'door', icon: '🗼', title: ['بابُ المنارة', 'The lighthouse door'], goal: 's53', doorLine: 'door_ok2' },
+      { type: 'catch', icon: '🔤', title: ['فوقَ المنارة', 'On the lighthouse'], goal: 's54', obst: ['crate'], taunt: 'n2', shell: true }
+    ],
+    outro: [['wh2-c5end.jpg', 'c5_end']] },
+  { name: ['أبراج الكويت', 'Kuwait Towers'], theme: 1, letters: [11, 12], node: [73, 62],
+    intro: [['wh2-c6a.jpg', 'c6_a'], ['wh2-c6a.jpg', 'c6_b']],
+    stages: [
+      { type: 'run', icon: '🏃', title: ['إلى الأبراج', 'To the towers'], goal: 's61', len: 400, speedMul: 1.12, forks: ['towers', 'lift', 'sea'], obst: ['ball', 'banner', 'crab', 'lamp', 'bench', 'sprinkler'], dest: 'kiosk', done: 's61_done', shell: true },
+      { type: 'quiz', chase: 'nawras', away: 'naw_away', icon: '🐦', title: ['الحقْ بنورس', 'Chase Nawras'], goal: 's62', obst: ['bench', 'banner'], done: 's62_done' },
+      { type: 'fly', icon: '🛸', title: ['حولَ البرج', 'Around the tower'], goal: 's63', len: 420, done: 's63_done', shell: true },
+      { type: 'catch', icon: '🔤', title: ['آخرُ حرفين', 'The last two letters'], goal: 's64', obst: ['bench', 'banner'], taunt: 'n3' }
+    ],
+    outro: [['wh2-c6a.jpg', 'c6_end']] },
+  { name: ['المهرجان', 'The festival'], theme: 1, letters: [], node: [11, 84], finale: true,
+    intro: [['wh2-intro3.jpg', 'c7_a']],
+    stages: [
+      { type: 'run', icon: '🎉', title: ['إلى المهرجان', 'To the festival'], goal: 's71', len: 300, forks: [], obst: ['ball', 'banner', 'bench'], dest: 'kids', done: 's71_done', shell: true },
+      { type: 'bridge', variant: 'gate', icon: '🔤', title: ['بوّابةُ المهرجان', 'The festival gate'], goal: 's72', doorLine: 'gate_ok' }
+    ],
+    outro: [['wh2-fin1.jpg', 'fin1'], ['wh2-fin2.jpg', 'fin2'], ['wh2-fin1.jpg', 'fin3']] }
 ];
 const INTRO = [['wh2-intro1.jpg', 'i1'], ['wh2-intro1.jpg', 'i2'], ['wh2-intro2.jpg', 'i3'], ['wh2-intro3.jpg', 'i4'], ['wh2-intro3.jpg', 'i5']];
 
@@ -687,6 +761,12 @@ function spawnScenery(z) {
   });
 }
 
+THEMES.push({ name: 'city', sky: 0x8fd0ff, fog: 0xcfe8ff, ground: 0xc9ccd6, road: '#6d7488', side: 0xe2e5ec });
+const _spawnScenery0 = spawnScenery;
+spawnScenery = function (z) {
+  if (theme.name !== 'city') return _spawnScenery0(z);
+  [-1, 1].forEach(sd => { let o; const r = Math.random(); if (r < 0.62) o = tower2(sd); else if (r < 0.72) o = crane(); else o = palm(); const off = o.children.length > 8 ? 9 : 7 + Math.random() * 4; o.position.set(sd * off, 0, z); world.add(o); scenery.push(o); });
+};
 // ====================================================================================
 //  GAMEPLAY
 // ====================================================================================
@@ -758,7 +838,7 @@ function kiosk() {
   [-1.6, 1.6].forEach(x => g.add(box(0.12, 2.2, 0.12, 0xffffff, x, 2.2, -0.6)));
   const aw = new THREE.Mesh(new THREE.BoxGeometry(3.8, 0.18, 1.9), new THREE.MeshToonMaterial({ map: stripeTex(['#ff5f8f', '#ffffff'], 10), gradientMap: grad })); aw.position.set(0, 3.3, 0.1); aw.rotation.x = 0.18; aw.castShadow = true; g.add(aw);
   const big = iceCream(1.4); big.position.set(0, 3.45, -0.2); g.add(big);
-  const man = person(0xffffff, 0xc98b5a, 'ghutra'); man.position.set(0.6, 0, -0.5); g.add(man); g.userData.npc = man;
+  const man = npc('uncle', 1.85, 0xffffff); man.position.set(0.6, 0, -0.5); g.add(man); g.userData.npc = man;
   return g;
 }
 function kidsCorner() {
@@ -767,10 +847,63 @@ function kidsCorner() {
   g.add(box(4.6, 0.16, 0.16, 0xff8a30, 0, 3.1, 0));
   [-1, 1].forEach(x => { g.add(box(0.03, 1.8, 0.03, 0x555555, x - 0.3, 2.2, 0)); g.add(box(0.03, 1.8, 0.03, 0x555555, x + 0.3, 2.2, 0)); g.add(box(0.8, 0.08, 0.36, 0x2f7de1, x, 1.3, 0)); });
   const kids = [];
-  [[-1.8, 0x7fd0ff, 'hair'], [-0.6, 0xffffff, 'ghutra'], [0.6, 0xffb3d1, 'hair'], [1.8, 0xfff1b0, 'ghutra']].forEach(([x, c, hw]) => { const k = person(c, 0xd9a273, hw, 1.15); k.position.set(x, 0, 1.6); g.add(k); kids.push(k); });
+  [[-1.8, 0x7fd0ff, 'hair'], [-0.6, 0xffffff, 'ghutra'], [0.6, 0xffb3d1, 'hair'], [1.8, 0xfff1b0, 'ghutra']].forEach(([x, c, hw]) => { const k = npc(hw === 'hair' ? 'kidg' : 'kidb', 1.2, c); k.position.set(x, 0, 1.6); g.add(k); kids.push(k); });
   for (let i = 0; i < 5; i++) { const bl = mesh(SPH, M([0xff5f8f, 0xffc93c, 0x2fd39a, 0x2f7de1, 0x8a63ff][i])); bl.scale.set(0.5, 0.62, 0.5); bl.position.set(-2.6 + (i % 2) * 0.3, 3.3 + i * 0.35, 1.2 + (i % 3) * 0.2); g.add(bl); }
   g.userData.kids = kids; return g;
 }
+
+function carpet() { // a carpet hung across one lane → duck
+  const g = new THREE.Group(); [-1.15, 1.15].forEach(x => g.add(box(0.14, 2.9, 0.14, 0x6b4426, x, 1.45, 0)));
+  g.add(box(2.4, 0.1, 0.1, 0x6b4426, 0, 2.85, 0));
+  const k = 'carpet'; if (!texCache[k]) { const c = document.createElement('canvas'); c.width = 128; c.height = 96; const x = c.getContext('2d'); x.fillStyle = '#b3262e'; x.fillRect(0, 0, 128, 96); x.strokeStyle = '#ffd36b'; x.lineWidth = 6; x.strokeRect(8, 8, 112, 80); x.fillStyle = '#1d4f91'; x.beginPath(); x.moveTo(64, 20); x.lineTo(96, 48); x.lineTo(64, 76); x.lineTo(32, 48); x.fill(); x.fillStyle = '#ffd36b'; x.fillRect(58, 42, 12, 12); texCache[k] = new THREE.CanvasTexture(c); }
+  const rug = new THREE.Mesh(new THREE.BoxGeometry(2.2, 1.35, 0.06), new THREE.MeshToonMaterial({ map: texCache[k], gradientMap: grad })); rug.position.y = 2.15; rug.castShadow = true; g.add(rug); g.userData.rug = rug; return g;
+}
+function cat() { const g = new THREE.Group(); const c = [0xf0a64a, 0x8a8f9c, 0x2b2b33][Math.floor(Math.random() * 3)]; const b = mesh(SPH, M(c)); b.scale.set(0.5, 0.42, 0.9); b.position.y = 0.42; g.add(b); const h = mesh(SPH, M(c)); h.scale.setScalar(0.42); h.position.set(0, 0.72, 0.42); g.add(h); [-0.12, 0.12].forEach(x => { const e = mesh(CONE, M(c)); e.scale.set(0.12, 0.2, 0.08); e.position.set(x, 0.95, 0.42); g.add(e); const ey = mesh(SPH, M(0x2fbf71), false); ey.scale.setScalar(0.07); ey.position.set(x, 0.76, 0.62); g.add(ey); }); const t = box(0.08, 0.08, 0.6, c, 0, 0.6, -0.6); t.rotation.x = -0.7; g.add(t); [[-0.15, 0.3], [0.15, 0.3], [-0.15, -0.3], [0.15, -0.3]].forEach(([x, z]) => g.add(box(0.1, 0.3, 0.1, c, x, 0.15, z))); return g; }
+function sack() { const g = new THREE.Group(); const s = mesh(SPH, M(0xc9a36b)); s.scale.set(1.0, 0.8, 0.8); s.position.y = 0.4; g.add(s); const top = mesh(CONE, M(0xc9a36b)); top.scale.set(0.4, 0.35, 0.4); top.position.y = 0.85; g.add(top); const sp = mesh(SPH, M([0xe85d2a, 0xf2c14e, 0x8a4b2a][Math.floor(Math.random() * 3)])); sp.scale.set(0.7, 0.2, 0.6); sp.position.y = 0.75; g.add(sp); return g; }
+function barrel() { const g = new THREE.Group(); const b = mesh(CYL, M(0x8a5a32)); b.scale.set(1.1, 1.4, 1.1); b.position.y = 0.7; g.add(b); [0.25, 1.15].forEach(y => { const r = mesh(new THREE.TorusGeometry(0.56, 0.05, 6, 20), M(0x3a3f4f)); r.rotation.x = Math.PI / 2; r.position.y = y; g.add(r); }); const b2 = mesh(CYL, M(0x8a5a32)); b2.scale.set(1.0, 1.2, 1.0); b2.position.set(0.3, 2.0, 0); g.add(b2); return g; }
+function grocery() { const k = Math.floor(Math.random() * 4); const g = new THREE.Group(); let m;
+  if (k === 0) { m = mesh(SPH, M(0xff9a1f)); m.scale.setScalar(0.75); const lf = box(0.2, 0.06, 0.12, 0x2fbf71, 0, 0.38, 0); g.add(lf); }
+  else if (k === 1) { m = mesh(SPH, M(0xe8312f)); m.scale.set(0.75, 0.62, 0.75); const st = mesh(CONE, M(0x2fbf71)); st.scale.set(0.2, 0.12, 0.2); st.position.y = 0.32; g.add(st); }
+  else if (k === 2) { m = mesh(SPH, M(0xd9a25b)); m.scale.set(1.1, 0.55, 0.62); }
+  else { m = box(0.75, 0.42, 0.55, 0x7a3e22); const lid = box(0.8, 0.08, 0.6, 0xffd36b, 0, 0.23, 0); g.add(lid); }
+  g.add(m); const w = new THREE.Group(); w.add(g); g.position.y = 0.45; w.userData.spin = g; return w; }
+function cart() { const g = new THREE.Group(); g.add(box(2.2, 0.7, 1.5, 0x9b6a3c, 0, 1.0, 0)); g.add(box(2.3, 0.12, 1.6, 0x6b4426, 0, 1.38, 0));
+  [-0.8, 0.8].forEach(x => { const w = mesh(new THREE.TorusGeometry(0.42, 0.1, 8, 16), M(0x3a3f4f)); w.rotation.y = Math.PI / 2; w.position.set(x, 0.45, 0.8); g.add(w); const w2 = w.clone(); w2.position.z = -0.8; g.add(w2); g.userData.wheels = (g.userData.wheels || []).concat([w, w2]); });
+  for (let i = 0; i < 9; i++) { const f = mesh(SPH, M([0xff9a1f, 0xe8312f, 0x2fbf71][i % 3])); f.scale.setScalar(0.42); f.position.set(-0.7 + (i % 3) * 0.7, 1.55 + Math.floor(i / 3) * 0.12, -0.4 + Math.floor(i / 3) * 0.4); g.add(f); }
+  const h = box(0.08, 0.08, 1.6, 0x6b4426, 1.4, 1.5, 0); h.rotation.z = 0.4; g.add(h); return g; }
+function shopDest() { const g = new THREE.Group(); const st = glb('stall', 4.2, 'w'); if (st) { st.rotation.y = Math.PI; g.add(st); } else { g.add(box(3.6, 1.1, 1.6, 0x9b6a3c, 0, 0.55, 0)); const aw = new THREE.Mesh(new THREE.BoxGeometry(3.8, 0.18, 1.9), new THREE.MeshToonMaterial({ map: stripeTex(['#2fbf71', '#ffffff'], 10), gradientMap: grad })); aw.position.y = 3.1; g.add(aw); }
+  const man = npc('uncle', 1.85, 0xffffff); man.position.set(0.9, 0, 1.2); g.add(man); g.userData.npc = man; return g; }
+function npc(name, h, robe) { const a = glb(name, h, 'h'); if (a) { const w = new THREE.Group(); w.add(a); return w; } return person(robe || 0xffffff, 0xd9a273, name === 'kidg' ? 'hair' : 'ghutra', h); }
+function wordItem(w, i) { const g = new THREE.Group(); g.add(box(1.4, 0.8, 1.0, 0x9b6a3c, 0, 0.4, 0)); const m = new THREE.Mesh(new THREE.BoxGeometry(2.2, 0.95, 0.16), [M(0x1b2440), M(0x1b2440), M(0x1b2440), M(0x1b2440), new THREE.MeshBasicMaterial({ map: tileTex(w, ['#ff8a30', '#2f7de1', '#8a63ff'][i % 3], '#fff', 256, true) }), M(0x1b2440)]); m.position.y = 1.55; g.add(m); return g; }
+
+function cone() { const g = new THREE.Group(); const c = mesh(CONE, M(0xff7a1a)); c.scale.set(0.6, 0.95, 0.6); c.position.y = 0.48; g.add(c); const b = mesh(new THREE.TorusGeometry(0.2, 0.05, 6, 14), M(0xffffff)); b.rotation.x = Math.PI / 2; b.position.y = 0.55; g.add(b); g.add(box(0.75, 0.08, 0.75, 0x3a3f4f, 0, 0.04, 0)); return g; }
+function roadblock() { const g = new THREE.Group(); const k = 'rb'; if (!texCache[k]) texCache[k] = stripeTex(['#ff5f6d', '#ffffff'], 8); const bar = new THREE.Mesh(new THREE.BoxGeometry(2.2, 0.32, 0.2), new THREE.MeshToonMaterial({ map: texCache[k], gradientMap: grad })); bar.position.y = 0.62; bar.castShadow = true; g.add(bar); [-0.9, 0.9].forEach(x => { const l = box(0.12, 0.62, 0.5, 0x3a3f4f, x, 0.31, 0); g.add(l); }); return g; }
+function eScooter() { const g = new THREE.Group(); g.add(box(0.35, 0.1, 1.2, 0x2f7de1, 0, 0.2, 0)); const p = box(0.08, 1.1, 0.08, 0x3a3f4f, 0, 0.75, 0.5); g.add(p); g.add(box(0.6, 0.06, 0.06, 0x3a3f4f, 0, 1.3, 0.5)); [-0.5, 0.5].forEach(z => { const w = mesh(new THREE.TorusGeometry(0.15, 0.05, 6, 12), M(0x1b2440)); w.rotation.y = Math.PI / 2; w.position.set(0, 0.15, z); g.add(w); }); const r = npc('kidb', 1.3, 0xffffff); r.position.y = 0.25; r.scale.setScalar(0.9); g.add(r); g.rotation.y = Math.PI / 2; const w = new THREE.Group(); w.add(g); return w; }
+function swingBeam() { const g = new THREE.Group(); const ch = box(0.06, 3.0, 0.06, 0x3a3f4f, 0, 3.0, 0); g.add(ch); const beam = box(2.0, 0.4, 0.4, 0xffc93c, 0, 1.3, 0); g.add(beam); [-0.9, 0.9].forEach(x => g.add(box(0.06, 0.42, 0.42, 0x1b2440, x, 1.3, 0))); return g; }
+function pigeon() { const g = gullMesh(0.45); g.traverse(o => { if (o.isMesh && o.material && o.material.color && o.material.color.getHex() === 0xffffff) o.material = M(0x9aa3b8); }); g.position.y = 1.5; const w = new THREE.Group(); w.add(g); w.userData.bird = g; return w; }
+function windGust() { const g = new THREE.Group(); const mat = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.75 }); for (let i = 0; i < 5; i++) { const t = new THREE.Mesh(new THREE.TorusGeometry(0.5 + i * 0.08, 0.04, 6, 20, Math.PI * 1.3), mat); t.position.set((i - 2) * 0.35, 1.0 + (i % 2) * 0.5, 0); t.rotation.y = Math.PI / 2; g.add(t); } g.userData.spin = g; return g; }
+function steelBeam() { const g = new THREE.Group(); g.add(box(5.0, 0.35, 0.5, 0xd8452c, 0, 1.6, 0)); g.add(box(5.0, 0.1, 0.9, 0xd8452c, 0, 1.4, 0)); g.add(box(5.0, 0.1, 0.9, 0xd8452c, 0, 1.8, 0)); return g; }
+function siteDest() { const g = new THREE.Group(); // a building site: crane, fence, a builder
+  const tower = new THREE.Group(); for (let y = 0; y < 14; y++) { tower.add(box(0.12, 1, 0.12, 0xffc93c, -0.6, y + 0.5, -0.6)); tower.add(box(0.12, 1, 0.12, 0xffc93c, 0.6, y + 0.5, -0.6)); tower.add(box(0.12, 1, 0.12, 0xffc93c, -0.6, y + 0.5, 0.6)); tower.add(box(0.12, 1, 0.12, 0xffc93c, 0.6, y + 0.5, 0.6)); const d = box(1.6, 0.08, 0.08, 0xffc93c, 0, y + 0.5, 0.6); d.rotation.z = 0.6; tower.add(d); }
+  tower.add(box(12, 0.5, 0.6, 0xffc93c, 3, 14.3, 0)); tower.add(box(1.6, 1.4, 1.6, 0xff8a30, 0, 13.2, 0.9)); tower.position.set(-4.6, 0, -3); g.add(tower);
+  for (let x = -3; x <= 3; x += 1.5) { const f = box(1.4, 1.2, 0.08, 0xd9dde6, x, 0.6, -2); g.add(f); }
+  const man = person(0xff8a30, 0xc98b5a, 'none', 1.8); const hat = mesh(SPH, M(0xffd23f)); hat.scale.set(0.5, 0.28, 0.5); hat.position.y = 1.72; man.add(hat); man.position.set(1.4, 0, 0.5); g.add(man); g.userData.npc = man; return g; }
+function cabinDest() { const g = new THREE.Group(); g.add(box(4.2, 3.2, 3.2, 0xff8a30, 0, 1.6, -1)); g.add(box(1.4, 2.2, 0.1, 0x1b2440, 0, 1.1, 0.62)); g.add(box(3.2, 1.0, 0.1, 0x9fe6ff, 0, 2.4, 0.62)); return g; }
+function crane() { const g = new THREE.Group(); for (let y = 0; y < 20; y += 2) { g.add(box(0.15, 2, 0.15, 0xffc93c, -0.5, y + 1, 0)); g.add(box(0.15, 2, 0.15, 0xffc93c, 0.5, y + 1, 0)); } g.add(box(14, 0.4, 0.5, 0xffc93c, 4, 20, 0)); g.add(box(0.04, 6, 0.04, 0x3a3f4f, 9, 17, 0)); return g; }
+function kitten() { const g = cat(); g.scale.setScalar(0.62); return g; }
+
+function duneHump() { const g = new THREE.Group(); const d = mesh(SPH, M(0xe8b86a)); d.scale.set(2.0, 0.75, 1.4); d.position.y = 0.05; g.add(d); return g; }
+function bush() { const g = new THREE.Group(); for (let i = 0; i < 5; i++) { const b = mesh(SPH, M([0x8a9a3a, 0x9fae4a, 0x6f7f2a][i % 3])); b.scale.setScalar(0.55 + Math.random() * 0.25); b.position.set((i - 2) * 0.28, 0.35 + (i % 2) * 0.2, (i % 2) * 0.2); g.add(b); } return g; }
+function tentRope() { const g = new THREE.Group(); [-1.15, 1.15].forEach(x => g.add(box(0.12, 2.0, 0.12, 0x6b4426, x, 1.0, 0))); const r = box(2.3, 0.05, 0.05, 0xdcc08a, 0, 1.45, 0); g.add(r); for (let i = 0; i < 4; i++) { const c = box(0.5, 0.35, 0.05, [0xb3262e, 0x1d4f91, 0xffc93c, 0x2fbf71][i], -0.85 + i * 0.57, 1.25, 0); g.add(c); } return g; }
+function camelX() { const a = glb('camel', 3.0, 'h'); if (a) { const w = new THREE.Group(); a.rotation.y = Math.PI / 2; w.add(a); return w; } const c = camelBasic(); c.scale.setScalar(0.9); return c; }
+function crate() { const g = new THREE.Group(); g.add(box(1.4, 0.75, 1.0, 0xb07a45, 0, 0.38, 0)); g.add(box(1.45, 0.08, 1.05, 0x6b4426, 0, 0.76, 0)); const f = mesh(SPH, M(0x9fc9d9)); f.scale.set(0.5, 0.2, 0.25); f.position.set(0.2, 0.85, 0); g.add(f); return g; }
+function fishNet() { const g = new THREE.Group(); [-1.15, 1.15].forEach(x => g.add(box(0.12, 2.8, 0.12, 0x6b4426, x, 1.4, 0))); const k = 'net'; if (!texCache[k]) { const c = document.createElement('canvas'); c.width = 64; c.height = 64; const x = c.getContext('2d'); x.strokeStyle = '#3b6e7a'; x.lineWidth = 3; for (let i = 0; i <= 64; i += 12) { x.beginPath(); x.moveTo(i, 0); x.lineTo(i, 64); x.stroke(); x.beginPath(); x.moveTo(0, i); x.lineTo(64, i); x.stroke(); } texCache[k] = new THREE.CanvasTexture(c); } const n = new THREE.Mesh(new THREE.PlaneGeometry(2.2, 1.3), new THREE.MeshBasicMaterial({ map: texCache[k], transparent: true, side: THREE.DoubleSide })); n.position.y = 2.1; g.add(n); return g; }
+function campDest() { const g = new THREE.Group(); const t = glb('tent', 6, 'h'); if (t) { t.position.set(-1.5, 0, -2); g.add(t); } else { const tb = tentBasic(); tb.position.set(-1.5, 0, -2); g.add(tb); } const w = npc('granny', 1.65, 0x1b2440); w.position.set(1.5, 0, 0.8); g.add(w); g.userData.npc = w; const m = camelX(); m.position.set(3.6, 0, -1.5); g.add(m); return g; }
+function harborDest() { const g = new THREE.Group(); const b = glb('boat', 7, 'l'); if (b) { b.position.set(-2.4, 0, -2.5); g.add(b); } g.add(box(9, 0.3, 3, 0xb07a45, 0, 0.15, -1)); const f = npc('fisher', 1.85, 0xffffff); f.position.set(1.4, 0, 0.6); g.add(f); g.userData.npc = f; const lh = new THREE.Group(); const tw = mesh(CYL, M(0xffffff)); tw.scale.set(2.2, 12, 2.2); tw.position.y = 6; lh.add(tw); const st = mesh(CYL, M(0xe8312f)); st.scale.set(2.25, 1.5, 2.25); st.position.y = 8; lh.add(st); const lamp = mesh(SPH, new THREE.MeshBasicMaterial({ color: 0xfff1b0 })); lamp.scale.setScalar(1.6); lamp.position.y = 12.8; lh.add(lamp); lh.position.set(5.5, 0, -6); g.add(lh); return g; }
+function campItem() { const k = Math.floor(Math.random() * 3); const g = new THREE.Group(); if (k === 0) { const p = mesh(CONE, M(0x8a5a32)); p.scale.set(0.25, 1.0, 0.25); p.rotation.x = Math.PI; p.position.y = 0.6; g.add(p); } else if (k === 1) { g.add(box(0.5, 0.6, 0.5, 0x3a3f4f, 0, 0.5, 0)); const l = mesh(SPH, new THREE.MeshBasicMaterial({ color: 0xffd36b })); l.scale.setScalar(0.4); l.position.y = 0.5; g.add(l); } else { g.add(box(0.9, 0.3, 0.9, [0xb3262e, 0x1d4f91, 0x2fbf71][Math.floor(Math.random() * 3)], 0, 0.3, 0)); } const w = new THREE.Group(); w.add(g); w.userData.spin = g; return w; }
+function fishItem() { const g = new THREE.Group(); const b = mesh(SPH, M([0x9fc9d9, 0xffb03a, 0xc0d4e0][Math.floor(Math.random() * 3)])); b.scale.set(0.42, 0.42, 1.0); b.position.y = 0.6; g.add(b); const t = mesh(CONE, M(0x7fa9bd)); t.scale.set(0.4, 0.4, 0.1); t.rotation.x = Math.PI / 2; t.position.set(0, 0.6, -0.6); g.add(t); const w = new THREE.Group(); w.add(g); w.userData.hop = g; return w; }
+function babyCamel() { const a = glb('camel', 1.5, 'h'); if (a) { const w = new THREE.Group(); a.rotation.y = 0; w.add(a); return w; } const c = camelBasic(); c.scale.setScalar(0.45); return c; }
+function gateArch() { const g = new THREE.Group(); [-4.2, 4.2].forEach(x => { for (let y = 0; y < 5; y++) g.add(box(1.2, 1.1, 1.0, [0xff5f8f, 0xffc93c, 0x2fd39a, 0x2f7de1, 0x8a63ff][(y + (x > 0 ? 2 : 0)) % 5], x, 0.55 + y * 1.1, 0)); }); g.add(box(9.6, 1.0, 1.0, 0xffffff, 0, 6.0, 0)); return g; }
 function shellMesh() { const g = new THREE.Group(); const m = new THREE.Mesh(new THREE.SphereGeometry(0.42, 18, 10, 0, Math.PI * 2, 0, Math.PI / 2), new THREE.MeshToonMaterial({ color: 0xffd23f, gradientMap: grad, emissive: 0x664400 })); m.scale.set(1, 0.7, 1.15); g.add(m); for (let i = -2; i <= 2; i++) { const r = box(0.04, 0.32, 0.9, 0xd79a00, i * 0.16, 0.12, 0); r.rotation.z = i * 0.25; g.add(r); } const halo = new THREE.Mesh(new THREE.RingGeometry(0.55, 0.7, 24), new THREE.MeshBasicMaterial({ color: 0xfff1b0, transparent: true, opacity: 0.8, side: THREE.DoubleSide })); halo.position.y = 0.2; g.add(halo); g.userData.halo = halo; return g; }
 function gullMesh(scale = 1, scarf = false) {
   const art = scarf && glb('nawras', 2.6 * scale, 'h');
@@ -798,10 +931,27 @@ function spawnObstacle(type, z) {
   if (type === 'banner') { const ob = add(banner(), z, lane, 'high', { w: 1.1 }); return ob; }
   if (type === 'lamp') { const l2 = (lane + 1 + Math.floor(Math.random() * 2)) % 3; add(lampPost(), z, lane, 'block', { w: 0.9 }); if (band() > 0) add(lampPost(), z, l2, 'block', { w: 0.9 }); return; }
   if (type === 'sprinkler') { const ob = add(sprinkler(), z, lane, 'water', { w: 1.0, phase: Math.random() * 3 }); return ob; }
+  if (type === 'carpet') return add(carpet(), z, lane, 'high', { w: 1.1 });
+  if (type === 'cone') return add(cone(), z, lane, 'low', { w: 0.8 });
+  if (type === 'dune') return add(duneHump(), z, lane, 'low', { w: 1.1 });
+  if (type === 'bush') return add(bush(), z, lane, 'low', { w: 0.9 });
+  if (type === 'rope') return add(tentRope(), z, lane, 'high', { w: 1.1 });
+  if (type === 'camelX') return add(camelX(), z, lane, 'block', { w: 1.2, vx: (Math.random() < 0.5 ? -1 : 1) * (1.0 + band() * 0.3) });
+  if (type === 'crate') return add(crate(), z, lane, 'low', { w: 1.0 });
+  if (type === 'net') return add(fishNet(), z, lane, 'high', { w: 1.1 });
+  if (type === 'roadblock') return add(roadblock(), z, lane, 'low', { w: 1.1 });
+  if (type === 'scooterX') return add(eScooter(), z, lane, 'low', { w: 0.9, vx: (Math.random() < 0.5 ? -1 : 1) * (2.4 + band() * 0.6) });
+  if (type === 'swing') return add(swingBeam(), z, lane, 'block', { w: 1.0, vx: (Math.random() < 0.5 ? -1 : 1) * (1.4 + band() * 0.4) });
+  if (type === 'pigeon') return add(pigeon(), z, lane, 'block', { w: 0.9, vx: (Math.random() < 0.5 ? -1 : 1) * (2.2 + band() * 0.6) });
+  if (type === 'wind') return add(windGust(), z, lane, 'wind', { w: 1.2 });
+  if (type === 'beam') { const l = Math.random() < 0.5 ? 0 : 1; const ob = add(steelBeam(), z, -1, 'beam', { lanes: [l, l + 1] }); ob.o.position.x = (LANES[l] + LANES[l + 1]) / 2; return ob; }
+  if (type === 'cat') return add(cat(), z, lane, 'low', { w: 0.7, vx: (Math.random() < 0.5 ? -1 : 1) * (2 + band() * 0.6) });
+  if (type === 'sack') return add(sack(), z, lane, 'low', { w: 0.9 });
+  if (type === 'barrel') return add(barrel(), z, lane, 'block', { w: 0.9 });
 }
 function spawnStars(z, lane, n = 5) { for (let i = 0; i < n; i++) { const s = new THREE.Mesh(new THREE.OctahedronGeometry(0.35), new THREE.MeshToonMaterial({ color: 0xffd23f, gradientMap: grad, emissive: 0x553300 })); s.position.y = 1; add(s, z - i * 2.2, lane, 'star', { w: 1 }); } }
 function spawnShell(z) { const s = shellMesh(); s.position.y = 0.9; add(s, z, Math.floor(Math.random() * 3), 'shell', { w: 1 }); }
-function spawnDest(kind, z) { const o = kind === 'kiosk' ? kiosk() : kidsCorner(); const ob = add(o, z, -1, 'dest', { which: kind }); o.position.x = 0; return ob; }
+function spawnDest(kind, z) { const o = kind === 'kiosk' ? kiosk() : kind === 'shop' ? shopDest() : kind === 'site' ? siteDest() : kind === 'cabin' ? cabinDest() : kind === 'camp' ? campDest() : kind === 'harbor' ? harborDest() : kidsCorner(); const ob = add(o, z, -1, 'dest', { which: kind }); o.position.x = 0; return ob; }
 
 // ---------- hurting & stage flow ----------
 function hurt(cost = 1) {
@@ -826,7 +976,7 @@ STAGE.run = {
     S.def.forks = S.def.forks || []; S.len = S.def.len * (1 + band() * 0.12); const n = S.def.forks.length;
     S.forkAt = S.def.forks.map((_, i) => (i + 1) * S.len / (n + 1)); S.fi = 0; S.fork = null; S.nextObs = 26; S.nextStar = 18;
     S.shellAt = S.def.shell ? S.len * (0.25 + Math.random() * 0.5) : -1;
-    speed = RUN_SPEED[band()];
+    speed = RUN_SPEED[band()] * (S.def.speedMul || 1);
   },
   update(S, dt) {
     const A = 52;
@@ -861,6 +1011,18 @@ STAGE.bridge = {
     if (b === 2) S.words = WORDS[2].filter(w => Array.from(w[0]).length <= 6).sort(() => Math.random() - 0.5).slice(0, 1);
     S.picks = S.words.reduce((n, w) => n + Math.min(gapCount(), Array.from(w[0]).length), 0);
     S.gapLen = S.picks * 1.3 + 0.8; S.phase = 'approach'; S.wi = 0; S.planks = 0; speed = RUN_SPEED[band()] * 0.8;
+    if (S.def.variant === 'gate') { S.words = [['مهرجان', '🎉', lang === 'en' ? 'The festival' : 'مهرجان'], ['الحروف', '🔤', lang === 'en' ? 'of letters' : 'الحروف']]; S.full = true; S.picks = 12; }
+    if (S.def.variant === 'tent' || S.def.variant === 'gate') {
+      const g = new THREE.Group(); let door;
+      if (S.def.variant === 'tent') { const t = glb('tent', 6.5, 'h'); door = new THREE.Group(); if (t) door.add(t); else door.add(tentBasic()); door.scale.y = 0.25; g.add(door); }
+      else { door = gateArch(); g.add(door); }
+      const panel = box(3.6, 0.9, 0.12, 0x1b2440, 0, S.def.variant === 'gate' ? 7.2 : 4.4, 0.4); g.add(panel);
+      S.canal = add(g, -60, -1, 'canal'); g.position.x = 0; S.stopZ = S.def.variant === 'gate' ? -9 : -8.5; S.door = door; S.doorKind = S.def.variant; S.gapLen = 6; return;
+    }
+    if (S.def.variant === 'door') { // a locked door: each right letter lights up on it
+      const g = new THREE.Group(); g.add(box(9.2, 5.5, 0.6, 0xd9dde6, 0, 2.75, 0)); const door = box(3.0, 3.8, 0.3, 0xff8a30, 0, 1.9, 0.4); g.add(door); g.userData.door = door;
+      const panel = box(3.6, 0.9, 0.12, 0x1b2440, 0, 4.4, 0.4); g.add(panel); S.canal = add(g, -60, -1, 'canal'); g.position.x = 0; S.stopZ = -7.5; S.door = door; S.doorKind = 'door'; S.panel = panel; S.gapLen = 6; return;
+    }
     // the canal with a broken bridge
     const g = new THREE.Group();
     const water = mesh(new THREE.PlaneGeometry(40, S.gapLen), new THREE.MeshToonMaterial({ color: 0x23a8d8, gradientMap: grad }), false); water.rotation.x = -Math.PI / 2; water.position.set(0, 0.05, -S.gapLen / 2); g.add(water);
@@ -870,13 +1032,13 @@ STAGE.bridge = {
     later(0.4, () => {});
   },
   update(S, dt) {
-    if (S.phase === 'approach') { setMeter(0, t('progress')); if (S.canal.z >= -1.6) { S.canal.z = -1.6; S.canal.o.position.z = -1.6; S.phase = 'puzzle'; speed = 0; newBridgeWord(S); } }
+    if (S.phase === 'approach') { setMeter(0, t('progress')); const stopZ = S.stopZ || -1.6; if (S.canal.z >= stopZ) { S.canal.z = stopZ; S.canal.o.position.z = stopZ; S.phase = 'puzzle'; speed = 0; newBridgeWord(S); } }
     else if (S.phase === 'puzzle') { setMeter(S.planks / S.picks, '🪵'); for (const ob of objs) if (ob.kind === 'tile') { ob.o.position.y = 1.7 + Math.sin(time * 2 + ob.lane) * 0.12; ob.o.rotation.y = Math.sin(time * 1.5 + ob.lane) * 0.25; } }
     else if (S.phase === 'cross') { setMeter(1, '🪵'); if (dist - S.crossFrom > S.gapLen + 14) stageDone(); }
   }
 };
 let wordNow = null, gaps = [], gi = 0, wordPos = 0;
-function gapCount() { const b = band(); return b === 0 ? 1 : b === 1 ? 2 : 99; }
+function gapCount() { if (S && S.full) return 99; const b = band(); return b === 0 ? 1 : b === 1 ? 2 : 99; }
 function pickGaps(w) {
   const L = Array.from(w), n = gapCount(); if (n >= L.length) return L.map((_, i) => i);
   const idx = L.map((_, i) => i).sort(() => Math.random() - 0.5).sort((a, b) => (TRICKY.includes(L[b]) ? 1 : 0) - (TRICKY.includes(L[a]) ? 1 : 0));
@@ -888,11 +1050,11 @@ function drawSpell() {
   const ch = Array.from(wordNow[0]);
   $('card').innerHTML = `<span class="tag">${spellTag()}</span><div class="clue">${wordNow[2]}<span class="emo">${wordNow[1]}</span></div><div class="slots">${ch.map((x, i) => { const g = gaps.indexOf(i); return g < 0 ? `<span class="slot given">${x}</span>` : g < gi ? `<span class="slot got">${x}</span>` : `<span class="slot${i === wordPos ? ' next' : ''}"></span>`; }).join('')}</div>`;
 }
-function newBridgeWord(S) { wordNow = S.words[S.wi]; gaps = pickGaps(wordNow[0]); gi = 0; wordPos = gaps[0]; drawSpell(); sayText(wordNow[2]); spawnTiles(); $('pickHint').textContent = t('pick'); $('pickHint').classList.remove('hidden'); }
+function newBridgeWord(S) { wordNow = S.words[S.wi]; gaps = pickGaps(wordNow[0]); gi = 0; wordPos = gaps[0]; drawSpell(); if (!S.full) sayText(wordNow[2]); spawnTiles(); $('pickHint').textContent = t('pick'); $('pickHint').classList.remove('hidden'); }
 function spawnTiles() {
   for (let i = objs.length - 1; i >= 0; i--) if (objs[i].kind === 'tile') { world.remove(objs[i].o); objs.splice(i, 1); }
   const target = Array.from(wordNow[0])[wordPos], opts = [target, ...distractors(target)].sort(() => Math.random() - 0.5);
-  opts.forEach((c, k) => { const m = letterTile(c, k + wordPos); m.position.y = 1.7; const ob = add(m, -4.6, k, 'tile', { c, good: c === target }); ob.fixed = true; });
+  opts.forEach((c, k) => { const m = letterTile(c, k + wordPos); m.position.y = 1.7; const ob = add(m, S.door ? -4.2 : -4.6, k, 'tile', { c, good: c === target }); ob.fixed = true; });
 }
 function letterTile(ch, i) { const m = new THREE.Mesh(new THREE.BoxGeometry(1.7, 1.7, 0.3), [M(0x1b2440), M(0x1b2440), M(0x1b2440), M(0x1b2440), new THREE.MeshBasicMaterial({ map: tileTex(ch, LCOL[i % 6]) }), M(0x1b2440)]); m.castShadow = true; return m; }
 function pickTile(lane) {
@@ -902,14 +1064,14 @@ function pickTile(lane) {
   if (ob.good) {
     S.busy = true; sfx.good(); score += 2; drawScore();
     // the tile flies down and becomes a plank
-    const from = ob.o.position.clone(), k = S.planks, to = new THREE.Vector3(0, 0.2, S.canal.z - 0.4 - k * 1.3 - 0.65);
+    const from = ob.o.position.clone(), k = S.planks, to = S.door ? new THREE.Vector3(S.doorKind === 'gate' ? 4.1 - k * 0.74 : -1.4 + (k % 9) * 0.35, S.doorKind === 'gate' ? 6.0 : 4.4, S.canal.z + 0.5) : new THREE.Vector3(0, 0.2, S.canal.z - 0.4 - k * 1.3 - 0.65);
     tween(0.45, u => { ob.o.position.lerpVectors(from, to, u); ob.o.rotation.x = -u * Math.PI / 2; ob.o.scale.setScalar(1 - u * 0.6); }, () => {
       world.remove(ob.o); objs.splice(objs.indexOf(ob), 1);
-      const pl = box(7.6, 0.18, 1.2, 0xb07a45, 0, 0.22, -0.4 - k * 1.3 - 0.65); S.canal.o.add(pl); S.planks++; sfx.plank(); burst(new THREE.Vector3(0, -0.6, to.z), 8, 0xb07a45);
+      if (S.door) { const lt = box(0.32, 0.32, 0.05, 0x2fd39a, -1.4 + (k % 9) * 0.35, S.doorKind === 'gate' ? 7.2 : 4.4, 0.5); if (S.doorKind === 'tent') S.door.scale.y = 0.25 + 0.75 * (k + 1) / S.picks; if (S.doorKind === 'gate') { const lt2 = mesh(new THREE.BoxGeometry(0.78, 0.9, 0.1), new THREE.MeshBasicMaterial({ map: tileTex(Array.from(wordNow[0])[wordPos], LCOL[k % 6]) })); lt2.position.set(4.1 - k * 0.74, 6.0, 0.56); S.canal.o.add(lt2); } lt.material = new THREE.MeshBasicMaterial({ color: 0x2fd39a }); S.canal.o.add(lt); S.planks++; sfx.good(); } else { const pl = box(7.6, 0.18, 1.2, 0xb07a45, 0, 0.22, -0.4 - k * 1.3 - 0.65); S.canal.o.add(pl); S.planks++; sfx.plank(); } burst(new THREE.Vector3(0, -0.6, to.z), 8, 0xb07a45);
       gi++; wordPos = gi < gaps.length ? gaps[gi] : -1;
-      if (gi >= gaps.length) { sfx.word(); toast(wordNow[0], 1.1); sayText(wordNow[0]); S.wi++;
+      if (gi >= gaps.length) { sfx.word(); toast(wordNow[0], 1.1); if (!S.full) sayText(wordNow[0]); S.wi++;
         if (S.wi < S.words.length) { later(1.3, () => { S.busy = false; newBridgeWord(S); }); for (let i = objs.length - 1; i >= 0; i--) if (objs[i].kind === 'tile') { world.remove(objs[i].o); objs.splice(i, 1); } }
-        else { for (let i = objs.length - 1; i >= 0; i--) if (objs[i].kind === 'tile') { world.remove(objs[i].o); objs.splice(i, 1); } wordNow = null; drawSpell(); $('pickHint').classList.add('hidden'); later(1.2, () => { sayLine('bridge_ok'); toast('🌉', 1); S.phase = 'cross'; S.crossFrom = dist; speed = RUN_SPEED[band()]; S.busy = false; }); }
+        else { for (let i = objs.length - 1; i >= 0; i--) if (objs[i].kind === 'tile') { world.remove(objs[i].o); objs.splice(i, 1); } wordNow = null; drawSpell(); $('pickHint').classList.add('hidden'); later(1.2, () => { if (S.doorKind === 'door') { const d = S.door, y0 = d.position.y; tween(1.2, u => { d.position.y = y0 + u * 3.6; }); sfx.transform(); } if (S.doorKind === 'gate') { sfx.win(); for (let i = 0; i < 6; i++) later(0.3 * i, () => burst(new THREE.Vector3((Math.random() - 0.5) * 8, 5 + Math.random() * 3, S.canal.z), 30)); } sayLine(S.def.doorLine || (S.door ? 'door_ok' : 'bridge_ok')); toast(S.doorKind === 'gate' ? '🎉' : S.doorKind === 'tent' ? '⛺' : S.door ? '🔓' : '🌉', 1.2); if (S.doorKind && S.doorKind !== 'door') { later(3.5, () => stageDone()); S.busy = false; return; } S.phase = 'cross'; S.crossFrom = dist; speed = RUN_SPEED[band()]; S.busy = false; }); }
       } else { S.busy = false; spawnTiles(); }
       drawSpell();
     });
@@ -923,23 +1085,26 @@ function tween(d, f, done) { tweens.push({ t: 0, d, f, done }); }
 // ---- carry something precious ----
 STAGE.carry = {
   init(S) {
-    STAGE.run.init(S); S.def.forks.length; S.melt = 1; S.T = S.def.time[band()]; S.nextGull = 7; S.warned = false; S.gullSaid = false;
-    S.item = iceCream(0.75); S.item.position.set(0, 2.05, 0.1); hero.add(S.item);
+    STAGE.run.init(S); S.melt = 1; S.kit = S.def.item === 'kitten' || S.def.item === 'babycamel'; S.T = S.kit ? 1e9 : S.def.time[band()]; S.nextGull = 7; S.warned = false; S.gullSaid = false;
+    S.camel = S.def.item === 'babycamel'; if (S.camel) S.kit = true;
+    if (S.camel) { S.item = babyCamel(); S.item.position.set(0, 0, 2.6); scene.add(S.item); S.fx = 0; } else { S.item = S.kit ? kitten() : iceCream(0.75); S.item.position.set(0, S.kit ? 1.95 : 2.05, 0.1); hero.add(S.item); } if (S.kit) speed = RUN_SPEED[band()] * 0.85;
   },
   update(S, dt) {
     const A = 52;
-    S.melt -= dt / S.T; setMeter(S.melt, '🍦', 'melt' + (S.melt < 0.3 ? ' low' : ''));
+    if (S.camel) { S.fx += (P.x - S.fx) * Math.min(1, dt * 3); S.item.position.x = S.fx; S.item.position.y = Math.abs(Math.sin(time * 7)) * 0.15; S.item.rotation.y = Math.PI + (P.x - S.fx) * 0.3; }
+    if (S.kit) { S.melt = Math.min(1, S.melt + dt * 0.02); setMeter(S.melt, S.camel ? '🐪' : '🐱', 'melt' + (S.melt < 0.35 ? ' low' : '')); S.item.rotation.y = Math.sin(time * 2) * 0.4; if (S.melt <= 0) { failStage(S.camel ? 'camel_fail' : 'cat_fail'); return; } }
+    else { S.melt -= dt / S.T; setMeter(S.melt, '🍦', 'melt' + (S.melt < 0.3 ? ' low' : ''));
     S.item.scale.y = 0.6 + S.melt * 0.4; S.item.rotation.z = Math.sin(time * 9) * 0.06;
     if (S.melt < 0.3 && !S.warned) { S.warned = true; sayLine('melt'); }
-    if (S.melt <= 0) { failStage('melted'); return; }
+    if (S.melt <= 0) { failStage('melted'); return; } }
     if (dist >= S.nextObs && dist < S.len - 30) { spawnObstacle(pick(S.def.obst), -A); S.nextObs += [17, 14, 12][band()] + Math.random() * 6; }
     if (dist >= S.nextStar && dist < S.len - 30) { spawnStars(-A - 6, Math.floor(Math.random() * 3), 4); S.nextStar += 45 + Math.random() * 30; }
     if (S.shellAt > 0 && dist >= S.shellAt) { spawnShell(-A - 3); S.shellAt = -1; }
     if (S.def.gulls && dist < S.len - 40) { S.nextGull -= dt; if (S.nextGull <= 0) { spawnGull(-40); S.nextGull = [8, 6.5, 5][band()] + Math.random() * 3; if (!S.gullSaid) { S.gullSaid = true; sayLine('gull'); } } }
     if (!S.destOb && dist >= S.len) S.destOb = spawnDest(S.def.dest, -A);
   },
-  onHurt() { if (S && S.melt) S.melt -= 0.08; },
-  exit(S) { if (S.item) hero.remove(S.item); }
+  onHurt() { if (!S || !S.melt) return; if (S.kit) { S.melt -= 0.34; sayLine(S.camel ? 'camel_scared' : 'cat_scared'); if (S.melt <= 0) { failStage(S.camel ? 'camel_fail' : 'cat_fail'); } } else S.melt -= 0.08; },
+  exit(S) { if (S.item) { if (S.camel) scene.remove(S.item); else hero.remove(S.item); } }
 };
 function spawnGull(z) {
   const g = gullMesh(0.7); const lane = P.lane; g.position.y = 9;
@@ -989,8 +1154,94 @@ function onDrop(ob) {
   if (ob.junk) { hurt(); if (!S.junkSaid) { S.junkSaid = true; sayLine('junk'); } return; }
   if (ob.good && !S.got.includes(ob.c)) {
     S.got.push(ob.c); score += 10; sfx.word(); burst(hero.position, 24); toast(ob.c, 1); sayLine('got_letter'); drawCatch(S); drawScore();
-    if (S.got.length >= S.need.length) { S.leaving = true; for (let i = objs.length - 1; i >= 0; i--) if (objs[i].kind === 'drop') { world.remove(objs[i].o); objs.splice(i, 1); } sfx.squawk(); later(1.6, () => sayLine('n1')); later(4.8, () => stageDone()); }
+    if (S.got.length >= S.need.length) { S.leaving = true; for (let i = objs.length - 1; i >= 0; i--) if (objs[i].kind === 'drop') { world.remove(objs[i].o); objs.splice(i, 1); } sfx.squawk(); later(1.6, () => sayLine(S.def.taunt || 'n1')); later(S.def.taunt === 'n3' ? 7.5 : 4.8, () => stageDone()); }
   } else if (!ob.good) { hurt(); sayLine('wrong_letter'); }
+}
+
+
+
+// ---- fly on the hero scooter between the towers ----
+STAGE.fly = {
+  init(S) { STAGE.run.init(S); S.nextObs = 22; P.fly = true; hero.userData.veh.visible = true; S.windSaid = false; speed = RUN_SPEED[band()] * 1.15; },
+  update(S, dt) {
+    const A = 52; setMeter(dist / S.len, '🛸');
+    if (dist >= S.nextObs && dist < S.len - 30) { const r = Math.random(); spawnObstacle(r < 0.4 ? 'pigeon' : r < 0.7 ? 'wind' : 'beam', -A); S.nextObs += [18, 15, 13][band()] + Math.random() * 6; }
+    if (dist >= S.nextStar && dist < S.len - 20) { spawnStars(-A - 6, Math.floor(Math.random() * 3), 6); S.nextStar += 26 + Math.random() * 16; }
+    if (S.shellAt > 0 && dist >= S.shellAt) { spawnShell(-A - 3); S.shellAt = -1; }
+    if (!S.destOb && dist >= S.len) S.destOb = spawnDest('cabin', -A);
+  },
+  exit(S) { P.fly = false; }
+};
+// ---- catch the rolling shopping ----
+STAGE.gather = {
+  init(S) { const b = band(); S.need = [8, 10, 12][b]; S.maxMiss = 5; S.got = 0; S.miss = 0; S.spawnT = 1.2; S.nextObs = 30; S.nextStar = 999; S.shellAt = S.def.shell ? 60 + Math.random() * 60 : -1; speed = RUN_SPEED[b] * 0.9; S.len = 99999; drawGather(S); },
+  update(S, dt) {
+    setMeter(S.got / S.need, S.def.items === 'camp' ? '🏮' : S.def.items === 'fish' ? '🐟' : '🍊');
+    S.spawnT -= dt;
+    if (S.spawnT <= 0 && S.got + objs.filter(o => o.kind === 'item').length < S.need + S.maxMiss) { S.spawnT = [1.7, 1.45, 1.2][band()] + Math.random() * 0.5; const busy = objs.filter(o => o.z < -40 && o.lane >= 0).map(o => o.lane); const lanes = [0, 1, 2].filter(l => !busy.includes(l)); const lane = pick(lanes.length ? lanes : [0, 1, 2]); add(S.def.items === 'camp' ? campItem() : S.def.items === 'fish' ? fishItem() : grocery(), -52, lane, 'item', { w: 1.0, roll: S.def.items === 'fish' ? 1.5 : 3 + band() }); }
+    if (dist >= S.nextObs) { spawnObstacle(pick(S.def.obst), -52); S.nextObs += [24, 20, 16][band()] + Math.random() * 8; }
+    if (S.shellAt > 0 && dist >= S.shellAt) { spawnShell(-55); S.shellAt = -1; }
+  }
+};
+function drawGather(S) { const ic = S.def.items === 'camp' ? '🏮' : S.def.items === 'fish' ? '🐟' : '🍊'; $('card').innerHTML = `<span class="tag">${lang === 'en' ? 'Caught' : girl() ? 'التقطتِ' : 'التقطتَ'}</span><div class="clue">${ic} ${num(S.got)} / ${num(S.need)} <span style="font-size:.7em;opacity:.75">· ${lang === 'en' ? 'lost' : 'ضاع'} ${num(S.miss)}/${num(S.maxMiss)}</span></div>`; }
+function onItem(ob, caught) {
+  if (caught) { S.got++; score += 2; sfx.good(); burst(hero.position, 8, 0xff9a1f); drawScore(); if (S.got % 3 === 0) praise(); }
+  else { S.miss++; sfx.bad(); if (S.miss > S.maxMiss) { drawGather(S); failStage(S.def.lost || 'too_many'); return; } }
+  drawGather(S);
+  if (S.got >= S.need) { for (let i = objs.length - 1; i >= 0; i--) if (objs[i].kind === 'item') { world.remove(objs[i].o); objs.splice(i, 1); } stageDone(); }
+}
+// ---- chase the runaway cart: answer grammar questions to catch up ----
+STAGE.quiz = {
+  init(S) { const b = band(); S.needQ = [3, 4, 4][b]; S.ok = 0; S.gapV = 1; S.qs = CHALLENGES[b].slice().sort(() => Math.random() - 0.5); S.qi = 0; S.q = null; S.nextQ = 1.5; S.nextObs = 20; speed = RUN_SPEED[b];
+    S.cart = S.def.chase === 'nawras' ? gullMesh(1.0, true) : cart(); S.cart.rotation.y = Math.PI; scene.add(S.cart); S.cartZ = -34; S.cart.position.set(0, 0, S.cartZ); S.len = 99999; },
+  update(S, dt) {
+    setMeter(S.ok / S.needQ, '🛒');
+    const targetZ = S.done ? -4.5 : -12 - S.gapV * 22; S.cartZ += (targetZ - S.cartZ) * Math.min(1, dt * 1.2); S.cart.position.z = S.cartZ; S.cart.position.x = Math.sin(time * 1.3) * 1.2; if (S.def.chase === 'nawras') { S.cart.position.y = 2.2 + Math.sin(time * 3) * 0.4; flap(S.cart, time, 14); } else S.cart.rotation.z = Math.sin(time * 9) * 0.03;
+    (S.cart.userData.wheels || []).forEach(w => w.rotation.x += dt * 10);
+    if (S.done) return;
+    if (!S.q) { S.nextQ -= dt; if (S.nextQ <= 0) newQuizGate(S); }
+    if (dist >= S.nextObs && S.q && S.q.z0 !== undefined) { S.nextObs += 999; }
+    if (dist >= S.nextObs) { spawnObstacle(pick(S.def.obst), -52); S.nextObs += 28 + Math.random() * 10; }
+  },
+  exit(S) { if (S.cart) scene.remove(S.cart); }
+};
+function newQuizGate(S) {
+  const c = S.qs[S.qi++ % S.qs.length]; S.q = c;
+  const opts = [c[2], c[3], c[4]].sort(() => Math.random() - 0.5), Z = -60;
+  opts.forEach((w, k) => add(signBoard(w, k), Z, k, 'board', { good: w === c[2], ans: c[2], w: 1.2 }));
+  $('card').innerHTML = `<span class="tag">${c[0]}</span><div class="clue">${c[1]}</div>`; sayText(c[1].replace('___', '...'));
+  S.nextObs = dist + 20;
+}
+function onBoard(ob) {
+  for (let i = objs.length - 1; i >= 0; i--) if (objs[i].kind === 'board') { world.remove(objs[i].o); objs.splice(i, 1); }
+  if (ob.good) { S.ok++; S.gapV = Math.max(0, 1 - S.ok / S.needQ); score += 5; sfx.word(); toast(t('yes'), 0.9); praise(); burst(hero.position, 18); }
+  else { chRun.mistakes++; S.gapV = Math.min(1.2, S.gapV + 0.15); sfx.bad(); toast(t('no') + '\n' + ob.ans, 1.4); sayLine(S.def.away || 'cart_away'); shake = 0.2; }
+  $('card').innerHTML = ''; drawScore(); S.q = null; S.nextQ = ob.good ? 1.2 : 2.6;
+  if (S.ok >= S.needQ) { S.done = true; later(1.6, () => { if (S.def.chase === 'nawras') sfx.squawk(); else sfx.hit(); burst(new THREE.Vector3(0, 0, -4), 26); stageDone(); }); }
+}
+// ---- the shopping list: read it, and run through only the right items ----
+STAGE.list = {
+  init(S) { const L = LISTS[band()]; S.need = L.need.slice(); S.decoy = L.decoy; S.got = []; S.rowAt = 30; S.nextObs = 18; S.shellAt = S.def.shell ? 80 + Math.random() * 60 : -1; speed = RUN_SPEED[band()] * 0.9; S.len = 99999; drawList(S); },
+  update(S, dt) {
+    setMeter(S.got.length / S.need.length, '📝');
+    if (!S.done && dist >= S.rowAt && !objs.some(o => o.kind === 'witem')) {
+      const left = S.need.filter(w => !S.got.includes(w)); const good = pick(left);
+      const ds = S.decoy.slice().sort(() => Math.random() - 0.5).slice(0, 2); const row = [good, ...ds].sort(() => Math.random() - 0.5);
+      row.forEach((w, k) => add(wordItem(w, k), -60, k, 'witem', { word: w, good: w === good, w: 1.2 }));
+      S.rowAt = dist + 34 + Math.random() * 10;
+    }
+    if (dist >= S.nextObs && !objs.some(o => o.kind === 'witem' && o.z < -30)) { spawnObstacle(pick(S.def.obst), -52); S.nextObs += 30 + Math.random() * 10; }
+    if (S.shellAt > 0 && dist >= S.shellAt) { spawnShell(-55); S.shellAt = -1; }
+    if (S.done && !S.destOb) S.destOb = spawnDest('shop', -52);
+  }
+};
+function drawList(S) { $('card').innerHTML = `<span class="tag">📝 ${lang === 'en' ? 'Shopping list' : 'قائمة المشتريات'}</span><div class="slots" style="gap:8px">${S.need.map(w => `<span class="slot${S.got.includes(w) ? ' got' : ''}" style="width:auto;padding:0 10px;font-size:22px">${S.got.includes(w) ? '✔ ' : ''}${w}</span>`).join('')}</div>`; }
+function onWordItem(ob) {
+  for (let i = objs.length - 1; i >= 0; i--) if (objs[i].kind === 'witem') { world.remove(objs[i].o); objs.splice(i, 1); }
+  if (ob.good) { S.got.push(ob.word); score += 5; sfx.word(); toast('✔ ' + ob.word, 1); praise(); burst(hero.position, 16); }
+  else { chRun.mistakes++; sfx.bad(); toast('✘ ' + ob.word, 1.1); sayLine('not_list'); shake = 0.2; }
+  drawList(S); drawScore();
+  if (S.got.length >= S.need.length) S.done = true;
 }
 
 // ---------- the stage lifecycle ----------
@@ -1005,8 +1256,8 @@ function startStage(i, retry) {
   if (S && STAGE[S.type].exit) STAGE[S.type].exit(S);
   stI = i; const def = CH.stages[i];
   clearObjs(); wordNow = null; $('card').innerHTML = ''; $('pickHint').classList.add('hidden');
-  if (hero) scene.remove(hero); hero = makeHero(CHILD.gender, 'car'); scene.add(hero);
-  Object.assign(P, { lane: 1, x: 0, y: 0, vy: 0, duck: 0, run: 0, invuln: 0, stumble: 0 });
+  if (hero) scene.remove(hero); hero = makeHero(CHILD.gender, def.type === 'fly' ? 'scooter' : 'car'); scene.add(hero);
+  Object.assign(P, { lane: 1, x: 0, y: 0, vy: 0, duck: 0, run: 0, invuln: 0, stumble: 0, fly: false });
   dist = 0; maxHearts = 5; hearts = maxHearts;
   S = { type: def.type, def }; STAGE[def.type].init(S);
   const st0 = speed; speed = 0;
@@ -1041,6 +1292,13 @@ function chapterDone() {
     $('endMap').textContent = t('toMap'); $('endMap').onclick = openMap;
     const nx = CHAPTERS[chI + 1]; $('endNext').textContent = nx && !nx.soon ? t('nextCh') : t('toMap');
     $('endNext').onclick = () => { if (nx && !nx.soon) startChapter(chI + 1); else openMap(); };
+    if (CH.finale) { // the certificate
+      const tot = Object.values(save.ch).reduce((a, c) => [a[0] + (c.stars || 0), a[1] + (c.shells || 0)], [0, 0]);
+      $('endTitle').innerHTML = `<div style="font-size:54px;line-height:1">🏅</div>${lang === 'en' ? 'Word Hero Certificate' : girl() ? 'شهادةُ بطلةِ الكلمات' : 'شهادةُ بطلِ الكلمات'}<div style="font-size:clamp(30px,8vw,46px);color:var(--berry);-webkit-text-stroke:1px var(--line)">${kidName()}</div><div style="font-size:15px;font-weight:600">${lang === 'en' ? 'saved the Letter Festival and brought back all 12 letters!' : girl() ? 'أنقذتِ مهرجانَ الحروف وأعادتِ الحروفَ الاثنَي عشر!' : 'أنقذَ مهرجانَ الحروف وأعادَ الحروفَ الاثنَي عشر!'}</div>`;
+      $('endStars').innerHTML = '<span class="on">★</span><span class="on">★</span><span class="on">★</span>';
+      $('endStats').innerHTML = `<span class="pill">★ ${num(tot[0])}</span><span class="pill">🐚 ${num(tot[1])}</span>`;
+      $('endNext').textContent = lang === 'en' ? '🖨 Print certificate' : '🖨 اطبع الشهادة'; $('endNext').onclick = () => window.print();
+    }
   });
 }
 
@@ -1137,11 +1395,11 @@ function heroCardTick(dt) { if (!cardArt || !cardR || state !== 'title') return;
 // ---------- input ----------
 function move(d) { if (state !== 'play') return; if (S && S.type === 'bridge' && S.phase === 'puzzle') { P.lane = Math.max(0, Math.min(2, P.lane + d)); return; } P.lane = Math.max(0, Math.min(2, P.lane + d)); }
 function jump() {
-  if (state !== 'play') return;
+  if (state !== 'play' || P.fly) return;
   if (S && S.type === 'bridge' && S.phase === 'puzzle') { pickTile(P.lane); return; }
   if (P.y > 0.05) return; P.duck = 0; P.vy = S && S.type === 'carry' ? 8.0 : 9.5; sfx.jump();
 }
-function duck() { if (state !== 'play' || (S && S.type === 'bridge' && S.phase === 'puzzle')) return; P.duck = 0.75; if (P.y > 0.05) P.vy = Math.min(P.vy, -12); }
+function duck() { if (state !== 'play' || P.fly || (S && S.type === 'bridge' && S.phase === 'puzzle')) return; P.duck = 0.75; if (P.y > 0.05) P.vy = Math.min(P.vy, -12); }
 addEventListener('keydown', e => {
   if (e.repeat) return; const k = e.key;
   if (state === 'play') {
@@ -1196,8 +1454,11 @@ function update(dt) {
     if (ob.fixed) continue;
     const prevZ = ob.z; ob.z += dz + (ob.roll ? ob.roll * dt : 0); ob.o.position.z = ob.z;
     if (ob.vx) { ob.x += ob.vx * dt; if (ob.x > 2.9 || ob.x < -2.9) ob.vx *= -1; ob.o.position.x = ob.x; ob.o.rotation.y = Math.sin(time * 10) * 0.15; }
-    if (ob.roll) ob.o.userData.spin.rotation.x -= dt * 8;
+    if (ob.roll && ob.o.userData.spin) ob.o.userData.spin.rotation.x -= dt * 8;
+    if (ob.o.userData.hop) { ob.o.userData.hop.position.y = Math.abs(Math.sin(time * 6 + ob.z)) * 1.2; ob.o.userData.hop.rotation.z = Math.sin(time * 12 + ob.z) * 0.5; }
     if (ob.kind === 'star') ob.o.rotation.y += dt * 4;
+    if (ob.kind === 'wind') ob.o.rotation.z += dt * 6;
+    if (ob.o.userData.bird) flap(ob.o.userData.bird, time + ob.z, 14);
     if (ob.kind === 'shell') { ob.o.rotation.y += dt * 2; ob.o.userData.halo.rotation.z += dt; }
     if (ob.kind === 'water') { const on = Math.sin(time * 2.2 + ob.phase) > -0.2; ob.on = on; ob.o.userData.water.visible = on; ob.o.userData.water.scale.y = on ? 1 + Math.sin(time * 14) * 0.08 : 0.01; }
     if (ob.kind === 'gull') { const u = Math.max(0, Math.min(1, (ob.z + 16) / 16)); ob.g.position.y = 9 - u * 7.8; ob.g.position.z = -2 + u * 2; ob.g.rotation.x = u * 0.6; flap(ob.g, time, 16); ob.shadow.scale.setScalar(0.5 + u); ob.shadow.material.opacity = 0.15 + u * 0.25; }
@@ -1214,14 +1475,22 @@ function update(dt) {
       else if (ob.kind === 'block' && inLane) hurt();
       else if (ob.kind === 'water' && inLane && ob.on && P.y < 1.2) hurt();
       else if (ob.kind === 'gull' && inLane && P.duck <= 0) { hurt(); sfx.squawk(); }
+      else if (ob.kind === 'beam' && ob.lanes.includes(nearLane(px))) hurt();
+      else if (ob.kind === 'wind' && inLane) { const d = P.lane === 0 ? 1 : P.lane === 2 ? -1 : (Math.random() < 0.5 ? -1 : 1); P.lane += d; shake = 0.25; toast('💨', 0.7); if (!S.windSaid) { S.windSaid = true; sayLine('wind'); } }
       else if (ob.kind === 'sign' && nearLane(px) === ob.lane) { STAGE.run.onSign(S, ob); continue; }
       else if (ob.kind === 'star' && inLane && P.y < 2.2) { score += 1; drawScore(); sfx.star(); world.remove(ob.o); objs.splice(objs.indexOf(ob), 1); continue; }
       else if (ob.kind === 'shell' && inLane && P.y < 2.4) { chRun.shells++; score += 10; drawScore(); sfx.shell(); toast(t('shell'), 1.1); burst(hero.position, 20, 0xffd23f); world.remove(ob.o); objs.splice(objs.indexOf(ob), 1); continue; }
       else if (ob.kind === 'drop' && inLane && P.y < 2.6) { world.remove(ob.o); objs.splice(objs.indexOf(ob), 1); onDrop(ob); continue; }
+      else if (ob.kind === 'item' && inLane && P.y < 2) { world.remove(ob.o); objs.splice(objs.indexOf(ob), 1); onItem(ob, true); continue; }
+      else if (ob.kind === 'board' && nearLane(px) === ob.lane) { onBoard(ob); continue; }
+      else if (ob.kind === 'witem' && nearLane(px) === ob.lane) { onWordItem(ob); continue; }
     }
     if (ob.kind === 'dest' && ob.z > -6 && !ob.reached) { ob.reached = true; speed = 0; stageDone(); }
     if (ob.kind === 'canal') continue;
     if (ob.kind === 'sign' && ob.z > 3 && objs.includes(ob)) { STAGE.run.onSign(S, { good: false }); continue; }
+    if (ob.kind === 'item' && ob.z > 2.5 && objs.includes(ob)) { world.remove(ob.o); objs.splice(objs.indexOf(ob), 1); onItem(ob, false); continue; }
+    if (ob.kind === 'board' && ob.z > 3 && objs.includes(ob)) { onBoard({ good: false, ans: S.q ? S.q[2] : '' }); continue; }
+    if (ob.kind === 'witem' && ob.z > 3 && objs.includes(ob)) { for (let i = objs.length - 1; i >= 0; i--) if (objs[i].kind === 'witem') { world.remove(objs[i].o); objs.splice(i, 1); } continue; }
     if (ob.z > 14 && objs.includes(ob)) { world.remove(ob.o); objs.splice(objs.indexOf(ob), 1); }
   }
 }
@@ -1234,7 +1503,7 @@ function visuals(dt) {
   const u = hero.userData;
   hero.position.set(P.x, P.y, 0);
   hero.rotation.y = Math.PI + (LANES[P.lane] - P.x) * -0.12;
-  u.bot.visible = true; u.veh.visible = false;
+  u.bot.visible = !P.fly; u.veh.visible = !!P.fly; if (P.fly) { u.veh.scale.setScalar(1); u.veh.position.y = 1.0 + Math.sin(time * 3) * 0.15; u.veh.traverse(o => { if (o.userData.pad) o.scale.y = 0.08 + Math.abs(Math.sin(time * 18)) * 0.05; }); }
   const ducking = P.duck > 0;
   u.bot.scale.set(1, ducking ? 0.55 : 1, 1); u.bot.rotation.x = ducking ? 0.35 : 0;
   const moving = state === 'play' && speed > 0.1 || state === 'title';
@@ -1269,8 +1538,8 @@ function frame(now) {
 }
 drawTitle();
 loadArt(
-  { hero: CHILD.runModel || 'child-run.gltf.json', palm: 'palm.gltf.json', shop: 'shop.gltf.json', stall: 'stall.gltf.json', camel: 'camel.gltf.json', tent: 'tent.gltf.json', nawras: 'nawras.gltf.json' },
-  { bg0: 'bg-wh-souq.jpg', bg1: 'bg-wh-corniche.jpg', bg2: 'bg-wh-desert.jpg', towers: 'kuwait-towers.png' }
+  { hero: CHILD.runModel || 'child-run.gltf.json', palm: 'palm.gltf.json', shop: 'shop.gltf.json', stall: 'stall.gltf.json', camel: 'camel.gltf.json', tent: 'tent.gltf.json', nawras: 'nawras.gltf.json', uncle: 'npc-uncle.gltf.json', kidb: 'npc-kidb.gltf.json', kidg: 'npc-kidg.gltf.json', granny: 'npc-granny.gltf.json', scooter: 'scooter.gltf.json', fisher: 'npc-fisher.gltf.json', boat: 'boat.gltf.json' },
+  { bg0: 'bg-wh-souq.jpg', bg1: 'bg-wh-corniche.jpg', bg2: 'bg-wh-desert.jpg', bg3: 'bg-wh-corniche.jpg', towers: 'kuwait-towers.png' }
 ).then(() => { if (state === 'title' || state === 'map') { buildWorld(1); scene.remove(hero); hero = makeHero(CHILD.gender, 'car'); scene.add(hero); } heroCard(); window.__artReady = true; });
 document.fonts && document.fonts.ready.then(() => { for (const k in texCache) delete texCache[k]; });
 requestAnimationFrame(frame);
