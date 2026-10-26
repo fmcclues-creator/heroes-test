@@ -120,7 +120,7 @@ h2{margin:4px 0 6px;font-size:24px}
 .node .st{position:absolute;bottom:100%;left:50%;transform:translateX(-50%);font-size:12px;color:#d79a00;-webkit-text-stroke:1px var(--line);letter-spacing:-1px;white-space:nowrap}
 #chCard{margin-top:10px;display:flex;gap:12px;align-items:center;text-align:start;background:#fff;border:3px solid var(--line);border-radius:20px;padding:10px 12px;box-shadow:0 4px 0 var(--line)}
 #chCard .tx{flex:1}#chCard .tx b{font-size:20px;display:block}#chCard .tx small{font-size:14px;display:block;line-height:1.4}
-#chCard .go{width:auto;padding:4px 22px;font-size:22px}
+#chCard .go{width:auto;padding:4px 22px;font-size:22px}#chCard .gos{display:flex;flex-direction:column;gap:6px;align-items:stretch}#chCard .go2{background:#fff;border:2px solid var(--line);border-radius:14px;font:inherit;font-size:14px;font-weight:700;padding:2px 10px;cursor:pointer}#chCard #chRes{font-size:17px;padding:4px 14px}
 .mapTop{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px}
 .mapTop h2{margin:0}
 
@@ -254,7 +254,7 @@ const T = {
     title: 'أبطال الكلمات', tag: 'نورس، طائرُ النّورسِ المشاغب، خطفَ حروفَ مهرجانِ الحروف! اركضْ في الكويت، واقرأْ، وتهجَّ، وأعِدِ الحروف.', tagG: 'نورس، طائرُ النّورسِ المشاغب، خطفَ حروفَ مهرجانِ الحروف! اركضي في الكويت، واقرئي، وتهجَّي، وأعيدي الحروف.',
     me: 'بطل القصة', meG: 'بطلة القصة', age: 'كم عمرك؟', start: 'ابدأ المغامرة', startG: 'ابدئي المغامرة', cont: 'تابع المغامرة', contG: 'تابعي المغامرة',
     howto: '<b>تحرّك</b> الأسهم يمين ويسار أو اسحب<br><b>اقفز</b> السهم فوق أو زر ⤒<br><b>انحنِ</b> السهم تحت أو زر ⤓',
-    map: 'خريطة المغامرة', gate: 'بوّابة المهرجان', play: 'العب', replay: 'العب مجددًا', soon: 'قريبًا', locked: 'مقفول',
+    map: 'خريطة المغامرة', gate: 'بوّابة المهرجان', play: 'العب', replay: 'العب مجددًا', resume2: 'تابع من المرحلة', resume2G: 'تابعي من المرحلة', fromStart: 'من البداية', soon: 'قريبًا', locked: 'مقفول',
     chapter: 'الفصل', stage: 'المرحلة', of: 'من', go: 'يلا!', skip: 'تخطَّ ⏭', next: '◀',
     pause: 'استراحة', resume: 'كمّل', restart: 'أعد المرحلة', quit: 'الخريطة',
     chDone: 'أنهيتَ الفصل!', chDoneG: 'أنهيتِ الفصل!', mistakes: 'أخطاء', shells: 'أصداف ذهبية', toMap: 'الخريطة', nextCh: 'الفصل التالي',
@@ -266,7 +266,7 @@ const T = {
     title: 'Word Heroes', tag: 'Nawras the cheeky seagull stole the letters of the Letter Festival! Run across Kuwait, read, spell and win the letters back.', tagG: 'Nawras the cheeky seagull stole the letters of the Letter Festival! Run across Kuwait, read, spell and win the letters back.',
     me: 'Starring', meG: 'Starring', age: 'How old are you?', start: 'Start the adventure', startG: 'Start the adventure', cont: 'Continue', contG: 'Continue',
     howto: '<b>Move</b> Left/Right arrows or swipe<br><b>Jump</b> Up arrow or ⤒<br><b>Duck</b> Down arrow or ⤓',
-    map: 'Adventure map', gate: 'The festival gate', play: 'Play', replay: 'Play again', soon: 'Coming soon', locked: 'Locked',
+    map: 'Adventure map', gate: 'The festival gate', play: 'Play', replay: 'Play again', resume2: 'Continue at stage', fromStart: 'From the start', soon: 'Coming soon', locked: 'Locked',
     chapter: 'Chapter', stage: 'Stage', of: 'of', go: "Let's go!", skip: 'Skip ⏭', next: '▶',
     pause: 'Paused', resume: 'Resume', restart: 'Restart stage', quit: 'Map',
     chDone: 'Chapter complete!', chDoneG: 'Chapter complete!', mistakes: 'Mistakes', shells: 'Golden shells', toMap: 'Map', nextCh: 'Next chapter',
@@ -420,7 +420,7 @@ sfx.splash = () => { beep(500, 0.25, 'sine', 0.12, -380); };
 sfx.squawk = () => { beep(900, 0.12, 'sawtooth', 0.08, 500); setTimeout(() => beep(1100, 0.1, 'sawtooth', 0.07, -300), 120); };
 
 // ---------- voice: recorded clips. voice-wh.json = words & clues; voice-wh2.json = story lines ----------
-let VOICE = null, vBuf = {}, vSrc = null, vQueue = [], vMiss = [];
+let VOICE = null, vBuf = {}, vSrc = null, vQueue = [], vMiss = [], vTok = 0;
 Promise.all(['assets/voice-wh.json', 'assets/voice-wh2.json'].map(f => fetch(f).then(r => r.ok ? r.json() : {}).catch(() => ({})))).then(([a, b]) => { VOICE = Object.assign({}, a, b); });
 function vCtx() { if (!actx) { try { actx = new (window.AudioContext || window.webkitAudioContext)(); } catch (_) {} } if (actx && actx.state === 'suspended') actx.resume(); return actx; }
 async function vDecode(k) {
@@ -428,9 +428,9 @@ async function vDecode(k) {
   const bin = atob(b64.replace(/^data:[^,]+,/, '')), u8 = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) u8[i] = bin.charCodeAt(i);
   vBuf[k] = await new Promise((res, rej) => c.decodeAudioData(u8.buffer, res, rej)).catch(() => null); return vBuf[k];
 }
-function vStop() { vQueue = []; if (vSrc) { try { vSrc.onended = null; vSrc.stop(); } catch (_) {} const cb = vSrc.__cb; vSrc = null; } try { window.speechSynthesis && speechSynthesis.cancel(); } catch (_) {} }
-async function vPlay(k, cb) {
-  const buf = await vDecode(k); if (!buf) { if (cb) setTimeout(cb, 1200); vNext(); return false; }
+function vStop() { vTok++; vQueue = []; if (vSrc) { try { vSrc.onended = null; vSrc.stop(); } catch (_) {} const cb = vSrc.__cb; vSrc = null; } try { window.speechSynthesis && speechSynthesis.cancel(); } catch (_) {} }
+async function vPlay(k, cb, tok = vTok) {
+  const buf = await vDecode(k); if (tok !== vTok) return false; if (!buf) { if (cb) setTimeout(cb, 1200); vNext(); return false; }
   const c = vCtx(), s = c.createBufferSource(); s.buffer = buf; s.connect(c.destination);
   if (vSrc) { try { vSrc.onended = null; vSrc.stop(); } catch (_) {} }
   vSrc = s; s.onended = () => { if (vSrc === s) { vSrc = null; if (cb) cb(); vNext(); } }; s.start(); return true;
@@ -445,21 +445,21 @@ function sayLine(id, queued, cb) {
   if (lang === 'en') { enSpeak(LINES[k][1], cb); return; }
   if (VOICE && !VOICE[k]) vMiss.push(k);
   if (queued && (vSrc || vQueue.length)) { vQueue.push({ k, cb }); return; }
-  vQueue = []; vPlay(k, cb);
+  vQueue = []; vTok++; vPlay(k, cb);
 }
 // a clip keyed by its text (spelling words and clues)
 function sayText(text, queued) {
   if (!text || lang === 'en') return; const k = String(text).trim();
   if (!(VOICE && VOICE[k])) { if (VOICE) vMiss.push(k); return; }
   if (queued && (vSrc || vQueue.length)) { vQueue.push({ k }); return; }
-  vQueue = []; vPlay(k);
+  vQueue = []; vTok++; vPlay(k);
 }
 function ev(name, queued) {
   if (lang === 'en') return; let k = 'ev_' + name;
   if (VOICE && !VOICE[k]) k = 'ev_' + name + (girl() ? '_g' : '_b');
   if (!VOICE || !VOICE[k]) return;
   if (queued && (vSrc || vQueue.length)) { vQueue.push({ k }); return; }
-  vQueue = []; vPlay(k);
+  vQueue = []; vTok++; vPlay(k);
 }
 function praise(q) { ev(['great1', 'great2', 'right', 'good'][Math.floor(Math.random() * 4)], q); }
 
@@ -1245,16 +1245,18 @@ function onWordItem(ob) {
 }
 
 // ---------- the stage lifecycle ----------
-function startChapter(i, skipIntro) {
+function startChapter(i, skipIntro, resume) {
   chI = i; CH = CHAPTERS[i]; chRun = { mistakes: 0, shells: 0, score: 0 }; score = 0;
+  if (resume) { chRun.mistakes = resume.m || 0; chRun.shells = resume.h || 0; score = resume.p || 0; }
   buildWorld(CH.theme);
-  const go = () => startStage(0);
+  const go = () => startStage(resume ? resume.s : 0);
   if (skipIntro) go(); else storyShow(save.intro ? CH.intro : INTRO.concat(CH.intro), () => { save.intro = true; persist(); go(); });
 }
 function startStage(i, retry) {
   runId++; timers = []; tweens.length = 0;
   if (S && STAGE[S.type].exit) STAGE[S.type].exit(S);
   stI = i; const def = CH.stages[i];
+  if (!retry) { save.cur = { c: chI, s: i, m: chRun.mistakes, h: chRun.shells, p: score }; persist(); }
   clearObjs(); wordNow = null; $('card').innerHTML = ''; $('pickHint').classList.add('hidden');
   if (hero) scene.remove(hero); hero = makeHero(CHILD.gender, def.type === 'fly' ? 'scooter' : 'car'); scene.add(hero);
   Object.assign(P, { lane: 1, x: 0, y: 0, vy: 0, duck: 0, run: 0, invuln: 0, stumble: 0, fly: false });
@@ -1273,15 +1275,15 @@ function stageDone() {
   if (state !== 'play') return; state = 'stagedone'; runId++; timers = [];
   if (STAGE[S.type].exit) STAGE[S.type].exit(S);
   sfx.win(); $('pickHint').classList.add('hidden');
-  const next = () => { if (stI + 1 < CH.stages.length) startStage(stI + 1); else chapterDone(); };
-  const done = S.def.done; if (done) { sayLine(done, false, () => later2(0.5, next)); toast('✔', 1.2); }
+  let went = false; const next = () => { if (went) return; went = true; if (stI + 1 < CH.stages.length) startStage(stI + 1); else chapterDone(); };
+  const done = S.def.done; if (done) { sayLine(done, false, () => later2(0.5, next)); toast('✔', 1.2); later2(9, next); }
   else { toast('✔', 1.2); later2(1.6, next); }
 }
 function chapterDone() {
   const mistakes = chRun.mistakes, stars = mistakes <= 2 ? 3 : mistakes <= 6 ? 2 : 1;
   const prev = save.ch[chI] || { stars: 0, shells: 0 };
   const fresh = !save.ch[chI];
-  save.ch[chI] = { stars: Math.max(prev.stars, stars), shells: Math.max(prev.shells, chRun.shells) }; persist();
+  save.ch[chI] = { stars: Math.max(prev.stars, stars), shells: Math.max(prev.shells, chRun.shells) }; delete save.cur; persist();
   $('hud').classList.add('hidden'); $('touch').classList.add('hidden');
   storyShow(CH.outro, () => {
     state = 'end'; showOnly('end'); sayLine('chapter_done');
@@ -1340,14 +1342,15 @@ function openMap() {
     b.innerHTML = (c.finale ? '🎉' : num(i + 1)) + `<small>${c.name[lang === 'en' ? 1 : 0]}</small>` + (done ? `<span class="st">${'★'.repeat(save.ch[i].stars)}</span>` : '');
     b.onclick = () => chCard(i); wrap.appendChild(b);
   });
-  chCard(Math.max(0, nextI < 0 ? 0 : nextI));
+  chCard(save.cur && CHAPTERS[save.cur.c] ? save.cur.c : Math.max(0, nextI < 0 ? 0 : nextI));
 }
 const UNLOCK = /[?&]all\b/.test(location.search); // ?all → every chapter open (for testing)
 function chCard(i) {
-  const c = CHAPTERS[i], done = !!save.ch[i], nextI = CHAPTERS.findIndex((_, k) => !save.ch[k]), open = done || i === nextI || UNLOCK;
+  const c = CHAPTERS[i], cur = save.cur && save.cur.c === i && save.cur.s > 0 && c.stages && save.cur.s < c.stages.length ? save.cur : null, done = !!save.ch[i], nextI = CHAPTERS.findIndex((_, k) => !save.ch[k]), open = done || i === nextI || UNLOCK;
   const sub = c.soon ? t('soon') : !open ? '🔒 ' + t('locked') : c.stages.map(s => s.icon + ' ' + s.title[lang === 'en' ? 1 : 0]).join(' · ');
-  $('chCard').innerHTML = `<div style="font-size:40px">${c.finale ? '🎉' : c.stages ? c.stages[0].icon : '🗺️'}</div><div class="tx"><b>${c.finale ? '' : t('chapter') + ' ' + num(i + 1) + ': '}${c.name[lang === 'en' ? 1 : 0]}</b><small>${sub}</small></div>` + (open && !c.soon ? `<button class="go" id="chGo">${done ? t('replay') : t('play')}</button>` : '');
-  if (open && !c.soon) $('chGo').onclick = () => { vCtx(); musStart(); startChapter(i); };
+  $('chCard').innerHTML = `<div style="font-size:40px">${c.finale ? '🎉' : c.stages ? c.stages[0].icon : '🗺️'}</div><div class="tx"><b>${c.finale ? '' : t('chapter') + ' ' + num(i + 1) + ': '}${c.name[lang === 'en' ? 1 : 0]}</b><small>${sub}</small></div>` + (open && !c.soon ? `<div class="gos">${cur ? `<button class="go" id="chRes">${t('resume2')} ${num(cur.s + 1)}</button><button class="go2" id="chGo">${t('fromStart')}</button>` : `<button class="go" id="chGo">${done ? t('replay') : t('play')}</button>`}</div>` : '');
+  if (open && !c.soon) $('chGo').onclick = () => { vCtx(); musStart(); delete save.cur; persist(); startChapter(i); };
+  if (open && cur) $('chRes').onclick = () => { vCtx(); musStart(); startChapter(i, true, cur); };
 }
 function drawTitle() {
   document.documentElement.lang = lang; document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
@@ -1513,16 +1516,19 @@ function visuals(dt) {
   if (!u.mixer && moving) { P.run += dt * Math.max(speed, 6) * 0.9; const s = Math.sin(P.run), air = P.y > 0.05; u.legs[0].rotation.x = air ? -0.7 : s * 0.9; u.legs[1].rotation.x = air ? 0.4 : -s * 0.9; u.arms[0].rotation.x = air ? -2.4 : -s * 0.8; u.arms[1].rotation.x = air ? -2.4 : s * 0.8; }
   hero.visible = !(P.invuln > 0 && Math.floor(time * 12) % 2 === 0);
   const bridgeLook = S && S.type === 'bridge' && S.phase === 'puzzle';
-  const cx = P.x * 0.55, cy = bridgeLook ? 3.6 : 4.3 + P.y * 0.25, cz = bridgeLook ? 6.2 : 7.6;
+  const cx = P.x * (0.55 - 0.4 * narrow), cy = bridgeLook ? 3.6 : 4.3 + P.y * 0.25, cz = bridgeLook ? 6.2 : 7.6;
   camera.position.x += (cx - camera.position.x) * Math.min(1, 6 * dt); camera.position.y += (cy - camera.position.y) * Math.min(1, 4 * dt); camera.position.z += (cz - camera.position.z) * Math.min(1, 4 * dt);
   if (shake > 0) { shake -= dt; camera.position.x += (Math.random() - 0.5) * 0.25; camera.position.y += (Math.random() - 0.5) * 0.25; }
-  camera.lookAt(P.x * 0.4, bridgeLook ? 1.5 : 1.4, -8);
+  camera.lookAt(P.x * (0.4 - 0.3 * narrow), bridgeLook ? 1.5 : 1.4, -8);
   sun.position.set(P.x - 8, 18, 6); sun.target.position.set(P.x, 0, -4);
   if (sea) sea.material.color.setHSL(0.55, 0.75, 0.53 + Math.sin(time) * 0.02);
 }
 
 // ---------- loop ----------
-function resize() { const w = innerWidth, h = innerHeight; renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix(); }
+let narrow = 0; // 0 = landscape … 1 = tall phone: keep all three lanes (and the signs) on screen
+function resize() { const w = innerWidth, h = innerHeight, asp = w / h; renderer.setSize(w, h, false); camera.aspect = asp;
+  const MIN = 0.7; camera.fov = asp >= MIN ? 60 : Math.min(92, 2 * Math.atan(Math.tan(30 * Math.PI / 180) * MIN / asp) * 180 / Math.PI);
+  narrow = Math.max(0, Math.min(1, (MIN - asp) / 0.3)); camera.updateProjectionMatrix(); }
 addEventListener('resize', resize); resize();
 buildWorld(1); camera.position.set(0, 4.3, 7.6);
 hero = makeHero(CHILD.gender, 'car'); scene.add(hero);
