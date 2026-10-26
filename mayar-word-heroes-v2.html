@@ -66,6 +66,7 @@ button:focus-visible{outline:3px solid var(--sun);outline-offset:2px}
 h1{margin:26px 0 0;font-size:clamp(36px,9vw,56px);line-height:1.05;color:var(--sun);-webkit-text-stroke:2px var(--line);text-shadow:0 5px 0 var(--line);font-weight:800}
 h2{margin:4px 0 6px;font-size:24px}
 .sub{margin:6px 0 12px;font-size:16px;line-height:1.5}
+.backBtn{position:absolute;top:12px;inset-inline-end:12px;text-decoration:none;color:var(--ink);font-size:14px;padding:2px 12px}
 .langs{position:absolute;top:12px;inset-inline-start:12px;display:flex;border:3px solid var(--line);border-radius:999px;overflow:hidden}
 .langs button{border:0;background:#fff;font-weight:800;padding:2px 12px;font-size:14px}
 .langs button.on{background:var(--ink);color:#fff}
@@ -131,7 +132,8 @@ h2{margin:4px 0 6px;font-size:24px}
 #stText{flex:1;margin:0;color:#fff;font-size:clamp(19px,4.2vw,28px);font-weight:700;line-height:1.5;text-shadow:0 2px 4px #000}
 #stNext{flex:none;border:4px solid var(--line);border-radius:999px;background:var(--sun);font-size:22px;font-weight:800;padding:4px 22px;box-shadow:0 4px 0 var(--line)}
 #stSkip{position:absolute;top:calc(env(safe-area-inset-top,0px) + 12px);inset-inline-end:14px;border:3px solid #fff;background:#0006;color:#fff;border-radius:999px;font-weight:800;padding:2px 14px}
-#stDots{position:absolute;top:calc(env(safe-area-inset-top,0px) + 18px);inset-inline-start:16px;display:flex;gap:6px}
+#stBack{position:absolute;top:calc(env(safe-area-inset-top,0px) + 12px);inset-inline-start:14px;width:40px;height:40px;border:3px solid #fff;background:#0006;color:#fff;border-radius:50%;font-weight:800;font-size:18px;padding:0;z-index:2}
+#stDots{inset-inline-start:66px!important;position:absolute;top:calc(env(safe-area-inset-top,0px) + 18px);inset-inline-start:16px;display:flex;gap:6px}
 #stDots i{width:10px;height:10px;border-radius:50%;background:#fff6}#stDots i.on{background:#fff}
 
 /* stage card */
@@ -166,6 +168,7 @@ h2{margin:4px 0 6px;font-size:24px}
 <div class="screen" id="title">
   <div class="panel">
     <div class="langs"><button id="langAr" class="on">عربي</button><button id="langEn">English</button></div>
+    <a class="ghost backBtn" id="hubBtn" href="index.html"></a>
     <h1 id="tTitle"></h1>
     <p class="sub" id="tTag"></p>
     <div class="me loading" id="meCard"><div class="meStage"><canvas id="pvMe" width="320" height="320"></canvas><div class="meLoad"><i></i><span id="meLoadT"></span></div></div><div class="meText"><small id="meT"></small><b id="meName"></b><span class="meTag" id="meTag"></span></div></div>
@@ -190,13 +193,14 @@ h2{margin:4px 0 6px;font-size:24px}
 <div id="story" class="hidden">
   <img id="stImg" alt="">
   <div id="stDots"></div>
-  <button id="stSkip"></button>
+  <button id="stSkip"></button><button id="stBack" aria-label="Map">✕</button>
   <div class="stCap"><p id="stText"></p><button id="stNext">◀</button></div>
 </div>
 
 <!-- stage card -->
 <div class="screen hidden" id="stageCard">
   <div class="panel">
+    <button class="ghost backBtn" id="scBack"></button>
     <div id="scIcon"></div>
     <span id="scNum"></span>
     <h2 id="scTitle"></h2>
@@ -207,7 +211,7 @@ h2{margin:4px 0 6px;font-size:24px}
 </div>
 
 <div class="screen hidden" id="pause">
-  <div class="panel"><h2 id="pauseT"></h2><div class="row"><button class="go" id="resumeBtn" style="flex:1"></button></div><p></p><div class="row"><button class="ghost" id="restartBtn"></button><button class="ghost" id="quitBtn"></button></div></div>
+  <div class="panel"><h2 id="pauseT"></h2><div class="row"><button class="go" id="resumeBtn" style="flex:1"></button></div><p></p><div class="row" style="flex-wrap:wrap"><button class="ghost" id="restartBtn"></button><button class="ghost" id="quitBtn"></button><button class="ghost" id="homeBtn"></button></div></div>
 </div>
 
 <div class="screen hidden" id="end">
@@ -217,7 +221,7 @@ h2{margin:4px 0 6px;font-size:24px}
     <div class="stats" id="endStats"></div>
     <div id="endGateT" style="font-weight:800"></div>
     <div class="gate" id="endGate"></div>
-    <div class="row"><button class="ghost" id="endMap"></button><button class="go" id="endNext" style="flex:1"></button></div>
+    <div class="row"><button class="ghost" id="endHome">⌂</button><button class="ghost" id="endMap"></button><button class="go" id="endNext" style="flex:1"></button></div>
   </div>
 </div>
 
@@ -255,7 +259,7 @@ const T = {
     chDone: 'أنهيتَ الفصل!', chDoneG: 'أنهيتِ الفصل!', mistakes: 'أخطاء', shells: 'أصداف ذهبية', toMap: 'الخريطة', nextCh: 'الفصل التالي',
     progress: 'المسافة', melt: 'الآيسكريم', yes: 'صح!', no: 'لا!', ouch: 'آخ!', pick: 'اختر الحرف ⤒ أو المسه', pickG: 'اختاري الحرف ⤒ أو المسيه',
     fork: 'اقرأ اللوحة', forkG: 'اقرئي اللوحة', fork2: 'اقرأ الوصف واختر اللوحة', fork2G: 'اقرئي الوصف واختاري اللوحة', spell1: 'أكمل الحرف الناقص', spell2: 'أكمل الحرفين الناقصين', spellAll: 'تهجَّ الكلمة',
-    catchT: 'التقط:', catchTG: 'التقطي:', wrongWay: 'طريق خطأ!', shell: 'صدفة ذهبية!', ctrl: 'الأسهم للحركة · فوق للقفز · تحت للانحناء'
+    catchT: 'التقط:', catchTG: 'التقطي:', wrongWay: 'طريق خطأ!', shell: 'صدفة ذهبية!', ctrl: 'الأسهم للحركة · فوق للقفز · تحت للانحناء', hub: '→ كل الألعاب', toMap2: '→ الخريطة', home: 'القائمة الرئيسية'
   },
   en: {
     title: 'Word Heroes', tag: 'Nawras the cheeky seagull stole the letters of the Letter Festival! Run across Kuwait, read, spell and win the letters back.', tagG: 'Nawras the cheeky seagull stole the letters of the Letter Festival! Run across Kuwait, read, spell and win the letters back.',
@@ -267,7 +271,7 @@ const T = {
     chDone: 'Chapter complete!', chDoneG: 'Chapter complete!', mistakes: 'Mistakes', shells: 'Golden shells', toMap: 'Map', nextCh: 'Next chapter',
     progress: 'Distance', melt: 'Ice cream', yes: 'Correct!', no: 'No!', ouch: 'Ouch!', pick: 'Pick the letter: ⤒ or tap it', pickG: 'Pick the letter: ⤒ or tap it',
     fork: 'Read the sign', forkG: 'Read the sign', fork2: 'Read the clue, pick the sign', fork2G: 'Read the clue, pick the sign', spell1: 'Fill in the missing letter', spell2: 'Fill in the two missing letters', spellAll: 'Spell the word',
-    catchT: 'Catch:', catchTG: 'Catch:', wrongWay: 'Wrong way!', shell: 'Golden shell!', ctrl: 'Arrows to move · Up to jump · Down to duck'
+    catchT: 'Catch:', catchTG: 'Catch:', wrongWay: 'Wrong way!', shell: 'Golden shell!', ctrl: 'Arrows to move · Up to jump · Down to duck', hub: '← All games', toMap2: '← Map', home: 'Main menu'
   }
 };
 const t = k => { const L = T[lang]; return (girl() && L[k + 'G'] !== undefined) ? L[k + 'G'] : L[k]; };
@@ -1065,7 +1069,7 @@ function drawGate(el, popIdx = []) {
   el.innerHTML = GATE.map((c, i) => { if (c === ' ') return '<i class="sp"></i>'; const got = CHAPTERS.some((ch, k) => save.ch[k] && ch.letters.includes(i)); return `<i class="${got ? 'on' : ''}${popIdx.includes(i) ? ' pop' : ''}" style="--c:${GATE_COL[i % 6]}">${c}</i>`; }).join('');
 }
 function openMap() {
-  vStop(); state = 'map'; showOnly('map'); if (S && STAGE[S.type].exit) { STAGE[S.type].exit(S); S = null; }
+  vStop(); runId++; timers = []; clearTimeout(stAuto); state = 'map'; showOnly('map'); if (S && STAGE[S.type].exit) { STAGE[S.type].exit(S); S = null; } clearObjs(); wordNow = null;
   $('mapT').textContent = t('map'); $('mapImg').src = ART + 'wh2-map.jpg'; $('gateT').textContent = t('gate'); drawGate($('gate'));
   $('mapShells').textContent = num(Object.values(save.ch).reduce((n, c) => n + (c.shells || 0), 0));
   const wrap = $('mapWrap'); wrap.querySelectorAll('.node').forEach(n => n.remove());
@@ -1094,14 +1098,21 @@ function drawTitle() {
   if (!save.age && CHILD.age) save.age = CHILD.age;
   $('ages').querySelectorAll('.age').forEach(b => { b.textContent = num(b.dataset.a); b.classList.toggle('on', +b.dataset.a === save.age); });
   $('startBtn').textContent = Object.keys(save.ch).length || save.intro ? t('cont') : t('start'); $('startBtn').disabled = !save.age;
-  $('pauseT').textContent = t('pause'); $('resumeBtn').textContent = t('resume'); $('restartBtn').textContent = t('restart'); $('quitBtn').textContent = t('quit');
+  $('hubBtn').textContent = t('hub'); $('scBack').textContent = t('toMap2'); $('homeBtn').textContent = t('home'); $('pauseT').textContent = t('pause'); $('resumeBtn').textContent = t('resume'); $('restartBtn').textContent = t('restart'); $('quitBtn').textContent = t('quit');
   heroCard();
 }
 document.querySelectorAll('.age').forEach(b => b.onclick = () => { save.age = +b.dataset.a; persist(); drawTitle(); });
 $('langAr').onclick = () => { lang = save.lang = 'ar'; persist(); drawTitle(); };
 $('langEn').onclick = () => { lang = save.lang = 'en'; persist(); drawTitle(); };
 $('startBtn').onclick = () => { if (!save.age) return; vCtx(); musStart(); if (!save.intro) startChapter(0); else openMap(); };
-$('mapBack').onclick = () => { state = 'title'; showOnly('title'); drawTitle(); };
+function toTitle() { vStop(); runId++; timers = []; if (S && STAGE[S.type].exit) { STAGE[S.type].exit(S); S = null; } clearObjs(); state = 'title'; showOnly('title'); drawTitle(); }
+$('mapBack').onclick = toTitle;
+const HUB = (CHILD.runModel && /^([\w]+)-run/.test(CHILD.runModel)) ? CHILD.runModel.match(/^([\w]+)-run/)[1] + '.html' : 'index.html';
+$('hubBtn').href = HUB;
+$('stBack').onclick = e => { e.stopPropagation(); clearTimeout(stAuto); stCb = null; openMap(); };
+$('scBack').onclick = () => openMap();
+$('homeBtn').onclick = () => { $('pause').classList.add('hidden'); toTitle(); };
+$('endHome').onclick = toTitle;
 
 // hero card on the title screen: the child's own 3D character, turning slowly
 let cardR = null, cardS = null, cardC = null, cardArt = null, cardMix = null;
