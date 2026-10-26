@@ -95,6 +95,20 @@ h2{margin:4px 0 6px;font-size:24px}
 .row{display:flex;gap:8px;justify-content:center}
 #endImg{width:110px;height:110px;margin:-6px auto 0}
 [dir=rtl] .howto{text-align:right}
+
+/* hero card: the child's own 3D character, turning slowly */
+.me{display:flex;align-items:center;gap:16px;border:3px solid var(--line);border-radius:26px;background:linear-gradient(135deg,#fff3c4,#ffd29a);padding:10px 18px 10px 10px;margin:8px 0 14px;box-shadow:0 5px 0 var(--line);text-align:start}
+.meStage{position:relative;width:150px;height:150px;flex:none;border-radius:20px;border:3px solid var(--line);overflow:hidden;background:radial-gradient(circle at 50% 38%,#fffaf0 0,#ffe1a8 72%)}
+.meStage::after{content:'';position:absolute;left:22%;right:22%;bottom:9%;height:9%;border-radius:50%;background:rgba(16,35,63,.16)}
+#pvMe{width:100%;height:100%;display:block;position:relative;z-index:1;transition:opacity .4s;background:none;border-radius:0}
+.meLoad{position:absolute;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;gap:8px;font-size:13px;font-weight:800;text-align:center;padding:8px;z-index:2}
+.me.loading .meLoad{display:flex}.me.loading #pvMe{opacity:0}
+.meLoad i{width:36px;height:36px;border-radius:50%;border:5px solid #fff;border-top-color:var(--line);animation:meSpin .9s linear infinite}
+@keyframes meSpin{to{transform:rotate(360deg)}}
+.meText small{display:block;font-weight:800;opacity:.75;font-size:15px}
+.meText b{display:block;font-size:clamp(28px,7vw,38px);line-height:1.1}
+.meTag{display:inline-block;margin-top:8px;background:var(--line);color:#fff;border-radius:999px;padding:3px 12px;font-size:13px;font-weight:800}
+@media (max-width:420px){.meStage{width:118px;height:118px}}
 </style>
 
 <canvas id="c"></canvas>
@@ -118,7 +132,7 @@ h2{margin:4px 0 6px;font-size:24px}
     <div class="langs"><button id="langAr" class="on">عربي</button><button id="langEn">English</button></div>
     <h1 id="title"></h1>
     <p class="sub" id="tagline"></p>
-    <div class="me"><canvas id="pvMe" width="240" height="240"></canvas><div><small id="meT"></small><b id="meName"></b></div></div>
+    <div class="me loading" id="meCard"><div class="meStage"><canvas id="pvMe" width="320" height="320"></canvas><div class="meLoad"><i></i><span id="meLoadT"></span></div></div><div class="meText"><small id="meT"></small><b id="meName"></b><span class="meTag" id="meTag"></span></div></div>
     <h2 id="pickVeh"></h2>
     <div class="heroes vehs">
       <button class="hero" id="vehCar"><canvas id="pvCar" width="240" height="160"></canvas><span id="carName"></span></button>
@@ -850,7 +864,7 @@ function drawPreview(cv, kind, which, vk = save.vehicle) {
 }
 function ariaL() { const ar = lang !== 'en'; const L = { pauseBtn: ['إيقاف مؤقت', 'Pause'], leftBtn: ['يسار', 'Left'], rightBtn: ['يمين', 'Right'], jumpBtn: ['قفز', 'Jump'] }; for (const id in L) { const e = document.getElementById(id); if (e) e.setAttribute('aria-label', L[id][ar ? 0 : 1]); } }
 function drawMenu() {
-  ariaL();
+  ariaL(); heroCard();
   document.documentElement.lang = lang; document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
   $('langAr').classList.toggle('on', lang === 'ar'); $('langEn').classList.toggle('on', lang === 'en');
   $('title').textContent = t('title'); $('tagline').textContent = t('tagline'); $('meT').textContent = CHILD.gender === 'girl' ? t('meG') : t('me'); $('meName').textContent = kidName();
@@ -863,10 +877,43 @@ function drawMenu() {
   $('pauseT').textContent = t('pause'); $('resumeBtn').textContent = t('resume'); $('quitBtn').textContent = t('quit');
   $('energyLbl').textContent = t('energy'); $('transformBtn').textContent = t('transform');
 }
+
+// ---------- hero card on the start screen: the child's real 3D character, turning slowly ----------
+let cardR = null, cardS = null, cardC = null, cardArt = null, cardMix = null;
+function heroCard() {
+  const girl = CHILD.gender === 'girl', en = typeof lang !== 'undefined' && lang === 'en';
+  $('meLoadT').textContent = en ? 'Getting your hero ready…' : girl ? 'نجهّز بطلتك…' : 'نجهّز بطلك…';
+  const age = (typeof save !== 'undefined' && save.age) || CHILD.age || 0, ad = String(age).split('').map(d => '٠١٢٣٤٥٦٧٨٩'[d]).join('');
+  $('meTag').textContent = !age ? '' : en ? '🎂 Age ' + age : '🎂 ' + ad + (age <= 10 ? ' سنوات' : ' سنة'); $('meTag').style.display = age ? '' : 'none';
+  if (!GLB.hero) return;
+  if (!cardR) {
+    try { cardR = new THREE.WebGLRenderer({ canvas: $('pvMe'), antialias: true, alpha: true }); } catch (_) { return; }
+    cardS = new THREE.Scene(); cardS.add(new THREE.HemisphereLight(0xffffff, 0xb59a7a, 1.05));
+    const k = new THREE.DirectionalLight(0xffffff, 0.75); k.position.set(2, 4, 5); cardS.add(k);
+    const rim = new THREE.DirectionalLight(0xffffff, 0.35); rim.position.set(-3, 3, -4); cardS.add(rim);
+    cardC = new THREE.PerspectiveCamera(28, 1, 0.05, 50);
+  }
+  if (!cardArt) {
+    const art = glb('hero', 2, 'max'); if (!art) return;
+    const clip = art.userData.clips && art.userData.clips[0];
+    if (clip) { cardMix = new THREE.AnimationMixer(art.userData.model); cardMix.clipAction(clip).play(); cardMix.update(0.2); }
+    const piv = new THREE.Group(); piv.add(art); cardS.add(piv);
+    const b = boxOf(art), c = new THREE.Vector3(), z = new THREE.Vector3(); b.getCenter(c); b.getSize(z);
+    art.position.sub(new THREE.Vector3(c.x, c.y, c.z));
+    const h = Math.max(z.x, z.y, z.z); cardC.position.set(0, h * 0.12, h * 2.25); cardC.lookAt(0, 0, 0);
+    cardArt = piv;
+  }
+  $('meCard').classList.remove('loading');
+}
+function heroCardTick(dt) {
+  if (!cardArt || !cardR || state !== 'menu') return;
+  cardArt.rotation.y += dt * 0.6; if (cardMix) cardMix.update(dt * 0.7);
+  cardR.render(cardS, cardC);
+}
 let selLevel = Math.min(save.unlocked, 2);
 $('vehCar').onclick = () => { save.vehicle = 'car'; persist(); drawMenu(); drawPreviews(); };
 $('vehScooter').onclick = () => { save.vehicle = 'scooter'; persist(); drawMenu(); drawPreviews(); };
-function drawPreviews() { drawPreview($('pvMe'), CHILD.gender, 'bot'); drawPreview($('pvCar'), CHILD.gender, 'veh', 'car'); drawPreview($('pvScooter'), CHILD.gender, 'veh', 'scooter'); }
+function drawPreviews() { heroCard(); drawPreview($('pvCar'), CHILD.gender, 'veh', 'car'); drawPreview($('pvScooter'), CHILD.gender, 'veh', 'scooter'); }
 $('langAr').onclick = () => { lang = 'ar'; try { sessionStorage.setItem('abdullahworld.lang', 'ar'); } catch (_) {} drawMenu(); };
 $('langEn').onclick = () => { lang = 'en'; try { sessionStorage.setItem('abdullahworld.lang', 'en'); } catch (_) {} drawMenu(); };
 $('playBtn').onclick = () => { if (save.age) startLevel(selLevel); };
@@ -879,6 +926,7 @@ hero = makeHero(CHILD.gender, save.vehicle); scene.add(hero);
 let last = performance.now();
 function frame(now) {
   const dt = Math.min(0.05, (now - last) / 1000); last = now;
+  heroCardTick(dt);
   if (state === 'menu') { // idle: gentle run behind the menu
     const dz = 6 * dt; roadTex.offset.y -= dz / 300 * 18; for (const o of scenery) o.position.z += dz; for (let i = scenery.length - 1; i >= 0; i--) if (scenery[i].position.z > 14) { world.remove(scenery[i]); scenery.splice(i, 1); }
     sceneryAcc += dz; while (sceneryAcc >= 9) { sceneryAcc -= 9; spawnScenery(-170 + sceneryAcc); }
