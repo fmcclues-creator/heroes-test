@@ -1,0 +1,1248 @@
+<!doctype html><html lang="ar" dir="rtl"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Little Detective · المحقق الصغير</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+Bhaijaan+2:wght@500;700;800&display=swap">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/utils/SkeletonUtils.js"></script>
+<style>
+:root{
+  --ink:#1b2440; --cream:#fff8ec; --sky:#4fb3ff; --sun:#ffc93c; --mint:#2fd39a; --berry:#ff5f8f; --violet:#8a63ff; --line:#1b2440; --sea:#17a6c9;
+  --font:'Baloo Bhaijaan 2',system-ui,sans-serif;
+  color-scheme:light;
+}
+html,body{height:100%;margin:0;background:#4fb3ff;overflow:hidden;touch-action:none;-webkit-user-select:none;user-select:none}
+body{font-family:var(--font);color:var(--ink)}
+canvas#c{position:fixed;inset:0;width:100%;height:100%;display:block}
+.hidden{display:none!important}
+button{font-family:var(--font);cursor:pointer;color:var(--ink)}
+button:focus-visible{outline:3px solid var(--sun);outline-offset:2px}
+
+/* ---------- HUD ---------- */
+#hud{position:fixed;inset:0;pointer-events:none;padding:calc(env(safe-area-inset-top,0px) + 10px) max(12px,env(safe-area-inset-right,0px)) 0 max(12px,env(safe-area-inset-left,0px))}
+.topbar{display:flex;gap:8px;align-items:center;justify-content:space-between}
+.pills{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.pill{background:#fff;border:3px solid var(--line);border-radius:999px;padding:2px 12px;font-weight:800;font-size:17px;display:flex;align-items:center;gap:6px;box-shadow:0 3px 0 var(--line);white-space:nowrap;font-variant-numeric:tabular-nums}
+.pill .hrt{color:var(--berry)}
+.iconbtn{pointer-events:auto;width:44px;height:44px;border-radius:50%;border:3px solid var(--line);background:#fff;box-shadow:0 3px 0 var(--line);font-size:20px;display:grid;place-items:center;padding:0}
+#goal{margin:8px auto 0;max-width:520px;display:flex;align-items:center;gap:8px;background:var(--ink);color:#fff;border-radius:16px;padding:4px 12px;font-weight:800;font-size:15px;box-shadow:0 3px 0 #0006}
+#goal .dots{display:flex;gap:4px;flex:none}
+#goal .dots i{width:11px;height:11px;border-radius:50%;background:#ffffff40;border:2px solid #fff}
+#goal .dots i.on{background:var(--sun)}#goal .dots i.now{background:#fff}
+#goal span{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#meterWrap{margin:6px auto 0;max-width:420px;display:flex;align-items:center;gap:8px}
+#meterWrap b{font-size:15px;white-space:nowrap;background:#fff;border:3px solid var(--line);border-radius:999px;padding:0 10px}
+.bar{flex:1;height:16px;background:#fff;border:3px solid var(--line);border-radius:999px;overflow:hidden}
+#meter{height:100%;width:0;background:linear-gradient(90deg,var(--mint),var(--sky));transition:width .2s}
+#meter.melt{background:linear-gradient(90deg,#ff7a9a,#ffd0e0)}
+#meter.low{animation:glow .4s infinite alternate}
+@keyframes glow{to{filter:brightness(1.35)}}
+#card{margin:8px auto 0;max-width:520px;background:var(--cream);border:3px solid var(--line);border-radius:20px;box-shadow:0 4px 0 var(--line);padding:8px 14px;text-align:center;direction:rtl}
+#card:empty{display:none}
+#card .tag{display:inline-block;font-size:13px;font-weight:800;background:var(--ink);color:#fff;border-radius:999px;padding:0 10px;margin-bottom:2px}
+#card .clue{font-size:clamp(18px,4.4vw,24px);font-weight:700;line-height:1.35}
+#card .clue .emo{font-size:1.25em;vertical-align:-3px;margin-inline-start:6px}
+.slots{display:flex;justify-content:center;gap:5px;margin-top:6px;direction:rtl;flex-wrap:wrap}
+.slot{width:38px;height:44px;border:3px dashed #9aa3b8;border-radius:10px;display:grid;place-items:center;font-size:28px;font-weight:800;background:#fff}
+.slot.given{border-style:solid;border-color:#c5cbd8;color:#5b6478;background:#f4f6fb}
+.slot.got{border-style:solid;border-color:var(--line);background:var(--mint);color:#fff}
+.slot.next{border-color:var(--sun);border-style:solid;animation:pulse .8s infinite alternate}
+@keyframes pulse{to{transform:scale(1.08)}}
+#toast{position:fixed;left:50%;top:44%;transform:translate(-50%,-50%);font-size:clamp(28px,7vw,48px);font-weight:800;color:#fff;-webkit-text-stroke:2px var(--line);text-shadow:0 4px 0 var(--line);pointer-events:none;transition:opacity .25s;opacity:0;white-space:pre-line;text-align:center;max-width:calc(100vw - 32px)}
+#toast.on{opacity:1}
+#flash{position:fixed;inset:0;pointer-events:none;background:#fff;opacity:0;transition:opacity .35s}
+
+/* touch controls */
+#touch{position:fixed;left:0;right:0;bottom:0;padding:0 max(14px,env(safe-area-inset-left,0px)) calc(env(safe-area-inset-bottom,0px) + 14px) max(14px,env(safe-area-inset-right,0px));display:flex;justify-content:space-between;align-items:flex-end;pointer-events:none}
+.tbtn{pointer-events:auto;width:72px;height:72px;border-radius:50%;border:4px solid var(--line);background:#fff;box-shadow:0 5px 0 var(--line);font-size:30px;display:grid;place-items:center;padding:0;font-weight:800;touch-action:none}
+.tbtn:active{transform:translateY(3px);box-shadow:0 2px 0 var(--line)}
+.tgroup{display:flex;gap:12px;align-items:flex-end}
+#sub{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 96px);transform:translate(-50%,8px);width:max-content;max-width:min(560px,calc(100vw - 32px));background:rgba(27,36,64,.92);color:#fff;border-radius:16px;padding:8px 16px;font-size:clamp(16px,4.2vw,21px);font-weight:700;line-height:1.45;text-align:center;unicode-bidi:plaintext;pointer-events:none;opacity:0;transition:opacity .25s,transform .25s;z-index:30}
+#sub.on{opacity:1;transform:translate(-50%,0)}#sub.ok{background:rgba(31,140,96,.95)}
+#scWhy{background:#ffe3e3;border:2px solid #e05a5a;border-radius:14px;padding:4px 10px;font-size:15px;font-weight:700;margin:6px 0 0;unicode-bidi:plaintext}#scWhy:empty{display:none}#scSub{font-size:14px;font-weight:700;opacity:.85;margin:-4px 0 6px}#scSub:empty{display:none}
+#card .clue,#card .tag,#goalT,#scGoal,#stText{unicode-bidi:plaintext}
+#pickHint{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 100px);transform:translateX(-50%);background:#fff;border:3px solid var(--line);border-radius:999px;padding:2px 14px;font-weight:800;box-shadow:0 3px 0 var(--line);pointer-events:none;white-space:nowrap}
+
+/* ---------- screens ---------- */
+.screen{position:fixed;inset:0;display:grid;place-items:center;padding:calc(env(safe-area-inset-top,0px) + 16px) max(16px,env(safe-area-inset-right,0px)) calc(env(safe-area-inset-bottom,0px) + 16px) max(16px,env(safe-area-inset-left,0px));background:linear-gradient(#4fb3ffcc,#8fd3ffcc);overflow:auto}
+.panel{background:var(--cream);border:4px solid var(--line);border-radius:28px;box-shadow:0 8px 0 var(--line);padding:18px 18px 16px;width:min(560px,100%);text-align:center;position:relative}
+h1{margin:26px 0 0;font-size:clamp(36px,9vw,56px);line-height:1.05;color:var(--sun);-webkit-text-stroke:2px var(--line);text-shadow:0 5px 0 var(--line);font-weight:800}
+h2{margin:4px 0 6px;font-size:24px}
+.sub{margin:6px 0 12px;font-size:16px;line-height:1.5}
+.backBtn{position:absolute;top:12px;inset-inline-end:12px;text-decoration:none;color:var(--ink);font-size:14px;padding:2px 12px}
+.langs{position:absolute;top:12px;inset-inline-start:12px;display:flex;border:3px solid var(--line);border-radius:999px;overflow:hidden}
+.langs button{border:0;background:#fff;font-weight:800;padding:2px 12px;font-size:14px}
+.langs button.on{background:var(--ink);color:#fff}
+.ages{display:flex;gap:6px;justify-content:center;align-items:center;margin:0 0 12px;flex-wrap:wrap;font-weight:800}
+.age{width:46px;height:46px;border-radius:50%;border:3px solid var(--line);background:#fff;font-size:20px;font-weight:800;box-shadow:0 3px 0 var(--line);padding:0}
+.age.on{background:var(--sun)}
+.go{width:100%;border:4px solid var(--line);border-radius:999px;background:var(--mint);color:#fff;font-size:26px;font-weight:800;padding:6px 0;box-shadow:0 5px 0 var(--line);-webkit-text-stroke:1px var(--line)}
+.go[disabled]{opacity:.5}
+.ghost{border:3px solid var(--line);border-radius:999px;background:#fff;font-weight:800;font-size:16px;padding:4px 16px;box-shadow:0 3px 0 var(--line)}
+.howto{font-size:13px;text-align:start;background:#eef6ff;border-radius:14px;padding:8px 12px;margin:0 0 12px;line-height:1.55}
+.howto b{display:inline-block;min-width:64px}
+.stars{font-size:40px;color:#d9dde6;letter-spacing:4px}
+.stars .on{color:var(--sun);-webkit-text-stroke:2px var(--line)}
+.stats{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:8px 0}
+.row{display:flex;gap:8px;justify-content:center}
+[dir=rtl] .howto{text-align:right}
+
+/* hero card */
+.me{display:flex;align-items:center;gap:16px;border:3px solid var(--line);border-radius:26px;background:linear-gradient(135deg,#fff3c4,#ffd29a);padding:10px 18px 10px 10px;margin:8px 0 14px;box-shadow:0 5px 0 var(--line);text-align:start}
+.meStage{position:relative;width:150px;height:150px;flex:none;border-radius:20px;border:3px solid var(--line);overflow:hidden;background:radial-gradient(circle at 50% 38%,#fffaf0 0,#ffe1a8 72%)}
+.meStage::after{content:'';position:absolute;left:22%;right:22%;bottom:9%;height:9%;border-radius:50%;background:rgba(16,35,63,.16)}
+#pvMe{width:100%;height:100%;display:block;position:relative;z-index:1;transition:opacity .4s}
+.meLoad{position:absolute;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;gap:8px;font-size:13px;font-weight:800;text-align:center;padding:8px;z-index:2}
+.me.loading .meLoad{display:flex}.me.loading #pvMe{opacity:0}
+.meLoad i{width:36px;height:36px;border-radius:50%;border:5px solid #fff;border-top-color:var(--line);animation:meSpin .9s linear infinite}
+@keyframes meSpin{to{transform:rotate(360deg)}}
+.meText small{display:block;font-weight:800;opacity:.75;font-size:15px}
+.meText b{display:block;font-size:clamp(28px,7vw,38px);line-height:1.1}
+.meTag{display:inline-block;margin-top:8px;background:var(--line);color:#fff;border-radius:999px;padding:3px 12px;font-size:13px;font-weight:800}
+@media (max-width:420px){.meStage{width:118px;height:118px}}
+
+/* festival gate progress */
+.gate{display:flex;flex-wrap:wrap;gap:4px;justify-content:center;direction:rtl;margin:6px 0 10px}
+.gate i{font-style:normal;width:30px;height:36px;border-radius:9px;border:3px solid var(--line);background:#fff;display:grid;place-items:center;font-weight:800;font-size:20px;color:#c5cbd8;box-shadow:0 2px 0 var(--line)}
+.gate i.on{color:#fff;background:var(--c,var(--berry))}
+.gate i.sp{border:0;background:none;box-shadow:none;width:10px}
+.gate i.pop{animation:pop .6s}
+@keyframes pop{0%{transform:scale(.2)}70%{transform:scale(1.3)}100%{transform:scale(1)}}
+
+/* ---------- map ---------- */
+#map{align-items:start}
+#map .panel{width:min(820px,100%);padding:12px}
+.mapWrap{position:relative;border-radius:20px;overflow:hidden;border:3px solid var(--line);aspect-ratio:1344/752;background:#2a9fd0}
+.mapWrap img{width:100%;height:100%;object-fit:cover;display:block}
+.mapWrap svg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.node{position:absolute;transform:translate(-50%,-50%);width:clamp(38px,7vw,54px);height:clamp(38px,7vw,54px);border-radius:50%;border:4px solid var(--line);background:#fff;font-weight:800;font-size:clamp(16px,3.4vw,22px);box-shadow:0 4px 0 var(--line);padding:0;display:grid;place-items:center}
+.node.done{background:var(--mint);color:#fff}
+.node.now{background:var(--sun);animation:pulse .7s infinite alternate}
+.node.lock{background:#d9dde6;color:#8a91a5}
+.node small{position:absolute;top:100%;margin-top:4px;left:50%;transform:translateX(-50%);background:#fff;border:2px solid var(--line);border-radius:999px;padding:0 8px;font-size:12px;white-space:nowrap;color:var(--ink)}
+.node .st{position:absolute;bottom:100%;left:50%;transform:translateX(-50%);font-size:12px;color:#d79a00;-webkit-text-stroke:1px var(--line);letter-spacing:-1px;white-space:nowrap}
+#chCard{margin-top:10px;display:flex;gap:12px;align-items:center;text-align:start;background:#fff;border:3px solid var(--line);border-radius:20px;padding:10px 12px;box-shadow:0 4px 0 var(--line)}
+#chCard .tx{flex:1}#chCard .tx b{font-size:20px;display:block}#chCard .tx small{font-size:14px;display:block;line-height:1.4}
+#chCard .go{width:auto;padding:4px 22px;font-size:22px}#chCard .gos{display:flex;flex-direction:column;gap:6px;align-items:stretch}#chCard .go2{background:#fff;border:2px solid var(--line);border-radius:14px;font:inherit;font-size:14px;font-weight:700;padding:2px 10px;cursor:pointer}#chCard #chRes{font-size:17px;padding:4px 14px}
+.mapTop{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px}
+.mapTop h2{margin:0}
+
+/* ---------- story ---------- */
+#story{position:fixed;inset:0;background:#000;display:flex;flex-direction:column}
+#stImg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;animation:kb 12s ease-out forwards}
+@keyframes kb{from{transform:scale(1.08)}to{transform:scale(1)}}
+.stCap{position:absolute;left:0;right:0;bottom:0;padding:18px max(16px,env(safe-area-inset-left,0px)) calc(env(safe-area-inset-bottom,0px) + 16px);background:linear-gradient(transparent,#000c 30%);display:flex;align-items:flex-end;gap:12px}
+#stText{flex:1;margin:0;color:#fff;font-size:clamp(19px,4.2vw,28px);font-weight:700;line-height:1.5;text-shadow:0 2px 4px #000}
+#stNext{flex:none;border:4px solid var(--line);border-radius:999px;background:var(--sun);font-size:22px;font-weight:800;padding:4px 22px;box-shadow:0 4px 0 var(--line)}
+#stSkip{position:absolute;top:calc(env(safe-area-inset-top,0px) + 12px);inset-inline-end:14px;border:3px solid #fff;background:#0006;color:#fff;border-radius:999px;font-weight:800;padding:2px 14px}
+#stBack{position:absolute;top:calc(env(safe-area-inset-top,0px) + 12px);inset-inline-start:14px;width:40px;height:40px;border:3px solid #fff;background:#0006;color:#fff;border-radius:50%;font-weight:800;font-size:18px;padding:0;z-index:2}
+#stDots{inset-inline-start:66px!important;position:absolute;top:calc(env(safe-area-inset-top,0px) + 18px);inset-inline-start:16px;display:flex;gap:6px}
+#stDots i{width:10px;height:10px;border-radius:50%;background:#fff6}#stDots i.on{background:#fff}
+
+/* stage card */
+#stageCard .panel{max-width:460px}
+#scNum{display:inline-block;background:var(--ink);color:#fff;border-radius:999px;padding:2px 14px;font-weight:800;font-size:15px}
+#scTitle{font-size:30px;margin:8px 0 4px}
+#scGoal{font-size:18px;line-height:1.5;margin:0 0 12px}
+#scIcon{font-size:54px;line-height:1}
+.ctrl{font-size:13px;opacity:.8;margin-top:8px}
+@media print{body *{visibility:hidden}#end,#end *{visibility:visible}#end{position:absolute;inset:0;background:#fff}#end .row{display:none}}
+
+/* ---------- Little Detective additions ---------- */
+html,body{background:#f3d7a4}
+.screen{background:linear-gradient(#c98a3acc,#f3d7a4cc)}
+.me{background:linear-gradient(135deg,#fff3c4,#ffd29a)}
+#joy{position:fixed;left:max(18px,env(safe-area-inset-left,0px));bottom:calc(env(safe-area-inset-bottom,0px) + 18px);width:130px;height:130px;border-radius:50%;background:#ffffff55;border:4px solid #ffffffaa;touch-action:none}
+#knob{position:absolute;left:50%;top:50%;width:56px;height:56px;margin:-28px 0 0 -28px;border-radius:50%;background:#fff;border:4px solid var(--line);box-shadow:0 4px 0 var(--line)}
+#actBtn{position:fixed;right:max(18px,env(safe-area-inset-right,0px));bottom:calc(env(safe-area-inset-bottom,0px) + 22px);border:4px solid var(--line);border-radius:999px;background:var(--sun);font-size:22px;font-weight:800;padding:10px 24px;box-shadow:0 5px 0 var(--line);z-index:20}
+#bookBtn,#solveBtn{pointer-events:auto;border:3px solid var(--line);border-radius:999px;background:#fff;font-weight:800;font-size:16px;padding:4px 14px;box-shadow:0 3px 0 var(--line);font-family:var(--font)}
+#solveBtn.ready{background:var(--sun);animation:glow .6s infinite alternate}
+#read .panel,#book .panel,#puz .panel{background:#fbf0d6;text-align:start}
+#rWho{display:inline-block;background:var(--ink);color:#fff;border-radius:999px;padding:0 12px;font-weight:800;font-size:15px}
+#rText{font-size:clamp(19px,4.6vw,23px);line-height:1.75;margin:10px 0;font-weight:600;white-space:pre-line;max-height:42vh;overflow:auto;direction:rtl;text-align:right}
+#rQ{font-size:clamp(18px,4.4vw,21px);font-weight:800;margin:6px 0 10px;direction:rtl;text-align:right}
+#rOpts{display:grid;gap:8px}
+.opt{border:3px solid var(--line);border-radius:16px;background:#fff;font-size:18px;font-weight:700;padding:8px 12px;text-align:right;direction:rtl;box-shadow:0 3px 0 var(--line);font-family:var(--font)}
+.opt.ok{background:var(--mint);color:#fff}.opt.no{background:#ffd3dc;opacity:.7}.opt:disabled{color:inherit}.opt.ok:disabled{color:#fff}
+#rFb{min-height:26px;font-weight:800;text-align:center;margin-top:8px}
+#bookList{text-align:right;direction:rtl;line-height:1.7;font-size:17px;padding-inline-start:20px;margin:8px 0 12px;max-height:50vh;overflow:auto}
+#puz .paper{background:#fffdf4;border:3px dashed #b99a5a;border-radius:14px;padding:10px;margin:8px 0;transform:rotate(-1deg)}
+#puz .tiles{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin:10px 0}
+#puz .tile{width:58px;height:58px;border:3px solid var(--line);border-radius:14px;background:#fff;font-size:32px;font-weight:800;box-shadow:0 3px 0 var(--line);font-family:var(--font);padding:0}
+#puz .tile.no{background:#ffd3dc;opacity:.6}
+#puz .pfb{min-height:26px;font-weight:800;text-align:center}
+.mapWrap{aspect-ratio:1344/752;background:#e8c48a}
+.badge{display:flex;justify-content:center;gap:6px;margin:6px 0 10px}
+.badge i{font-style:normal;width:30px;height:30px;border-radius:50%;border:3px solid var(--line);background:#e9eef6;display:grid;place-items:center;font-size:15px;box-shadow:0 2px 0 var(--line)}
+.badge i.on{background:var(--sun)}.badge i.gold{width:38px;height:38px;margin-top:-4px}.badge i.gold.on{background:radial-gradient(circle at 35% 30%,#fff7c2,#ffc93c 60%,#d99a00)}
+.badge i.pop{animation:pop .6s}
+</style>
+
+<canvas id="c"></canvas>
+<div id="flash"></div>
+
+<div id="hud" class="hidden">
+  <div class="topbar">
+    <div class="pills"><span class="pill">🔎 <span id="clueCount">0</span></span><span class="pill" id="prog"></span></div>
+    <div class="pills" style="pointer-events:none"><button id="bookBtn">📒</button><button id="solveBtn" class="hidden"></button><button class="iconbtn hidden" id="musicBtn" aria-label="Music">🎵</button><button class="iconbtn" id="pauseBtn" aria-label="Pause">⏸</button></div>
+  </div>
+  <div id="goal"><div class="dots" id="dots"></div><span id="goalT"></span></div>
+  <div id="card"></div>
+</div>
+<div id="toast"></div>
+<div id="sub" aria-live="polite"></div>
+<div id="joy" class="hidden"><div id="knob"></div></div>
+<button id="actBtn" class="hidden"></button>
+
+<!-- title -->
+<div class="screen" id="title">
+  <div class="panel">
+    <div class="langs"><button id="langAr" class="on">عربي</button><button id="langEn">English</button></div>
+    <a class="ghost backBtn" id="hubBtn" href="index.html"></a>
+    <h1 id="tTitle"></h1>
+    <p class="sub" id="tTag"></p>
+    <div class="me loading" id="meCard"><div class="meStage"><canvas id="pvMe" width="320" height="320"></canvas><div class="meLoad"><i></i><span id="meLoadT"></span></div></div><div class="meText"><small id="meT"></small><b id="meName"></b><span class="meTag" id="meTag"></span></div></div>
+    <div class="ages" id="ages"><span id="ageT"></span><button class="age" data-a="8"></button><button class="age" data-a="9"></button><button class="age" data-a="10"></button><button class="age" data-a="11"></button><button class="age" data-a="12"></button></div>
+    <div class="howto" id="howto"></div>
+    <button class="go" id="startBtn"></button>
+  </div>
+</div>
+
+<!-- case map -->
+<div class="screen hidden" id="map">
+  <div class="panel">
+    <div class="mapTop"><button class="ghost" id="mapBack">⌂</button><h2 id="mapT"></h2><span class="pill">🔎 <span id="mapShells">0</span></span></div>
+    <div class="mapWrap" id="mapWrap"><img id="mapImg" alt=""><svg id="mapPath" viewBox="0 0 100 100" preserveAspectRatio="none"></svg></div>
+    <div id="gateT" style="font-weight:800;margin-top:8px"></div>
+    <div class="badge" id="gate"></div>
+    <div id="chCard"></div>
+  </div>
+</div>
+
+<!-- story -->
+<div id="story" class="hidden">
+  <img id="stImg" alt="">
+  <div id="stDots"></div>
+  <button id="stSkip"></button><button id="stBack" aria-label="Map">✕</button>
+  <div class="stCap"><p id="stText"></p><button id="stNext">◀</button></div>
+</div>
+
+<!-- stage card -->
+<div class="screen hidden" id="stageCard">
+  <div class="panel">
+    <button class="ghost backBtn" id="scBack"></button>
+    <div id="scIcon"></div>
+    <span id="scNum"></span>
+    <h2 id="scTitle"></h2>
+    <p id="scGoal"></p>
+    <p id="scSub"></p>
+    <p id="scWhy"></p>
+    <button class="go" id="scGo"></button>
+    <div class="ctrl" id="scCtrl"></div>
+  </div>
+</div>
+
+<!-- dialogue / reading -->
+<div class="screen hidden" id="read"><div class="panel"><span id="rWho"></span><div id="rText"></div><div id="rQ"></div><div id="rOpts"></div><div id="rFb"></div></div></div>
+<!-- clue notebook -->
+<div class="screen hidden" id="book"><div class="panel"><h2 id="bookT"></h2><ul id="bookList"></ul><button class="go" id="bookClose"></button></div></div>
+<!-- torn-paper puzzle -->
+<div class="screen hidden" id="puz"><div class="panel"><span id="puzT" class="tag" style="display:inline-block;background:var(--ink);color:#fff;border-radius:999px;padding:0 12px;font-weight:800"></span><div class="paper"><div class="clue" id="puzClue" style="font-size:20px;font-weight:700;text-align:center"></div><div class="slots" id="puzSlots"></div></div><div class="tiles" id="puzTiles"></div><div class="pfb" id="puzFb"></div></div></div>
+
+<div class="screen hidden" id="pause">
+  <div class="panel"><h2 id="pauseT"></h2><div class="row"><button class="go" id="resumeBtn" style="flex:1"></button></div><p></p><div class="row" style="flex-wrap:wrap"><button class="ghost" id="restartBtn"></button><button class="ghost" id="quitBtn"></button><button class="ghost" id="homeBtn"></button></div></div>
+</div>
+
+<div class="screen hidden" id="end">
+  <div class="panel">
+    <h2 id="endTitle"></h2>
+    <div class="stars" id="endStars"></div>
+    <div class="stats" id="endStats"></div>
+    <div id="endGateT" style="font-weight:800"></div>
+    <div class="badge" id="endGate"></div>
+    <div class="row"><button class="ghost" id="endHome">⌂</button><button class="ghost" id="endMap"></button><button class="go" id="endNext" style="flex:1"></button></div>
+  </div>
+</div>
+
+<script>
+'use strict';
+// ====================================================================================
+//  Little Detective · المحقق الصغير — v2, the story edition (ages 8–12)
+//  Grandma Noura, the souq's famous detective, will give her Golden Magnifier to whoever
+//  solves six cases in one week. Every case is four different missions: interview the
+//  witnesses, search with the magnifier, follow tracks, mend a torn note, retrace a
+//  timetable, deliver parcels — then solve it and walk to the answer.
+// ====================================================================================
+const $ = id => document.getElementById(id);
+const SAVE_KEY = 'littledetective.v2.' + (decodeURIComponent(location.pathname.split('/').pop() || 'index').replace(/\.html?$/, '') || 'index'); // one save per child
+let save = { lang: 'ar', age: 0, intro: false, ch: {}, music: true };
+try { const s = JSON.parse(localStorage.getItem(SAVE_KEY) || 'null'); if (s) save = Object.assign(save, s); } catch (_) {}
+let lang = save.lang || 'ar';
+function persist() { try { localStorage.setItem(SAVE_KEY, JSON.stringify(save)); } catch (_) {} }
+
+// ---------- THE CHILD (set per order — same block in every game of the bundle) ----------
+const CHILD = {
+  name: { ar: 'ميار', en: 'Mayar' },
+  gender: 'girl',
+  skin: 0xd09a74, hair: 0x24170f, hijab: false,
+  suit: { main: 0xb8264a, accent: 0xff8a65, glow: 0x7ff9ff, veh: 0xffb000 },
+  age: 9,
+  headFront: null, headBack: null,
+  runModel: 'mayar-run.gltf.json', swimModel: 'mayar-swim.gltf.json', walkModel: 'mayar-run.gltf.json'
+};
+const G = CHILD.gender === 'girl';
+const girl = () => G;
+function kidName() { return CHILD.name[lang] || CHILD.name.ar; }
+const AR_D = '٠١٢٣٤٥٦٧٨٩';
+const num = n => lang === 'ar' ? String(n).split('').map(d => AR_D[d] || d).join('') : String(n);
+
+const LINES = {"ti1":["في سوقِ الكويتِ القديم، تعيشُ الجدّةُ نورة، أشهرُ محقّقةٍ في السّوق.","In the old souq of Kuwait lives Grandma Noura, the most famous detective in the souq."],"ti2":["خمسونَ عامًا وهي تحلُّ ألغازَ السّوقِ بمكبّرتِها الذّهبيّة.","For fifty years she has solved the souq's mysteries with her Golden Magnifier."],"ti3_b":["واليومَ قالت: من يحلُّ ستَّ قضايا هذا الأسبوع، أعطيه المكبّرةَ الذّهبيّة. وأنتَ أوّلُ من سأختبرُ يا محقّقي الصّغير!","Today she said: whoever solves six cases this week will get the Golden Magnifier. And you are the first one I will test, little detective!"],"ti3_g":["واليومَ قالت: من يحلُّ ستَّ قضايا هذا الأسبوع، أعطيه المكبّرةَ الذّهبيّة. وأنتِ أوّلُ من سأختبرُ يا محقّقتي الصّغيرة!","Today she said: whoever solves six cases this week will get the Golden Magnifier. And you are the first one I will test, little detective!"],"ti4_b":["خذْ دفترَ الأدلّة… ولنبدأ!","Take the clue notebook… and let's begin!"],"ti4_g":["خذي دفترَ الأدلّة… ولنبدأ!","Take the clue notebook… and let's begin!"],"c1_a":["القضيّةُ الأولى: القطّةُ الضّائعة. العمُّ سالم يبحثُ عن قطّتِه منذُ الصّباح.","Case one: the lost cat. Uncle Salem has been looking for his cat since the morning."],"c2_a":["القضيّةُ الثّانية: الرّسالةُ الغامضة. وجدَ الخيّاطُ أبو ناصر رسالةً بلا اسم.","Case two: the mystery letter. Abu Nasser the tailor found a letter with no name."],"c3_a":["القضيّةُ الثّالثة: لؤلؤةُ الجدّ. حمد الصّيّادُ فقدَ لؤلؤةً ثمينة.","Case three: grandfather's pearl. Hamad the fisherman has lost a precious pearl."],"c4_a":["القضيّةُ الرّابعة: الطّرودُ المختلطة. وصلت طرودٌ كثيرةٌ إلى السّوق، واختلطت عناوينُها!","Case four: the mixed-up parcels. Lots of parcels arrived at the souq, and their addresses got mixed up!"],"c5_a":["القضيّةُ الخامسة: الببّغاءُ الثّرثار. هربَ «زعفران»، ببّغاءُ أمِّ فهد، وهو يردّدُ كلماتٍ غريبة.","Case five: the chatty parrot. Zaafaran, Umm Fahad's parrot, has escaped, repeating strange words."],"c6_a":["القضيّةُ الأخيرة: المكبّرةُ الذّهبيّة! في ليلةِ الحفل… اختفتِ المكبّرةُ من صندوقِها!","The last case: the Golden Magnifier! On the night of the party… the magnifier vanished from its box!"],"c1_e":["عادتِ القطّةُ إلى العمِّ سالم. قالتِ الجدّةُ نورة: بدايةٌ رائعة!","The cat is back with Uncle Salem. Grandma Noura said: a wonderful start!"],"c2_e":["احتفلَ أهلُ السّوقِ بعيدِ ميلادِ أبي ناصر، وضحكتِ الجدّةُ نورة: عملٌ رائع!","The souq celebrated Abu Nasser's birthday, and Grandma Noura laughed: great work!"],"c3_e":["عادت لؤلؤةُ الجدِّ إلى حمد، ولمعت عيناه من الفرح.","Grandfather's pearl is back with Hamad, and his eyes shone with joy."],"c4_e":["وصلَ كلُّ طردٍ إلى صاحبِه، وابتسمَ ساعي البريد.","Every parcel reached its owner, and the postman smiled."],"c5_e":["عادَ «زعفران» إلى قفصِه، وهو يقول: شكرًا! شكرًا!","Zaafaran is back in his cage, saying: thank you! thank you!"],"c6_e1":["كانت ريم، حفيدةُ الجدّةِ نورة، تلمّعُ المكبّرةَ لتكونَ جميلةً في الحفل!","Reem, Grandma Noura's granddaughter, was polishing the magnifier so it would look beautiful at the party!"],"c6_e2_b":["ثمّ قالتِ الجدّةُ نورة: حلَلْتَ ستَّ قضايا… هذه المكبّرةُ الذّهبيّةُ لك يا محقّقي الصّغير!","Then Grandma Noura said: you solved six cases… this Golden Magnifier is yours, little detective!"],"c6_e2_g":["ثمّ قالتِ الجدّةُ نورة: حلَلْتِ ستَّ قضايا… هذه المكبّرةُ الذّهبيّةُ لكِ يا محقّقتي الصّغيرة!","Then Grandma Noura said: you solved six cases… this Golden Magnifier is yours, little detective!"],"g_talk_b":["تحدّثْ مع الشّهود، واقرأْ ما يقولون، وأجبْ عن أسئلتِهم.","Talk to the witnesses, read what they say, and answer their questions."],"g_talk_g":["تحدّثي مع الشّهود، واقرئي ما يقولون، وأجيبي عن أسئلتِهم.","Talk to the witnesses, read what they say, and answer their questions."],"g_search_b":["ابحثْ بالمكبّرةِ عن الأدلّةِ المخفيّة. ليست كلُّ لمعةٍ دليلًا!","Search with your magnifier for the hidden clues. Not every sparkle is a clue!"],"g_search_g":["ابحثي بالمكبّرةِ عن الأدلّةِ المخفيّة. ليست كلُّ لمعةٍ دليلًا!","Search with your magnifier for the hidden clues. Not every sparkle is a clue!"],"g_follow_b":["اتبعِ الآثار. عندَ كلِّ مفترق، اقرأِ الدّليلَ واخترِ الطّريقَ الصّحيح.","Follow the tracks. At every fork, read the clue and choose the right path."],"g_follow_g":["اتبعي الآثار. عندَ كلِّ مفترق، اقرئي الدّليلَ واختاري الطّريقَ الصّحيح.","Follow the tracks. At every fork, read the clue and choose the right path."],"g_decode_b":["الورقةُ ممزّقة! أكملِ الحروفَ النّاقصةَ لتقرأَ الكلمات.","The paper is torn! Fill in the missing letters to read the words."],"g_decode_g":["الورقةُ ممزّقة! أكملي الحروفَ النّاقصةَ لتقرئي الكلمات.","The paper is torn! Fill in the missing letters to read the words."],"g_route_b":["اقرأْ الجدول، وامشِ إلى الأماكنِ بالتّرتيبِ الصّحيح.","Read the timetable and walk to the places in the right order."],"g_route_g":["اقرئي الجدول، وامشي إلى الأماكنِ بالتّرتيبِ الصّحيح.","Read the timetable and walk to the places in the right order."],"g_deliver_b":["اقرأِ العنوانَ على كلِّ طرد، وأوصلْه إلى المكانِ الصّحيح.","Read the address on each parcel and deliver it to the right place."],"g_deliver_g":["اقرئي العنوانَ على كلِّ طرد، وأوصليه إلى المكانِ الصّحيح.","Read the address on each parcel and deliver it to the right place."],"g_solve_b":["اقرأْ أدلّتَك، واخترِ الجواب، ثمّ اذهبْ إلى المكان!","Read your clues, choose the answer, then go to the place!"],"g_solve_g":["اقرئي أدلّتَكِ، واختاري الجواب، ثمّ اذهبي إلى المكان!","Read your clues, choose the answer, then go to the place!"],"wrong_way_b":["ليس هذا الطّريق. اقرأِ الدّليلَ مرّةً أخرى.","Not this way. Read the clue again."],"wrong_way_g":["ليس هذا الطّريق. اقرئي الدّليلَ مرّةً أخرى.","Not this way. Read the clue again."],"wrong_place_b":["ليس هذا المكانَ الصّحيح. اقرأْ مرّةً أخرى.","That's not the right place. Read it again."],"wrong_place_g":["ليس هذا المكانَ الصّحيح. اقرئي مرّةً أخرى.","That's not the right place. Read it again."],"nothing_b":["لا شيءَ هنا… ابحثْ في مكانٍ آخر.","Nothing here… look somewhere else."],"nothing_g":["لا شيءَ هنا… ابحثي في مكانٍ آخر.","Nothing here… look somewhere else."],"right_way":["صحيح! هيّا نكمل.","Right! Let's keep going."],"delivered":["وصلَ الطّرد! شكرًا!","The parcel arrived! Thank you!"],"case_done_b":["أحسنت! حُلّتِ القضيّة!","Well done! Case solved!"],"case_done_g":["أحسنتِ! حُلّتِ القضيّة!","Well done! Case solved!"]};
+
+const T = {
+  ar: {
+    title: 'المحقّق الصغير', titleG: 'المحقّقة الصغيرة', tag: 'ستُّ قضايا في سوقِ الكويتِ القديم، وجائزتُها المكبّرةُ الذّهبيّة! تحدّثْ مع النّاس، واقرأْ، وابحثْ عن الأدلّة، وحُلَّ الألغاز.', tagG: 'ستُّ قضايا في سوقِ الكويتِ القديم، وجائزتُها المكبّرةُ الذّهبيّة! تحدّثي مع النّاس، واقرئي، وابحثي عن الأدلّة، وحُلّي الألغاز.',
+    me: 'المحقّق', meG: 'المحقّقة', age: 'كم عمرك؟', start: 'ابدأ التّحقيق', startG: 'ابدئي التّحقيق', cont: 'تابع التّحقيق', contG: 'تابعي التّحقيق',
+    howto: '<b>امشِ</b> بالأسهم أو المس الأرض أو عصا التحكّم<br><b>تحدّث</b> اقترب واضغط الزّر الأصفر أو المسافة', howtoG: '<b>امشي</b> بالأسهم أو المسي الأرض أو عصا التحكّم<br><b>تحدّثي</b> اقتربي واضغطي الزّر الأصفر أو المسافة',
+    map: 'قضايا الأسبوع', gate: 'أوسمة المحقّق', gateG: 'أوسمة المحقّقة', play: 'ابدأ', playG: 'ابدئي', replay: 'العب مجددًا', replayG: 'العبي مجددًا', resume2: 'تابع من المهمّة', resume2G: 'تابعي من المهمّة', fromStart: 'من البداية', locked: 'مقفول',
+    chapter: 'القضيّة', stage: 'المهمّة', of: 'من', go: 'هيّا نحقّق!', skip: 'تخطَّ ⏭', skipG: 'تخطّي ⏭', next: '◀',
+    pause: 'استراحة', resume: 'كمّل', resumeG: 'كمّلي', restart: 'أعد المهمّة', restartG: 'أعيدي المهمّة', print: '🖨 اطبع الشهادة', printG: '🖨 اطبعي الشهادة', quit: 'الخريطة',
+    chDone: 'حُلّت القضيّة!', mistakes: 'أخطاء', toMap: 'القضايا', nextCh: 'القضيّة التالية',
+    talk: 'تحدّث', talkG: 'تحدّثي', inspect: 'افحص', inspectG: 'افحصي', take: 'خذ الطّرد', takeG: 'خذي الطّرد', give: 'سلّم الطّرد', giveG: 'سلّمي الطّرد', notebook: 'دفتر الأدلّة', solve: 'حلّ القضيّة', solveG: 'حلّي القضيّة', close: 'إغلاق', cont: 'تابع', contG: 'تابعي',
+    right: 'إجابة صحيحة! دليلٌ جديد', wrong: 'اقرأ مرّة أخرى وحاول', wrongG: 'اقرئي مرّة أخرى وحاولي', rightSolve: 'إجابة صحيحة! اذهب إلى المكان ★', rightSolveG: 'إجابة صحيحة! اذهبي إلى المكان ★', solveQ: 'فكّر في الأدلّة', solveQG: 'فكّري في الأدلّة',
+    torn: 'ورقة ممزّقة', tryAgain: 'جرّب حرفًا آخر', tryAgainG: 'جرّبي حرفًا آخر', words: 'كلمات', forks: 'مفترقات', parcels: 'طرود', places: 'أماكن', witnesses: 'شهود', hidden: 'أدلّة مخفيّة',
+    ctrl: 'الأسهم للمشي · المسافة للتّحدّث', hub: '→ كل الألعاب', toMap2: '→ القضايا', home: 'القائمة الرئيسية', nothing: 'لا شيء هنا', schedule: 'الجدول'
+  },
+  en: {
+    title: 'Little Detective', titleG: 'Little Detective', tag: 'Six cases in the old souq of Kuwait, and the prize is the Golden Magnifier! Talk to people, read, look for clues and solve the mysteries.', tagG: 'Six cases in the old souq of Kuwait, and the prize is the Golden Magnifier! Talk to people, read, look for clues and solve the mysteries.',
+    me: 'Detective', meG: 'Detective', age: 'How old are you?', start: 'Start investigating', startG: 'Start investigating', cont: 'Continue', contG: 'Continue',
+    howto: '<b>Walk</b> arrow keys, tap the ground or use the joystick<br><b>Talk</b> walk up close and press the yellow button or Space',
+    map: "This week's cases", gate: 'Detective badges', play: 'Start', replay: 'Play again', resume2: 'Continue at mission', fromStart: 'From the start', locked: 'Locked',
+    chapter: 'Case', stage: 'Mission', of: 'of', go: "Let's investigate!", skip: 'Skip ⏭', next: '▶',
+    pause: 'Paused', resume: 'Resume', restart: 'Restart mission', print: '🖨 Print certificate', quit: 'Cases',
+    chDone: 'Case solved!', mistakes: 'Mistakes', toMap: 'Cases', nextCh: 'Next case',
+    talk: 'Talk', inspect: 'Inspect', take: 'Take parcel', give: 'Deliver', notebook: 'Clue notebook', solve: 'Solve the case', close: 'Close', cont: 'Continue',
+    right: 'Correct! A new clue', wrong: 'Read it again and try', rightSolve: 'Correct! Go to the place ★', solveQ: 'Think about the clues',
+    torn: 'A torn note', tryAgain: 'Try another letter', words: 'words', forks: 'forks', parcels: 'parcels', places: 'places', witnesses: 'witnesses', hidden: 'hidden clues',
+    ctrl: 'Arrows to walk · Space to talk', hub: '← All games', toMap2: '← Cases', home: 'Main menu', nothing: 'Nothing here', schedule: 'Timetable'
+  }
+};
+const t = k => { const L = T[lang]; return (G && L[k + 'G'] !== undefined) ? L[k + 'G'] : L[k]; };
+
+// ---------- the cases ----------
+// ---------- the people of the souq ----------
+const PEOPLE = {
+  dates: { name: 'العمّ سالم', role: 'بائع التّمر', model: 'npcDates', col: 0xc98a3a },
+  perfume: { name: 'أمّ فهد', role: 'بائعة العطور', model: 'npcPerfume', col: 0x5a3d8a },
+  fisher: { name: 'حمد', role: 'الصّيّاد', model: 'npcFisher', col: 0x3d8ac9 },
+  tailor: { name: 'أبو ناصر', role: 'الخيّاط', model: 'npcTailor', col: 0x8a6b3d },
+  post: { name: 'مبارك', role: 'ساعي البريد', model: 'npcUncle', col: 0x2f7de1 },
+  granny: { name: 'الجدّة نورة', role: 'المحقّقة', model: 'npcGranny', col: 0xb8264a }
+};
+// places on the souq square (x, z) — shops face the centre
+const PLACES = {
+  dates: { x: -9, z: -8, label: 'بسطة التّمر', en: 'The date stall' },
+  perfume: { x: 9, z: -8, label: 'دكّان العطور', en: 'The perfume shop' },
+  tailor: { x: -9, z: 6, label: 'دكّان الخيّاط', en: "The tailor's shop" },
+  sea: { x: 9, z: 6, label: 'بوّابة البحر', en: 'The sea gate' }
+};
+
+// ---------- the six cases (Modern Standard Arabic). s = ages 8–9 (short), l = ages 10–12 (longer, more inference) ----------
+// witness: [person, place, {s:[text, q, right, wrong, wrong], l:[...]}] · hidden: [place, offsetX, offsetZ, {s, l}]
+// follow: forks [{s:[clue, rightLabel, wrongLabel], l:[...]}] · decode: [[word, emoji]] · route: {s, l, order:[places]} · deliver: {s:[[label, place]], l:[...]}
+const CASES = [
+  { // 1 · the lost cat
+    client: 'dates', item: 'cat',
+    intro: { s: 'اختفت قطّتي «لؤلؤة» منذُ الصّباح. ساعدني يا {n} في العثورِ عليها!', l: 'يا {n}، قطّتي «لؤلؤة» تخرجُ كلَّ صباحٍ وتعودُ قبلَ الظّهر، لكنّها لم تعُد اليوم. هل تساعدني في البحثِ عنها؟' },
+    witnesses: [
+      ['perfume', 'perfume', {
+        s: ['رأيتُ القطّةَ تجري خلفَ فراشةٍ نحوَ دكّانِ الخيّاط.', 'إلى أين جرتِ القطّة؟', 'نحوَ دكّانِ الخيّاط', 'نحوَ البحر', 'نحوَ بسطةِ التّمر'],
+        l: ['في الصّباحِ كانت «لؤلؤة» تلعبُ أمامَ دكّاني، ثمّ رأت فراشةً صفراءَ فجرت خلفَها نحوَ دكّانِ الخيّاطِ أبي ناصر.', 'لماذا جرت «لؤلؤة» نحوَ دكّانِ الخيّاط؟', 'لأنّها كانت تجري خلفَ فراشة', 'لأنّها كانت جائعة', 'لأنّ الخيّاطَ ناداها'] }],
+      ['fisher', 'sea', {
+        s: ['أنا لم أرَ القطّةَ اليوم. كنتُ عندَ البحرِ طوالَ الصّباح.', 'أين كانَ حمد في الصّباح؟', 'عندَ البحر', 'في دكّانِ الخيّاط', 'عندَ بائعةِ العطور'],
+        l: ['أطعمتُ «لؤلؤة» سمكةً صغيرةً أمسِ، لكنّني اليومَ كنتُ عندَ البحرِ منذُ الفجر، ولم أرَها أبدًا.', 'متى أطعمَ حمد القطّة؟', 'أمسِ', 'اليومَ في الصّباح', 'اليومَ عندَ الظّهر'] }],
+      ['tailor', 'tailor', {
+        s: ['سمعتُ صوتَ «مياو» في دكّاني، لكنّي لم أجد شيئًا.', 'ماذا سمعَ الخيّاط؟', 'صوتَ قطّة', 'صوتَ عصفور', 'صوتَ الموج'],
+        l: ['عندما رجعتُ إلى دكّاني بعدَ الغداء، سمعتُ صوتًا خافتًا يقولُ «مياو»، فبحثتُ تحتَ الطّاولةِ ولم أجد شيئًا.', 'أين بحثَ الخيّاطُ عن مصدرِ الصّوت؟', 'تحتَ الطّاولة', 'فوقَ الرّفوف', 'خارجَ الدّكّان'] }]
+    ],
+    hidden: [
+      ['tailor', 2.2, 1.6, { s: 'شعرٌ برتقاليٌّ ناعمٌ على قماشٍ أحمر.', l: 'وجدتَ شعرًا برتقاليًّا ناعمًا على لفّةِ قماشٍ أحمر في دكّانِ الخيّاط.' }],
+      ['tailor', -2.2, 2.0, { s: 'آثارُ أقدامٍ صغيرةٍ تصعدُ إلى الرّفوفِ العالية.', l: 'آثارُ أقدامٍ صغيرةٍ تبدأُ عندَ البابِ وتصعدُ إلى رفوفِ الأقمشةِ العالية.' }]
+    ],
+    solve: { s: ['أين «لؤلؤة»؟', 'فوقَ رفوفِ الأقمشةِ في دكّانِ الخيّاط', 'عندَ البحر', 'في دكّانِ العطور', 'تحتَ بسطةِ التّمر'],
+             l: ['بعدَ قراءةِ الأدلّة، أين تختبئُ «لؤلؤة» على الأرجح؟', 'فوقَ رفوفِ الأقمشةِ العاليةِ في دكّانِ الخيّاط', 'عندَ البحرِ مع حمد', 'في دكّانِ العطور', 'تحتَ بسطةِ التّمر'] },
+    answer: 'tailor', reveal: { s: 'وجدتَ «لؤلؤة» نائمةً فوقَ الأقمشةِ النّاعمة!', l: 'وجدتَ «لؤلؤة» نائمةً فوقَ رفوفِ الأقمشةِ الدّافئة. العمّ سالم سعيدٌ جدًّا!' }
+  },
+  { // 2 · the mystery letter (a happy surprise)
+    client: 'tailor', item: 'party',
+    intro: { s: 'وجدتُ رسالةً تقول: «تعالَ عندَ الغروبِ إلى المكانِ الأجملِ رائحة». ساعدني يا {n}!', l: 'يا {n}، وجدتُ تحتَ بابِ دكّاني رسالةً بلا اسم، مكتوبًا فيها: «تعالَ اليومَ عندَ الغروبِ إلى المكانِ الذي تفوحُ منه أجملُ رائحة». من كتبها؟ وإلى أين أذهب؟' },
+    witnesses: [
+      ['dates', 'dates', {
+        s: ['رأيتُ أمَّ فهد تشتري شموعًا وكعكة.', 'ماذا اشترت أمّ فهد؟', 'شموعًا وكعكة', 'سمكًا وخبزًا', 'تمرًا وقهوة'],
+        l: ['في الصّباحِ اشترت أمُّ فهد منّي تمرًا كثيرًا، ثمّ رأيتُها تشتري شموعًا وكعكةً كبيرةً، وكانت تبتسمُ وتهمسُ: «لا تُخبِر أحدًا».', 'ما الذي يدلُّ على أنّ أمَّ فهد تُخفي سرًّا؟', 'قالت: «لا تُخبِر أحدًا»', 'اشترت تمرًا كثيرًا', 'كانت تمشي بسرعة'] }],
+      ['fisher', 'sea', {
+        s: ['ساعدتُ في حملِ صندوقِ بالونات إلى دكّانِ العطور.', 'إلى أين حملَ حمد الصّندوق؟', 'إلى دكّانِ العطور', 'إلى البحر', 'إلى بسطةِ التّمر'],
+        l: ['طلبت منّي أمُّ فهد أن أحملَ صندوقًا خفيفًا مليئًا بالبالونات إلى دكّانِها، وقالت إنّ اليومَ يومٌ مميّزٌ لصديقٍ عزيز.', 'ماذا قالت أمُّ فهد عن هذا اليوم؟', 'إنّه يومٌ مميّزٌ لصديقٍ عزيز', 'إنّ البحرَ هادئ', 'إنّ السّوقَ مغلق'] }],
+      ['perfume', 'perfume', {
+        s: ['أنا مشغولةٌ جدًّا اليوم! لا تسألني الآن.', 'كيف كانت أمّ فهد؟', 'مشغولةً جدًّا', 'نائمة', 'حزينة'],
+        l: ['أهلًا يا {n}! أنا مشغولةٌ جدًّا اليوم بترتيبِ الدّكّانِ وتنظيفِه. ولا، لا أعرفُ شيئًا عن أيِّ رسالة!', 'بماذا كانت أمّ فهد مشغولة؟', 'بترتيبِ الدّكّانِ وتنظيفِه', 'ببيعِ السّمك', 'بخياطةِ ثوب'] }]
+    ],
+    hidden: [
+      ['perfume', 2.2, 1.6, { s: 'شريطٌ مكتوبٌ عليه: «كلُّ عامٍ وأنتَ بخير».', l: 'شريطٌ ذهبيٌّ صغيرٌ مكتوبٌ عليه: «كلُّ عامٍ وأنتَ بخير يا أبا ناصر».' }],
+      ['perfume', -2.2, 2.0, { s: 'قلمٌ بحبرٍ أزرق، مثلُ حبرِ الرّسالة.', l: 'على طاولةِ العطورِ قلمٌ بحبرٍ أزرقَ، لونُه مثلُ لونِ حبرِ الرّسالةِ تمامًا.' }]
+    ],
+    solve: { s: ['إلى أين يذهبُ أبو ناصر عندَ الغروب؟', 'إلى دكّانِ العطور', 'إلى البحر', 'إلى بسطةِ التّمر', 'يبقى في دكّانه'],
+             l: ['من كتبَ الرّسالة، وإلى أين يجبُ أن يذهبَ أبو ناصر؟', 'أمُّ فهد، ويذهبُ إلى دكّانِ العطور', 'حمد، ويذهبُ إلى البحر', 'العمّ سالم، ويذهبُ إلى بسطةِ التّمر', 'لا أحد، فيبقى في دكّانه'] },
+    answer: 'perfume', reveal: { s: 'مفاجأة! حفلةُ عيدِ ميلادِ أبي ناصر!', l: 'مفاجأة! جهّزَ أهلُ السّوقِ حفلةً لعيدِ ميلادِ أبي ناصر في دكّانِ العطور!' }
+  },
+  { // 3 · the missing pearl
+    client: 'fisher', item: 'pearl',
+    intro: { s: 'فقدتُ لؤلؤةَ جدّي! كانت في كيسٍ أحمرَ صغير. ساعدني يا {n}!', l: 'يا {n}، فقدتُ لؤلؤةَ جدّي الّتي وجدَها أيّامَ الغوص. كانت في كيسٍ أحمرَ صغيرٍ في جيبي، وقد مررتُ اليومَ بأماكنَ كثيرةٍ في السّوق.' },
+    witnesses: [
+      ['tailor', 'tailor', {
+        s: ['جاءَ حمد إلى دكّاني صباحًا، وكانَ الكيسُ الأحمرُ معه.', 'هل كانَ الكيسُ مع حمد عندَ الخيّاط؟', 'نعم، كانَ معه', 'لا، لم يكن معه', 'لم يأتِ حمد إليه'],
+        l: ['زارني حمد في السّاعةِ ٩ صباحًا ليُصلحَ ثوبَه، ورأيتُ الكيسَ الأحمرَ في يدِه وهو يخرج، وكانَ الكيسُ مُغلقًا جيّدًا.', 'ماذا نعرفُ من كلامِ الخيّاط؟', 'أنّ الكيسَ كانَ مع حمد عندَ خروجِه من دكّانِ الخيّاط', 'أنّ اللّؤلؤةَ سقطت في دكّانِ الخيّاط', 'أنّ حمد لم يزر الخيّاط'] }],
+      ['perfume', 'perfume', {
+        s: ['لم يأتِ حمد إلى دكّاني اليوم.', 'هل زارَ حمد دكّانَ العطور؟', 'لا، لم يزره', 'نعم، زاره مرّتين', 'نعم، في الصّباح'],
+        l: ['كنتُ في دكّاني من الصّباحِ حتّى الظّهر، ولم يدخل حمد دكّاني أبدًا اليوم، لكنّي رأيتُه يمشي نحوَ بسطةِ التّمرِ في السّاعةِ ١٠.', 'إلى أين ذهبَ حمد بعدَ الخيّاط؟', 'إلى بسطةِ التّمر', 'إلى دكّانِ العطور', 'إلى البيت'] }],
+      ['dates', 'dates', {
+        s: ['اشترى حمد تمرًا، ووضعَ يدَه في سلّةِ التّمر.', 'أين وضعَ حمد يدَه؟', 'في سلّةِ التّمر', 'في البحر', 'في جيبِ الخيّاط'],
+        l: ['اشترى حمد منّي تمرًا في السّاعةِ ١٠، ومدَّ يدَه في السّلّةِ الكبيرةِ ليختارَ أطيبَ حبّات. وبعدَ أن ذهب، سمعتُ صوتَ شيءٍ صغيرٍ يرنُّ في قاعِ السّلّة.', 'ماذا سمعَ العمّ سالم بعدَ ذهابِ حمد؟', 'صوتَ شيءٍ صغيرٍ يرنُّ في قاعِ السّلّة', 'صوتَ قطّة', 'صوتَ الموج'] }]
+    ],
+    hidden: [
+      ['dates', 2.2, 1.6, { s: 'خيطٌ أحمرُ صغيرٌ بجانبِ سلّةِ التّمر.', l: 'خيطٌ أحمرُ مقطوعٌ بجانبِ سلّةِ التّمر، يشبهُ خيطَ كيسِ حمد.' }],
+      ['sea', -2.0, 1.8, { s: 'الكيسُ الأحمرُ فارغ، وفيه ثقبٌ صغير.', l: 'وجدتَ الكيسَ الأحمرَ قربَ بوّابةِ البحر: إنّه فارغ، وفي أسفلِه ثقبٌ صغيرٌ تسقطُ منه الأشياء.' }]
+    ],
+    solve: { s: ['أين اللّؤلؤة؟', 'في قاعِ سلّةِ التّمر', 'في دكّانِ العطور', 'في البحر', 'عندَ الخيّاط'],
+             l: ['بعدَ ترتيبِ الأحداث: أين سقطت اللّؤلؤةُ على الأرجح؟', 'في قاعِ سلّةِ التّمر، من ثقبِ الكيس', 'في دكّانِ الخيّاط', 'في البحرِ صباحًا', 'في دكّانِ العطور'] },
+    answer: 'dates', reveal: { s: 'وجدتَ اللّؤلؤةَ في قاعِ سلّةِ التّمر!', l: 'وجدتَ اللّؤلؤةَ تلمعُ في قاعِ سلّةِ التّمر. حمد يشكرُك كثيرًا!' }
+  },
+  { // 4 · the mixed-up parcels
+    client: 'post', item: 'parcel', name: ['الطّرودُ المختلطة', 'The mixed-up parcels'], icon: '📦', img: 'dt2-c4.jpg',
+    intro: { s: 'أوصلتُ الطّرودَ كلَّها، لكنْ بقيَ طردٌ كبيرٌ تمزّقَ عنوانُه. لمن هو؟', l: 'اختلطت عليَّ الطّرودُ اليوم. ساعدْني في توصيلِها، ثمّ نكتشفُ صاحبَ الطّردِ الكبيرِ الذي تمزّقَ عنوانُه.' },
+    deliver: { s: [['إلى دكّانِ الخيّاط', 'tailor'], ['إلى بسطةِ التّمر', 'dates'], ['إلى دكّانِ العطور', 'perfume']],
+               l: [['إلى من يخيطُ الثّياب', 'tailor'], ['إلى من يبيعُ الرُّطَبَ والتّمر', 'dates'], ['إلى من يصنعُ الرّوائحَ الجميلة', 'perfume']] },
+    witnesses: [
+      ['dates', 'dates', {
+        s: ['الطّردُ الكبيرُ ثقيل، وتفوحُ منه رائحةُ البحر.', 'كيف كانت رائحةُ الطّرد؟', 'رائحةُ البحر', 'رائحةُ العطر', 'رائحةُ الخبز'],
+        l: ['حملتُ الطّردَ الكبيرَ لحظة: كانَ ثقيلًا وطويلًا، وتفوحُ منه رائحةُ البحرِ والملح.', 'ما الذي يدلُّ على أنّ للطّردِ علاقةً بالبحر؟', 'رائحةُ البحرِ والملح', 'أنّه ثقيل', 'أنّه طويل'] }],
+      ['perfume', 'perfume', {
+        s: ['سمعتُ حمد يقول: شبكتي قديمة، طلبتُ شبكةً جديدة.', 'ماذا طلبَ حمد؟', 'شبكةً جديدة', 'قاربًا جديدًا', 'عطرًا'],
+        l: ['أمسِ جلسَ حمد هنا حزينًا وقال: شبكتي القديمةُ ممزّقة، وقد طلبتُ شبكةً جديدةً تصلُ هذا الأسبوع.', 'لماذا طلبَ حمد شبكةً جديدة؟', 'لأنّ شبكتَه القديمةَ ممزّقة', 'لأنّه يحبُّ الألوان', 'لأنّ أمَّ فهد طلبت منه'] }]
+    ],
+    hidden: [],
+    decode: [['صياد', '🎣'], ['شبكة', '🕸️']],
+    solve: { s: ['لمن الطّردُ الكبير؟', 'لحمد الصّيّاد عندَ بوّابةِ البحر', 'لأمِّ فهد', 'للعمِّ سالم', 'لأبي ناصر'],
+             l: ['بعدَ قراءةِ الأدلّة: لمن الطّردُ الكبير، وماذا فيه؟', 'لحمد الصّيّاد، وفيه شبكةُ صيدٍ جديدة', 'لأمِّ فهد، وفيه عطورٌ جديدة', 'للعمِّ سالم، وفيه تمر', 'لأبي ناصر، وفيه قماش'] },
+    answer: 'sea', reveal: { s: 'فتحَ حمد الطّرد: شبكةٌ جديدةٌ زرقاء!', l: 'فتحَ حمد الطّردَ فوجدَ شبكةَ صيدٍ جديدةً زرقاء، وقال: الآن أستطيعُ الصّيدَ من جديد!' }
+  },
+  { // 5 · the chatty parrot
+    client: 'perfume', item: 'parrot', name: ['الببّغاءُ الثّرثار', 'The chatty parrot'], icon: '🦜', img: 'dt2-c5.jpg',
+    intro: { s: 'هربَ ببّغائي «زعفران» من القفص! هل تساعدُني؟', l: 'فتحتُ قفصَ «زعفران» لأنظّفَه، فطارَ بعيدًا وهو يصيح. «زعفران» يحبُّ الحلوى، ويردّدُ كلَّ كلمةٍ يسمعُها.' },
+    follow: [
+      { s: ['ريشُ «زعفران» أخضرُ وأحمر.', 'ريشٌ أخضرُ وأحمر', 'ريشٌ أبيض'], l: ['ريشُ «زعفران» أخضر، وفي طرفِه لونٌ أحمر. أمّا ريشُ النّورسِ فأبيضُ ورماديّ.', 'ريشٌ أخضرُ وأحمر', 'ريشٌ أبيضُ ورماديّ'] },
+      { s: ['«زعفران» يحبُّ الحلوى.', 'أوراقُ حلوى', 'قشورُ سمك'], l: ['يقولُ النّاسُ إنّ «زعفران» أكلَ في طريقِه شيئًا حلوًا، وتركَ وراءَه الأوراق.', 'أوراقُ حلوى', 'قشورُ سمك'] },
+      { s: ['«زعفران» لا يحبُّ الماء.', 'نحوَ النّخيل', 'نحوَ البحر'], l: ['«زعفران» يخافُ من الماء، ويحبُّ أن يقفَ على الأغصانِ العالية.', 'نحوَ النّخيلِ العالية', 'نحوَ بوّابةِ البحر'] }
+    ],
+    witnesses: [
+      ['tailor', 'tailor', {
+        s: ['سمعتُ ببّغاءً يقول: تمر! تمر!', 'ماذا قالَ الببّغاء؟', 'تمر! تمر!', 'سمك! سمك!', 'خيط! خيط!'],
+        l: ['كنتُ أخيطُ ثوبًا حينَ مرَّ فوقَ دكّاني طائرٌ ملوّنٌ يصيح: تمر! تمر! ثمّ طارَ نحوَ النّخيل.', 'إلى أين طارَ الطّائرُ الملوّن؟', 'نحوَ النّخيل', 'نحوَ البحر', 'إلى دكّانِ العطور'] }],
+      ['fisher', 'sea', {
+        s: ['لم يأتِ أيُّ ببّغاءٍ إلى البحر. هنا نوارسُ فقط.', 'ما الطّيورُ الّتي عندَ البحر؟', 'النّوارس', 'الببّغاوات', 'العصافير'],
+        l: ['أنا هنا منذُ الصّباح، ولم أرَ إلّا النّوارسَ البيضاء. الببّغاواتُ لا تحبُّ رذاذَ البحر.', 'لماذا لا يأتي الببّغاءُ إلى البحر؟', 'لأنّه لا يحبُّ رذاذَ البحر', 'لأنّه يحبُّ النّوارس', 'لأنّه جائع'] }]
+    ],
+    hidden: [],
+    decode: [['نخلة', '🌴'], ['رطب', '🌰']],
+    solve: { s: ['أين «زعفران»؟', 'فوقَ النّخلةِ عندَ بسطةِ التّمر', 'عندَ بوّابةِ البحر', 'في دكّانِ الخيّاط', 'في قفصِه'],
+             l: ['أين يختبئُ «زعفران» على الأرجح؟', 'فوقَ النّخلةِ بجانبِ بسطةِ التّمر، يأكلُ الرُّطَب', 'على قاربِ حمد', 'تحتَ طاولةِ الخيّاط', 'في دكّانِ العطور'] },
+    answer: 'dates', reveal: { s: 'وجدتَ «زعفران» فوقَ النّخلةِ يأكلُ الرُّطَب!', l: 'وجدتَ «زعفران» فوقَ النّخلةِ بجانبِ بسطةِ التّمر، يأكلُ الرُّطَبَ ويصيح: شكرًا! شكرًا!' }
+  },
+  { // 6 · the Golden Magnifier
+    client: 'granny', item: 'magnifier', name: ['المكبّرةُ الذّهبيّة', 'The Golden Magnifier'], icon: '🔍', img: 'dt2-c6.jpg', finale: true,
+    intro: { s: 'اختفت مكبّرتي الذّهبيّةُ من صندوقِها! والحفلُ بعدَ قليل!', l: 'كنتُ سأعطيكَ المكبّرةَ الذّهبيّةَ الليلة، لكنّي فتحتُ الصّندوقَ فوجدتُه فارغًا! أنتَ الآن محقّقٌ حقيقيّ… فابحثْ عنها.' },
+    hidden: [
+      ['perfume', 2.2, 1.6, { s: 'قطعةُ قماشٍ ناعمةٌ تلمع، ورائحتُها جميلة.', l: 'قطعةُ قماشٍ ناعمةٌ عليها لمعةٌ ذهبيّة، وتفوحُ منها رائحةُ عطرِ الورد.' }],
+      ['tailor', -2.2, 2.0, { s: 'آثارُ أصابعَ صغيرةٍ على غطاءِ الصّندوق.', l: 'على غطاءِ الصّندوقِ آثارُ أصابعَ صغيرة، كأنّها أصابعُ طفل، لا أصابعُ لصٍّ كبير.' }]
+    ],
+    decoys: 2,
+    witnesses: [
+      ['tailor', 'tailor', {
+        s: ['جاءت ريم وطلبت قطعةَ قماشٍ ناعمةٍ للتّلميع.', 'ماذا طلبت ريم؟', 'قطعةَ قماشٍ ناعمة', 'خيطًا أحمر', 'ثوبًا جديدًا'],
+        l: ['جاءت ريم، حفيدةُ الجدّةِ نورة، مسرعةً قبلَ العصر، وطلبت قطعةَ قماشٍ ناعمة، وقالت: أريدُ أن ألمّعَ شيئًا مهمًّا!', 'لماذا أرادت ريم القماش؟', 'لتلمّعَ شيئًا مهمًّا', 'لتخيطَ ثوبًا', 'لتلفَّ هديّة'] }],
+      ['dates', 'dates', {
+        s: ['رأيتُ ريم تمشي نحوَ دكّانِ العطور.', 'إلى أين مشت ريم؟', 'نحوَ دكّانِ العطور', 'نحوَ البحر', 'نحوَ الخيّاط'],
+        l: ['مرّت ريم من هنا وهي تُخفي شيئًا لامعًا تحتَ القماش، ثمّ دخلت دكّانَ العطورِ وأغلقتِ البابَ بهدوء.', 'ماذا كانت ريم تُخفي؟', 'شيئًا لامعًا تحتَ القماش', 'قطّةً صغيرة', 'رسالة'] }]
+    ],
+    route: { s: 'جدولُ ريم: أوّلًا دكّانُ الخيّاط، ثمّ بسطةُ التّمر، ثمّ دكّانُ العطور.', l: 'جدولُ ريم اليوم: بعدَ الظّهرِ ذهبت إلى الخيّاطِ لتأخذَ القماش، ثمّ مرّت على بسطةِ التّمر، وفي النّهايةِ دخلت دكّانَ العطور.', order: ['tailor', 'dates', 'perfume'] },
+    solve: { s: ['أين المكبّرةُ الذّهبيّة؟', 'مع ريم في دكّانِ العطور', 'في البحر', 'عندَ الخيّاط', 'في الصّندوق'],
+             l: ['بعدَ الأدلّة: أين المكبّرة، ولماذا أُخذت؟', 'مع ريم في دكّانِ العطور، تلمّعُها للحفل', 'أخذَها النّورس', 'سقطت في البحر', 'عندَ الخيّاطِ للتّصليح'] },
+    answer: 'perfume', reveal: { s: 'وجدتَ ريم تلمّعُ المكبّرةَ لتكونَ جميلةً في الحفل!', l: 'وجدتَ ريم في دكّانِ العطورِ تلمّعُ المكبّرةَ بالقماشِ النّاعم، وقالت: أردتُ أن تلمعَ في حفلِك!' }
+  }
+];
+// the first three cases (from the first edition) get new missions too
+Object.assign(CASES[0], { name: ['القطّةُ الضّائعة', 'The lost cat'], icon: '🐈', img: 'dt2-c1.jpg', decoys: 1,
+  follow: [
+    { s: ['آثارُ القطّةِ صغيرة، ولها أربعُ أصابع.', 'آثارٌ صغيرة', 'آثارُ حذاءٍ كبير'], l: ['آثارُ القطّةِ صغيرةٌ ومستديرة، ولها أربعُ أصابع، وليس فيها أثرٌ لحذاء.', 'آثارٌ صغيرةٌ مستديرة', 'آثارُ حذاءٍ كبير'] },
+    { s: ['جرتِ القطّةُ خلفَ فراشةٍ صفراء.', 'زهورٌ صفراء', 'سمكٌ على الأرض'], l: ['قالت أمُّ فهد إنّ القطّةَ جرت خلفَ فراشةٍ صفراء، والفراشاتُ تحبُّ الزّهور.', 'زهورٌ صفراء', 'سمكٌ على الأرض'] },
+    { s: ['القطّةُ تحبُّ الأماكنَ الدّافئةَ النّاعمة.', 'نحوَ الأقمشة', 'نحوَ الماء'], l: ['القطّةُ تحبُّ النّومَ في مكانٍ دافئٍ ناعم، وتكرهُ الماءَ البارد.', 'نحوَ لفّاتِ الأقمشة', 'نحوَ بوّابةِ البحر'] }
+  ] });
+Object.assign(CASES[1], { name: ['الرّسالةُ الغامضة', 'The mystery letter'], icon: '✉️', img: 'dt2-c2.jpg', decoys: 1, decode: [['غروب', '🌇'], ['رائحة', '🌸']] });
+Object.assign(CASES[2], { name: ['لؤلؤةُ الجدّ', "Grandfather's pearl"], icon: '⚪', img: 'dt2-c3.jpg', decoys: 1,
+  route: { s: 'طريقُ حمد اليوم: الخيّاط، ثمّ بسطةُ التّمر، ثمّ بوّابةُ البحر.', l: 'طريقُ حمد اليوم: في السّاعةِ ٩ زارَ الخيّاط، وفي السّاعةِ ١٠ اشترى التّمر، وفي السّاعةِ ١١ ذهبَ إلى بوّابةِ البحر.', order: ['tailor', 'dates', 'sea'] } });
+const CASE_STAGES = [['talk', 'search', 'follow', 'solve'], ['talk', 'decode', 'search', 'solve'], ['talk', 'route', 'search', 'solve'], ['deliver', 'talk', 'decode', 'solve'], ['follow', 'talk', 'decode', 'solve'], ['search', 'talk', 'route', 'solve']];
+const CASE_NODES = [[18, 36], [62, 62], [88, 46], [30, 80], [53, 20], [42, 50]];
+
+const DAYS = CASES;
+const STAGE_INFO = {
+  talk: { icon: '💬', title: ['استجوابُ الشّهود', 'Question the witnesses'], goal: 'g_talk' },
+  search: { icon: '🔍', title: ['البحثُ بالمكبّرة', 'Search with the magnifier'], goal: 'g_search' },
+  follow: { icon: '👣', title: ['تتبُّعُ الآثار', 'Follow the tracks'], goal: 'g_follow' },
+  decode: { icon: '📜', title: ['الورقةُ الممزّقة', 'The torn note'], goal: 'g_decode' },
+  route: { icon: '🗓️', title: ['جدولُ اليوم', "The day's timetable"], goal: 'g_route' },
+  deliver: { icon: '📦', title: ['توصيلُ الطّرود', 'Deliver the parcels'], goal: 'g_deliver' },
+  solve: { icon: '⭐', title: ['حلُّ القضيّة', 'Solve the case'], goal: 'g_solve' }
+};
+CASES.forEach((C, i) => { C.stages = CASE_STAGES[i].map(type => Object.assign({ type }, STAGE_INFO[type])); C.node = CASE_NODES[i];
+  C.intro2 = [[C.img, 'c' + (i + 1) + '_a']]; C.outro = C.finale ? [['dt2-fin.jpg', 'c6_e1'], ['dt2-fin.jpg', 'c6_e2']] : [[C.img, 'c' + (i + 1) + '_e']]; });
+const INTRO = [['dt2-intro.jpg', 'ti1'], ['dt2-intro.jpg', 'ti2'], ['dt2-intro.jpg', 'ti3'], ['dt2-intro.jpg', 'ti4']];
+function txt(o) { const v = band() === 0 ? o.s : o.l; return typeof v === 'string' ? fill(v) : v.map(fill); }
+const GIRL_FORMS = [['وجدتَ', 'وجدتِ'], ['هل تساعدني', 'هل تساعدينني'], ['ساعدني', 'ساعديني'], ['لا تسألني', 'لا تسأليني'], ['يشكرُك ', 'يشكرُكِ '], ['ساعدْني', 'ساعديني'], ['هل تساعدُني', 'هل تساعدينني'], ['سأعطيكَ', 'سأعطيكِ'], ['أنتَ الآن محقّقٌ حقيقيّ', 'أنتِ الآن محقّقةٌ حقيقيّة'], ['فابحثْ عنها', 'فابحثي عنها'], ['حفلِك!', 'حفلِكِ!']];
+function girlForm(s) { for (const [a, b] of GIRL_FORMS) s = s.split(a).join(b); return s; }
+function fill(s) { if (Array.isArray(s)) return s.map(fill); if (typeof s !== 'string') return s; s = s.replace(/\{n\}/g, kidName()); if (G) s = girlForm(s); return s; }
+
+// ---------- sound ----------
+// ---------- audio ----------
+let actx = null;
+function beep(f, d = 0.12, type = 'sine', v = 0.18, slide = 0) {
+  if (!actx) return; const o = actx.createOscillator(), g = actx.createGain(), n = actx.currentTime;
+  o.type = type; o.frequency.setValueAtTime(f, n); if (slide) o.frequency.exponentialRampToValueAtTime(Math.max(40, f + slide), n + d);
+  g.gain.setValueAtTime(v, n); g.gain.exponentialRampToValueAtTime(0.001, n + d); o.connect(g); g.connect(actx.destination); o.start(n); o.stop(n + d + 0.02);
+}
+const sfx = {
+  good() { beep(880, 0.1, 'triangle'); setTimeout(() => beep(1320, 0.16, 'triangle'), 70); },
+  bad() { beep(240, 0.22, 'sawtooth', 0.1, -90); },
+  clue() { [660, 880, 1100].forEach((f, i) => setTimeout(() => beep(f, 0.12, 'triangle', 0.14), i * 70)); },
+  open() { beep(500, 0.08, 'sine', 0.1, 200); },
+  win() { [523, 659, 784, 659, 784, 1047].forEach((f, i) => setTimeout(() => beep(f, 0.18, 'triangle', 0.16), i * 120)); }
+};
+
+// ---------- voice: voice-ld.json = case texts & event lines (keyed by text); voice-dt2.json = story lines ----------
+let VOICE = null, vBuf = {}, vSrc = null, vQueue = [], vMiss = [], vTok = 0;
+Promise.all(['assets/voice-ld.json', 'assets/voice-dt2.json'].map(f => fetch(f).then(r => r.ok ? r.json() : {}).catch(() => ({})))).then(([a, b]) => { VOICE = Object.assign({}, a, b); });
+function vCtx() { if (!actx) { try { actx = new (window.AudioContext || window.webkitAudioContext)(); } catch (_) {} } if (actx && actx.state === 'suspended') actx.resume(); return actx; }
+async function vDecode(k) {
+  if (vBuf[k]) return vBuf[k]; const b64 = VOICE && VOICE[k]; const c = vCtx(); if (!b64 || !c) return null;
+  const bin = atob(b64.replace(/^data:[^,]+,/, '')), u8 = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) u8[i] = bin.charCodeAt(i);
+  vBuf[k] = await new Promise((res, rej) => c.decodeAudioData(u8.buffer, res, rej)).catch(() => null); return vBuf[k];
+}
+function vStop() { vTok++; vQueue = []; if (vSrc) { try { vSrc.onended = null; vSrc.stop(); } catch (_) {} vSrc = null; } try { window.speechSynthesis && speechSynthesis.cancel(); } catch (_) {} }
+async function vPlay(k, cb, tok = vTok) {
+  const buf = await vDecode(k); if (tok !== vTok) return false; if (!buf) { if (cb) setTimeout(cb, 1200); vNext(); return false; }
+  const c = vCtx(), s = c.createBufferSource(); s.buffer = buf; s.connect(c.destination);
+  if (vSrc) { try { vSrc.onended = null; vSrc.stop(); } catch (_) {} }
+  vSrc = s; s.onended = () => { if (vSrc === s) { vSrc = null; if (cb) cb(); vNext(); } }; s.start(); return true;
+}
+function vNext() { if (vSrc || !vQueue.length) return; const q = vQueue.shift(); vPlay(q.k, q.cb); }
+function enSpeak(text, cb) { try { const ss = window.speechSynthesis; if (!ss) { cb && setTimeout(cb, 1500); return; } ss.cancel(); const u = new SpeechSynthesisUtterance(text); u.lang = 'en-US'; u.rate = 0.95; if (cb) u.onend = cb; ss.speak(u); } catch (_) { cb && setTimeout(cb, 1500); } }
+function lineKey(id) { if (LINES[id]) return id; const g = id + (G ? '_g' : '_b'); return LINES[g] ? g : null; }
+function lineText(id) { const k = lineKey(id); return k ? LINES[k][lang === 'en' ? 1 : 0] : ''; }
+let subT = null;
+function readSecs(txt) { return Math.max(2.6, String(txt || '').length * 0.075); }
+function caption(txt, secs, cls) { const e = $('sub'); clearTimeout(subT); if (!txt) { e.classList.remove('on'); return; } e.textContent = txt; e.className = 'on' + (cls ? ' ' + cls : ''); subT = setTimeout(() => e.classList.remove('on'), (secs || readSecs(txt)) * 1000); }
+function sayLine(id, queued, cb, noCap) {
+  const k = lineKey(id); if (!k) { cb && cb(); return; }
+  if (!noCap && (state === 'play' || state === 'stagedone')) caption(LINES[k][lang === 'en' ? 1 : 0], 0, state === 'stagedone' ? 'ok' : '');
+  if (lang === 'en') { enSpeak(LINES[k][1], cb); return; }
+  if (VOICE && !VOICE[k]) vMiss.push(k);
+  if (queued && (vSrc || vQueue.length)) { vQueue.push({ k, cb }); return; }
+  vQueue = []; vTok++; vPlay(k, cb);
+}
+// case texts are Arabic reading material: their clips are keyed by the text itself (the child's name → {n})
+function sayText(text, queued) {
+  if (!text || lang === 'en') return; let k = String(text).trim(); const nm = CHILD.name && CHILD.name.ar; if (nm) k = k.split(nm).join('{n}');
+  if (!(VOICE && VOICE[k])) { if (VOICE) vMiss.push(k); return; }
+  if (queued && (vSrc || vQueue.length)) { vQueue.push({ k }); return; }
+  vQueue = []; vTok++; vPlay(k);
+}
+function ev(name, queued) {
+  if (lang === 'en') return; let k = 'ev_' + name;
+  if (VOICE && !VOICE[k]) k = 'ev_' + name + (G ? '_g' : '_b');
+  if (!VOICE || !VOICE[k]) return;
+  if (queued && (vSrc || vQueue.length)) { vQueue.push({ k }); return; }
+  vQueue = []; vTok++; vPlay(k);
+}
+function praise(q) { ev(['great1', 'great2', 'right'][Math.floor(Math.random() * 3)], q); }
+
+// ---------- background music (optional file) ----------
+let musBuf = null, musSrc = null, musGain = null, musOn = save.music !== false;
+fetch('assets/music-ld.mp3').then(r => r.ok ? r.arrayBuffer() : null).then(ab => { if (!ab) return; window.__musAB = ab; $('musicBtn').classList.remove('hidden'); drawMusicBtn(); }).catch(() => {});
+async function musStart() {
+  if (!musOn || musSrc || !window.__musAB) return; const c = vCtx(); if (!c) return;
+  if (!musBuf) musBuf = await new Promise((res, rej) => c.decodeAudioData(window.__musAB.slice(0), res, rej)).catch(() => null);
+  if (!musBuf || musSrc || !musOn) return;
+  musGain = c.createGain(); musGain.gain.value = 0; musGain.connect(c.destination);
+  musSrc = c.createBufferSource(); musSrc.buffer = musBuf; musSrc.loop = true; musSrc.connect(musGain); musSrc.start();
+}
+function musStop() { if (musSrc) { try { musSrc.stop(); } catch (_) {} musSrc = null; } }
+function drawMusicBtn() { $('musicBtn').textContent = musOn ? '🎵' : '🔇'; }
+$('musicBtn').onclick = () => { musOn = save.music = !musOn; persist(); if (musOn) musStart(); else musStop(); drawMusicBtn(); };
+setInterval(() => { if (!musGain || !actx) return; const target = (state === 'paused' || state === 'title' || state === 'map') ? 0.05 : vSrc ? 0.07 : 0.2; musGain.gain.setTargetAtTime(target, actx.currentTime, 0.25); }, 150);
+
+// ---------- three.js engine ----------
+const canvas = $('c');
+function noGL() { const d = document.createElement('div'); d.style.cssText = 'position:fixed;inset:0;z-index:99;display:flex;align-items:center;justify-content:center;padding:24px;background:#fff8ec;font-family:inherit;text-align:center';
+  d.innerHTML = '<div style="max-width:420px"><div style="font-size:48px">🎮</div><h2 dir="rtl" style="margin:8px 0">هذا المتصفّح لا يستطيع تشغيل اللعبة</h2><p dir="rtl">جرّب فتحها في Safari أو Chrome، أو حدّث المتصفّح، وتأكّد من تفعيل «تسريع الرسومات».</p><p dir="ltr" style="opacity:.7">This browser can\'t start the game\'s 3D graphics. Please open it in Safari or Chrome, update the browser, or turn on hardware acceleration.</p></div>';
+  document.body.appendChild(d); }
+const renderer = (() => { try { return new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance' }); } catch (e) { noGL(); throw e; } })();
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2)); renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+const scene = new THREE.Scene(); scene.background = new THREE.Color(0xf3d7a4); scene.fog = new THREE.Fog(0xf3d7a4, 40, 110);
+const camera = new THREE.PerspectiveCamera(48, 1, 0.1, 400);
+scene.add(new THREE.HemisphereLight(0xfff4e0, 0xb59a6a, 0.8));
+const sunL = new THREE.DirectionalLight(0xffe9c4, 0.8); sunL.position.set(-12, 22, 10); sunL.castShadow = true; sunL.shadow.mapSize.set(1024, 1024);
+Object.assign(sunL.shadow.camera, { left: -26, right: 26, top: 26, bottom: -26, near: 1, far: 70 }); scene.add(sunL);
+const grad = (() => { const d = new Uint8Array([90, 160, 255]); const tx = new THREE.DataTexture(d, 3, 1, THREE.LuminanceFormat); tx.minFilter = tx.magFilter = THREE.NearestFilter; tx.needsUpdate = true; return tx; })();
+const matCache = {};
+function M(c) { if (!matCache[c]) matCache[c] = new THREE.MeshToonMaterial({ color: c, gradientMap: grad }); return matCache[c]; }
+function mesh(geo, mat) { const m = new THREE.Mesh(geo, mat); m.castShadow = true; m.receiveShadow = true; return m; }
+const BOX = new THREE.BoxGeometry(1, 1, 1), SPH = new THREE.SphereGeometry(0.5, 16, 12), CYL = new THREE.CylinderGeometry(0.5, 0.5, 1, 14), CONE = new THREE.ConeGeometry(0.5, 1, 12);
+function box(w, h, d, c, x = 0, y = 0, z = 0) { const m = mesh(BOX, M(c)); m.scale.set(w, h, d); m.position.set(x, y, z); return m; }
+// ---------- art assets: Pixar-style 3D models (GLB) + painted backdrops, made in Higgsfield ----------
+// Files live in ./assets next to this page. Anything missing falls back to the simple built-in shapes.
+const ART = 'assets/';
+const GLB = {}, IMG = {};
+function boxOf(obj) { // bounds that also work for skinned (rigged) characters
+  obj.updateMatrixWorld(true);
+  let skinned = null; obj.traverse(o => { if (o.isSkinnedMesh && !skinned) skinned = o; });
+  if (!skinned) return new THREE.Box3().setFromObject(obj);
+  const box = new THREE.Box3(), v = new THREE.Vector3();
+  obj.traverse(o => { if (!o.isSkinnedMesh) return; o.skeleton.update(); const n = o.geometry.attributes.position.count;
+    for (let i = 0; i < n; i += 7) { v.fromBufferAttribute(o.geometry.attributes.position, i); o.boneTransform(i, v); v.applyMatrix4(o.matrixWorld); box.expandByPoint(v); } });
+  return box;
+}
+function fitModel(obj, size, axis) {
+  obj.updateMatrixWorld(true);
+  const b = boxOf(obj), s = new THREE.Vector3(); b.getSize(s);
+  const ref = axis === 'h' ? s.y : axis === 'w' ? s.x : axis === 'l' ? Math.max(s.x, s.z) : Math.max(s.x, s.y, s.z);
+  obj.scale.multiplyScalar(size / (ref || 1)); obj.updateMatrixWorld(true);
+  const b2 = boxOf(obj), c = new THREE.Vector3(); b2.getCenter(c);
+  obj.position.x -= c.x; obj.position.z -= c.z; obj.position.y -= b2.min.y;
+  const g = new THREE.Group(); g.add(obj); return g;
+}
+// Generated models face +x by default; these turns make each one face +z (towards the camera / along the hero)
+const MODEL_YAW = { shop: -Math.PI / 2, chest: -Math.PI / 2, oyster: -Math.PI / 2, tent: -Math.PI / 2, jelly: -Math.PI / 2, trafficCar: -Math.PI / 2, raceCar: -Math.PI / 2, scooter: 0, fish: -Math.PI / 2, boat: Math.PI / 2, stall: -Math.PI / 2 };
+function glb(name, size, axis) {
+  const src = GLB[name]; if (!src) return null;
+  const o = src.userData.skinned && THREE.SkeletonUtils ? THREE.SkeletonUtils.clone(src) : src.clone(true);
+  o.rotation.y = MODEL_YAW[name] || 0; // turn every model so its front faces +z
+  const g = fitModel(o, size, axis); g.userData.model = o; g.userData.clips = src.userData.clips || []; return g;
+}
+function prepModel(s) {
+  s.traverse(o => {
+    if (!o.isMesh) return;
+    o.castShadow = true; o.receiveShadow = true;
+    if (o.isSkinnedMesh) { s.userData.skinned = true; o.frustumCulled = false; }
+    (Array.isArray(o.material) ? o.material : [o.material]).forEach(m => {
+      if (m.map) { m.map.encoding = THREE.LinearEncoding; m.map.needsUpdate = true; } // match the game's colour pipeline
+      if (m.emissiveMap) m.emissiveMap.encoding = THREE.LinearEncoding;
+      if ('metalness' in m) { m.metalness = Math.min(m.metalness, 0.15); m.roughness = Math.max(m.roughness, 0.55); }
+      m.needsUpdate = true;
+    });
+  });
+}
+function imgColor(im, yFrac, k = 1) { // average colour of one row band of an image, as "r,g,b"
+  const c = document.createElement('canvas'); c.width = 32; c.height = 32; const x = c.getContext('2d'); x.drawImage(im, 0, 0, 32, 32);
+  const d = x.getImageData(0, Math.floor(yFrac * 31), 32, 1).data; let r = 0, g = 0, b = 0; for (let i = 0; i < 32; i++) { r += d[i * 4]; g += d[i * 4 + 1]; b += d[i * 4 + 2]; }
+  const f = v => Math.min(255, Math.round(v / 32 * k)); return `${f(r)},${f(g)},${f(b)}`;
+}
+function loadArt(models, images) {
+  const jobs = [];
+  if (THREE.GLTFLoader) {
+    const L = new THREE.GLTFLoader();
+    for (const [k, f] of Object.entries(models)) jobs.push(new Promise(res => L.load(ART + f, g => { const s = g.scene; prepModel(s); s.userData.clips = g.animations; GLB[k] = s; res(); }, undefined, () => res())));
+  }
+  const TL = new THREE.TextureLoader();
+  for (const [k, f] of Object.entries(images)) jobs.push(new Promise(res => TL.load(ART + f, t => { IMG[k] = t; res(); }, undefined, () => res())));
+  return Promise.race([Promise.all(jobs), new Promise(r => setTimeout(r, 45000))]);
+}
+const headTex = {}; function cutout(src) { if (!headTex[src]) headTex[src] = new THREE.TextureLoader().load(src); return headTex[src]; }
+function makeKidHead() {
+  const h = new THREE.Group(), s = CHILD.suit, skin = CHILD.skin;
+  if (CHILD.headFront) {
+    const pf = mesh(new THREE.PlaneGeometry(1.15, 1.15), new THREE.MeshBasicMaterial({ map: cutout(CHILD.headFront), transparent: true, alphaTest: 0.1 })); pf.position.z = 0.02; h.add(pf);
+    const pb = mesh(new THREE.PlaneGeometry(1.15, 1.15), new THREE.MeshBasicMaterial({ map: cutout(CHILD.headBack || CHILD.headFront), transparent: true, alphaTest: 0.1 })); pb.rotation.y = Math.PI; pb.position.z = -0.02; h.add(pb);
+    return h;
+  }
+  const face = mesh(SPH, M(skin)); face.scale.set(0.74, 0.76, 0.7); h.add(face);
+  const dark = M(0x2b1d16);
+  [-0.14, 0.14].forEach(x => { const e = mesh(SPH, dark); e.scale.set(0.1, 0.13, 0.06); e.position.set(x, 0.04, 0.33); h.add(e);
+    const w = mesh(SPH, new THREE.MeshBasicMaterial({ color: 0xffffff })); w.scale.setScalar(0.04); w.position.set(x + 0.02, 0.07, 0.37); h.add(w); });
+  const smile = mesh(new THREE.TorusGeometry(0.09, 0.022, 6, 12, Math.PI), M(0x9b3b3b)); smile.rotation.z = Math.PI; smile.position.set(0, -0.15, 0.33); h.add(smile);
+  [-0.24, 0.24].forEach(x => { const c = mesh(SPH, M(0xff9c9c)); c.scale.set(0.1, 0.06, 0.03); c.position.set(x, -0.08, 0.3); h.add(c); });
+  const hairC = CHILD.hair;
+  if (G && CHILD.hijab) {
+    const top = mesh(SPH, M(s.accent)); top.scale.set(0.84, 0.86, 0.8); top.position.set(0, 0.03, -0.05); h.add(top);
+    const fr = mesh(new THREE.TorusGeometry(0.34, 0.07, 8, 20), M(s.accent)); fr.scale.set(1, 1.12, 1); fr.position.set(0, 0, 0.24); h.add(fr);
+    face.position.z = 0.02;
+  } else if (G) {
+    const top = mesh(SPH, M(hairC)); top.scale.set(0.8, 0.5, 0.76); top.position.set(0, 0.2, -0.04); h.add(top);
+    h.add(box(0.74, 0.8, 0.2, hairC, 0, -0.12, -0.28));
+  } else {
+    const top = mesh(SPH, M(hairC)); top.scale.set(0.8, 0.46, 0.78); top.position.set(0, 0.22, -0.05); h.add(top);
+    const fr = box(0.5, 0.12, 0.14, hairC, 0.06, 0.3, 0.28); fr.rotation.z = -0.15; h.add(fr);
+  }
+  // the «فطام» nose clip pearl divers wore
+  h.add(box(0.16, 0.06, 0.06, 0x3a2a1a, 0, -0.04, 0.37));
+  return h;
+}
+function makeDetective() {
+  const g = new THREE.Group();
+  const art = glb('hero', 1.8, 'h');
+  if (art) { g.add(art); const mixer = new THREE.AnimationMixer(art.userData.model); const clip = art.userData.clips[0]; let act = null; if (clip) { act = mixer.clipAction(clip); act.play(); } g.userData = { glb: true, mixer, act }; return g; }
+  const s = CHILD.suit, body = new THREE.Group(); g.add(body);
+  body.add(box(0.62, 0.7, 0.4, s.main, 0, 1.15, 0)); body.add(box(0.64, 0.1, 0.42, s.accent, 0, 0.84, 0));
+  const head = makeKidHead(); head.scale.setScalar(0.85); head.position.set(0, 1.85, 0); body.add(head);
+  const legs = [], arms = [];
+  [-1, 1].forEach(sd => {
+    const a = new THREE.Group(); a.position.set(sd * 0.4, 1.45, 0); body.add(a); a.add(box(0.16, 0.56, 0.18, s.main, 0, -0.26, 0)); arms.push(a);
+    const l = new THREE.Group(); l.position.set(sd * 0.16, 0.8, 0); body.add(l); l.add(box(0.2, 0.7, 0.22, 0x2a3555, 0, -0.35, 0)); l.add(box(0.24, 0.12, 0.34, 0xffffff, 0, -0.74, 0.05)); legs.push(l);
+  });
+  g.userData = { body, legs, arms }; return g;
+}
+
+// ---------- souq square ----------
+const world = new THREE.Group(); scene.add(world);
+const npcs = [], spots = [], props = [];
+let target = null, marker = null;
+function floorTex() {
+  const c = document.createElement('canvas'); c.width = c.height = 256; const x = c.getContext('2d');
+  x.fillStyle = '#8f7a5a'; x.fillRect(0, 0, 256, 256);
+  for (let i = 0; i < 8; i++) for (let j = 0; j < 8; j++) { x.fillStyle = ['#a88f68', '#b39a72', '#9e865f'][(i * 3 + j * 5) % 3]; x.fillRect(i * 32 + 1, j * 32 + 1, 30, 30); }
+  const tx = new THREE.CanvasTexture(c); tx.wrapS = tx.wrapT = THREE.RepeatWrapping; tx.repeat.set(8, 8); return tx;
+}
+function npcFallback(col) {
+  const g = new THREE.Group(); g.add(box(0.8, 1.5, 0.5, 0xf2efe6, 0, 0.75, 0)); const h = mesh(SPH, M(0xd9a273)); h.scale.setScalar(0.62); h.position.y = 1.85; g.add(h);
+  const cap = mesh(SPH, M(col)); cap.scale.set(0.68, 0.36, 0.68); cap.position.y = 2.05; g.add(cap); return g;
+}
+function nameTag(text, col) {
+  const c = document.createElement('canvas'); c.width = 512; c.height = 128; const x = c.getContext('2d');
+  x.fillStyle = 'rgba(16,35,63,.85)'; x.beginPath(); x.roundRect ? x.roundRect(8, 16, 496, 96, 40) : x.rect(8, 16, 496, 96); x.fill();
+  x.fillStyle = '#fff'; x.font = '800 54px "Baloo Bhaijaan 2", sans-serif'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.direction = 'rtl'; x.fillText(text, 256, 66);
+  const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(c), depthTest: false, fog: false })); sp.scale.set(2.6, 0.65, 1); sp.renderOrder = 5; return sp;
+}
+function iconSprite(ch, bg) {
+  const c = document.createElement('canvas'); c.width = c.height = 128; const x = c.getContext('2d');
+  x.fillStyle = bg; x.beginPath(); x.arc(64, 64, 56, 0, Math.PI * 2); x.fill(); x.lineWidth = 8; x.strokeStyle = '#10233f'; x.stroke();
+  x.fillStyle = '#10233f'; x.font = '800 70px sans-serif'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText(ch, 64, 70);
+  const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(c), depthTest: false, fog: false })); sp.scale.setScalar(0.9); sp.renderOrder = 6; return sp;
+}
+function shopFront(place, key) {
+  const g = new THREE.Group(); const p = PLACES[place];
+  const art = glb('shop', 7, 'w');
+  if (art) g.add(art); else { g.add(box(6, 5, 4, 0xe2c79a, 0, 2.5, -1)); g.add(box(2, 2.6, 0.2, 0x6b4426, 0, 1.3, 1.05)); g.add(box(6.4, 0.3, 1.6, 0xb3402f, 0, 3.3, 1.5)); }
+  if (key === 'dates') { const st = glb('stall', 3, 'w'); if (st) { st.position.set(0, 0, 3.2); g.add(st); } else g.add(box(3, 1, 1.4, 0x8a5a32, 0, 0.5, 3.2)); }
+  g.position.set(p.x * 1.4, 0, p.z * 1.4); g.lookAt(0, 0, 0); return g;
+}
+function buildWorld() {
+  while (world.children.length) world.remove(world.children[0]); npcs.length = 0; spots.length = 0; props.length = 0;
+  const fl = mesh(new THREE.PlaneGeometry(80, 80), new THREE.MeshToonMaterial({ map: floorTex(), gradientMap: grad })); fl.rotation.x = -Math.PI / 2; world.add(fl); fl.name = 'floor';
+  if (IMG.bg) { // painted souq sky all around
+    const a = IMG.bg.image.width / IMG.bg.image.height, H = 70;
+    for (let k = 0; k < 4; k++) { const p = mesh(new THREE.PlaneGeometry(H * a, H), new THREE.MeshBasicMaterial({ map: IMG.bg, fog: false, depthWrite: false })); const ang = k * Math.PI / 2; p.position.set(Math.sin(ang) * 75, H / 2 - 18, Math.cos(ang) * 75); p.lookAt(0, H / 2 - 18, 0); p.renderOrder = -1; world.add(p); }
+  }
+  for (const k of ['dates', 'perfume', 'tailor']) world.add(shopFront(k, k));
+  // sea gate: an arch with the boat behind it
+  const sp = PLACES.sea, gate = new THREE.Group(); gate.add(box(0.8, 5, 0.8, 0xd8c08f, -2.2, 2.5, 0)); gate.add(box(0.8, 5, 0.8, 0xd8c08f, 2.2, 2.5, 0)); gate.add(box(5.4, 0.9, 0.9, 0xd8c08f, 0, 5.2, 0));
+  const water = mesh(new THREE.PlaneGeometry(14, 8), M(0x2fa8d8)); water.rotation.x = -Math.PI / 2; water.position.set(0, 0.03, -5); gate.add(water);
+  const boat = glb('boat', 8, 'l'); if (boat) { boat.position.set(0, -1.2, -6); gate.add(boat); }
+  gate.position.set(sp.x * 1.55, 0, sp.z * 1.55); gate.lookAt(0, 0, 0); world.add(gate);
+  // palms, lanterns and stalls around the square
+  for (let k = 0; k < 10; k++) { const a = k / 10 * Math.PI * 2 + 0.3, r = 22 + (k % 2) * 3; const p = glb('palm', 7 + Math.random() * 2, 'h') || box(0.6, 6, 0.6, 0x8a5a32, 0, 3, 0); p.position.set(Math.cos(a) * r, 0, Math.sin(a) * r); world.add(p); }
+  for (let k = 0; k < 6; k++) { const a = k / 6 * Math.PI * 2 + 0.6; const st = glb('stall', 2.4, 'w'); if (st) { st.position.set(Math.cos(a) * 15, 0, Math.sin(a) * 15); st.lookAt(0, 0, 0); world.add(st); } }
+  for (let k = 0; k < 0; k++) { const a = 0; const l = glb('lantern', 1.6, 'h'); if (!l) continue; const post = new THREE.Group(); post.add(box(0.15, 3.2, 0.15, 0x6b4426, 0, 1.6, 0)); l.position.y = 1.6; post.add(l); post.position.set(Math.cos(a) * 5.5, 0, Math.sin(a) * 5.5); world.add(post); }
+}
+
+// ====================================================================================
+//  GAMEPLAY
+// ====================================================================================
+let state = 'title';
+let timers = [], runId = 0; function later(s, fn) { timers.push({ t: s, fn }); }
+function later2(s, fn) { const id = runId; setTimeout(() => { if (id === runId) fn(); }, s * 1000); }
+let det = null;
+const P = { x: 0, z: 2, vx: 0, vz: 0, face: Math.PI, walk: 0 };
+const keys = {}, inp = { x: 0, z: 0 };
+const coarse = matchMedia('(pointer: coarse)').matches;
+let CH = null, chI = 0, stI = 0, S = null, near = null, prize = null, revealT = 0;
+let chRun = { mistakes: 0 }, clues = [];
+const stObjs = []; // stage-only objects
+function band() { const a = save.age || CHILD.age || 8; return a <= 9 ? 0 : a === 10 ? 1 : 2; }
+function shuffle(a) { return a.slice().sort(() => Math.random() - 0.5); }
+function placePos(k, f = 0.98) { const p = PLACES[k]; return { x: p.x * f, z: p.z * f + (p.z > 0 ? -1.5 : 1.5) }; }
+function placeName(k) { return lang === 'en' ? PLACES[k].en : PLACES[k].label; }
+function clearStage() { for (const o of stObjs) world.remove(o.g || o); stObjs.length = 0; for (const s of spots) world.remove(s.g); spots.length = 0; if (marker) { world.remove(marker); marker = null; } }
+let toastT = 0;
+function toast(m, s = 1.1) { const e = $('toast'); e.textContent = m; e.classList.add('on'); toastT = s; }
+function flash(c = '#fff') { const f = $('flash'); f.style.background = c; f.style.transition = 'none'; f.style.opacity = 0.6; requestAnimationFrame(() => { f.style.transition = 'opacity .5s'; f.style.opacity = 0; }); }
+function setProg(txt) { const e = $('prog'); e.textContent = txt || ''; e.style.display = txt ? '' : 'none'; }
+function stTitle(d) { return lang === 'en' ? d.title[1] : d.title[0]; }
+function drawGoal() { $('dots').innerHTML = CH.stages.map((_, i) => `<i class="${i < stI ? 'on' : i === stI ? 'now' : ''}"></i>`).join(''); $('goalT').textContent = S ? stTitle(S.def) : ''; }
+function drawClues() { $('clueCount').textContent = num(clues.length); }
+function addClue(text) { clues.push(text); sfx.clue(); toast('🔎 +1', 1); drawClues(); if (save.cur) { save.cur.clues = clues.slice(); persist(); } }
+function setCard(tag, text) { $('card').innerHTML = text ? `<span class="tag">${tag}</span><div class="clue">${text}</div>` : ''; }
+function stageSub(d) {
+  const C = CH;
+  if (d.type === 'talk') return '💬 ' + num(C.witnesses.length) + ' ' + t('witnesses');
+  if (d.type === 'search') return '🔍 ' + num(C.hidden.length) + ' ' + t('hidden');
+  if (d.type === 'follow') return '👣 ' + num(C.follow.length) + ' ' + t('forks');
+  if (d.type === 'decode') return '📜 ' + num(C.decode.length) + ' ' + t('words');
+  if (d.type === 'route') return '🗓️ ' + num(C.route.order.length) + ' ' + t('places');
+  if (d.type === 'deliver') return '📦 ' + num(3) + ' ' + t('parcels');
+  return '';
+}
+const parts = [];
+function burst(x, y, z, n = 20) { for (let i = 0; i < n; i++) { const m = new THREE.Mesh(BOX, new THREE.MeshBasicMaterial({ color: [0xffd23f, 0xff5f8f, 0x2fd39a, 0x7ff9ff][i % 4] })); m.scale.setScalar(0.16); m.position.set(x, y, z); scene.add(m); parts.push({ m, v: new THREE.Vector3((Math.random() - 0.5) * 6, 3 + Math.random() * 5, (Math.random() - 0.5) * 6), life: 1.2 }); } }
+function textSign(text, col = '#fff8ec', w = 3.2) {
+  const c = document.createElement('canvas'); c.width = 512; c.height = 160; const x = c.getContext('2d');
+  x.fillStyle = col; x.strokeStyle = '#10233f'; x.lineWidth = 10; x.beginPath(); x.roundRect ? x.roundRect(6, 6, 500, 148, 40) : x.rect(6, 6, 500, 148); x.fill(); x.stroke();
+  x.fillStyle = '#10233f'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.direction = 'rtl'; let fs = 64; x.font = `800 ${fs}px "Baloo Bhaijaan 2", sans-serif`; while (x.measureText(text).width > 470 && fs > 30) { fs -= 4; x.font = `800 ${fs}px "Baloo Bhaijaan 2", sans-serif`; } x.fillText(text, 256, 86);
+  const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(c), depthTest: false, fog: false })); sp.scale.set(w, w * 160 / 512, 1); sp.renderOrder = 7; return sp;
+}
+function ringAt(x, z, col = 0xffd23f, r = 1.2) { const m = mesh(new THREE.RingGeometry(r * 0.75, r, 32), new THREE.MeshBasicMaterial({ color: col, side: THREE.DoubleSide, transparent: true, opacity: 0.85 })); m.rotation.x = -Math.PI / 2; m.position.set(x, 0.06, z); return m; }
+function printDecal(x, z, ang, kind) { const g = new THREE.Group(); const col = kind === 'feather' ? 0x2fbf71 : 0x6b4426; for (const s of [-1, 1]) { const m = mesh(kind === 'feather' ? new THREE.PlaneGeometry(0.18, 0.5) : new THREE.CircleGeometry(0.16, 10), new THREE.MeshBasicMaterial({ color: col, transparent: true, opacity: 0.75 })); m.rotation.x = -Math.PI / 2; if (kind === 'feather') m.rotation.z = Math.random() * 3; m.position.set(s * 0.18, 0.05, s * 0.25); g.add(m); } g.position.set(x, 0, z); g.rotation.y = ang; return g; }
+function parcelMesh() { const g = new THREE.Group(); g.add(box(0.9, 0.6, 0.7, 0xb07a45, 0, 0.3, 0)); g.add(box(0.95, 0.06, 0.12, 0xe8d6a8, 0, 0.61, 0)); g.add(box(0.12, 0.62, 0.72, 0xe8d6a8, 0, 0.31, 0)); return g; }
+
+// ---------- people ----------
+function placePeople() {
+  for (const n of npcs) world.remove(n.g); npcs.length = 0;
+  const C = CH, who = [[C.client, { x: 0, z: -2.5 }, true]].concat(C.witnesses.map(w => [w[0], placePos(w[1]), false]));
+  const seen = new Set();
+  for (const [key, at, client] of who) {
+    if (seen.has(key)) continue; seen.add(key);
+    const P0 = PEOPLE[key]; const g = new THREE.Group(); const art = glb(P0.model, key === 'granny' ? 1.75 : 1.9, 'h'); g.add(art || npcFallback(P0.col));
+    const tag = nameTag(P0.name, P0.col); tag.position.y = 2.6; g.add(tag);
+    const ic = iconSprite('!', '#ffd23f'); ic.position.y = 3.25; ic.visible = false; g.add(ic);
+    g.position.set(at.x, 0, at.z); g.lookAt(0, 0, 0); world.add(g);
+    npcs.push({ g, key, icon: ic, wi: C.witnesses.findIndex(w => w[0] === key), client, done: false });
+  }
+}
+
+// ---------- reading panel ----------
+let readCb = null;
+function openText(who, text, quiz, onDone, speak = true) {
+  state = 'read'; $('read').classList.remove('hidden'); $('rWho').textContent = who; $('rText').textContent = text; $('rFb').textContent = ''; $('rQ').textContent = '';
+  if (speak) sayText(text); sfx.open();
+  if (!quiz) { $('rOpts').innerHTML = `<button class="go" id="rOk">${t('cont')}</button>`; $('rOk').onclick = () => { closeRead(); onDone && onDone(); }; return; }
+  $('rQ').textContent = quiz[0]; let solved = false; const rid = runId;
+  const opts = quiz.slice(1).map((o, k) => ({ o, ok: k === 0 })).sort(() => Math.random() - 0.5);
+  $('rOpts').innerHTML = opts.map((x, k) => `<button class="opt" data-k="${k}">${x.o}</button>`).join('');
+  $('rOpts').querySelectorAll('.opt').forEach(b => b.onclick = () => {
+    if (solved || b.classList.contains('no')) return; const x = opts[+b.dataset.k];
+    if (x.ok) { solved = true; $('rOpts').querySelectorAll('.opt').forEach(o => o.disabled = true); b.classList.add('ok'); sfx.good(); praise(); $('rFb').textContent = onDone && onDone.final ? t('rightSolve') : t('right'); setTimeout(() => { if (rid !== runId || state !== 'read') return; closeRead(); onDone && onDone(); }, 1300); }
+    else { chRun.mistakes++; b.classList.add('no'); sfx.bad(); $('rFb').textContent = t('wrong'); ev('try'); }
+  });
+}
+function closeRead() { $('read').classList.add('hidden'); if (state === 'read') state = 'play'; last = performance.now(); }
+
+// ====================================================================================
+//  THE MISSIONS
+// ====================================================================================
+const STAGE = {};
+STAGE.talk = {
+  start(S) { S.left = CH.witnesses.length; npcs.forEach(n => { n.icon.visible = !n.client; n.done = n.client; }); this.prog(S); setCard('💬', lineText('g_talk')); },
+  prog(S) { setProg('💬 ' + num(CH.witnesses.length - S.left) + '/' + num(CH.witnesses.length)); },
+  interact(S, nr) {
+    if (nr.type !== 'npc') return false; const n = nr.o, P0 = PEOPLE[n.key];
+    if (n.client) { openText(P0.name, txt(CH.intro), null); return true; }
+    const w = CH.witnesses[n.wi], d = txt(w[2]);
+    if (n.done) { openText(P0.name, d[0], null); return true; }
+    openText(P0.name + ' · ' + P0.role, d[0], d.slice(1), () => { n.done = true; n.icon.visible = false; addClue(`${P0.name}: ${d[0]}`); S.left--; this.prog(S); if (S.left <= 0) later(0.4, stageDone); });
+    return true;
+  }
+};
+STAGE.search = {
+  start(S) {
+    S.left = CH.hidden.length;
+    const add = (x, z, i, real) => { const g = new THREE.Group(); const sp = iconSprite('🔍', '#ffffff'); sp.position.y = 0.9; g.add(sp); const ring = mesh(new THREE.RingGeometry(0.5, 0.75, 24), new THREE.MeshBasicMaterial({ color: 0xffd23f, transparent: true, opacity: 0.8, side: THREE.DoubleSide })); ring.rotation.x = -Math.PI / 2; ring.position.y = 0.05; g.add(ring); g.position.set(x, 0, z); world.add(g); spots.push({ g, i, done: false, ring, real }); };
+    CH.hidden.forEach((h, i) => { const p = PLACES[h[0]]; add(p.x * 0.98 + h[1], p.z * 0.98 + h[2] * Math.sign(-p.z), i, true); });
+    const dec = (CH.decoys || 0) + (band() > 0 ? 1 : 0), keysP = Object.keys(PLACES);
+    for (let k = 0; k < dec; k++) { const p = PLACES[keysP[(k * 3 + chI) % 4]]; add(p.x * 0.8 + (k % 2 ? 2.6 : -2.6), p.z * 0.8, -1, false); }
+    this.prog(S); setCard('🔍', lineText('g_search'));
+  },
+  prog(S) { setProg('🔍 ' + num(CH.hidden.length - S.left) + '/' + num(CH.hidden.length)); },
+  interact(S, nr) {
+    if (nr.type !== 'spot') return false; const s = nr.o; if (s.done) return true;
+    if (!s.real) { s.done = true; world.remove(s.g); sfx.bad(); toast('🤷 ' + t('nothing'), 1); sayLine('nothing'); return true; }
+    const h = CH.hidden[s.i]; openText('🔍 ' + t('inspect'), txt(h[3]), null, () => { s.done = true; world.remove(s.g); addClue('🔍 ' + txt(h[3])); S.left--; this.prog(S); if (S.left <= 0) later(0.4, stageDone); });
+    return true;
+  }
+};
+STAGE.follow = {
+  start(S) { S.fi = 0; S.origin = { x: 0, z: 13 }; P.x = 0; P.z = 14; this.fork(S); },
+  fork(S) {
+    for (const o of S.objs || []) world.remove(o); S.objs = [];
+    const f = txt(CH.follow[S.fi]), o = S.origin, kind = CH.item === 'parrot' ? 'feather' : 'paw';
+    const dz = -6.2, goodLeft = Math.random() < 0.5; S.opts = [];
+    [-1, 1].forEach(side => {
+      const x = Math.max(-16, Math.min(16, o.x + side * 4.6)), z = o.z + dz, good = (side < 0) === goodLeft;
+      const n = 5; for (let k = 1; k <= n; k++) { const u = k / (n + 1); const g = printDecal(o.x + (x - o.x) * u, o.z + (z - o.z) * u, Math.atan2(x - o.x, z - o.z), kind); world.add(g); S.objs.push(g); }
+      const sign = textSign(good ? f[1] : f[2], '#fff8ec', 3.0); sign.position.set(x, 2.1, z); world.add(sign); S.objs.push(sign);
+      const r = ringAt(x, z, 0xffd23f, 1.3); world.add(r); S.objs.push(r);
+      S.opts.push({ x, z, good });
+    });
+    S.objs.forEach(o2 => stObjs.push(o2)); setCard('👣 ' + num(S.fi + 1) + '/' + num(CH.follow.length), f[0]); sayText(f[0]); setProg('👣 ' + num(S.fi) + '/' + num(CH.follow.length)); S.cool = 0;
+  },
+  update(S, dt) {
+    S.cool = Math.max(0, (S.cool || 0) - dt);
+    for (const o of S.opts || []) if (S.cool <= 0 && Math.hypot(P.x - o.x, P.z - o.z) < 1.3) {
+      if (o.good) { sfx.good(); praise(); burst(o.x, 1, o.z, 14); S.origin = { x: o.x, z: o.z }; S.fi++;
+        if (S.fi >= CH.follow.length) { const last = txt(CH.follow[CH.follow.length - 1]); addClue('👣 ' + last[0] + ' → ' + last[1]); S.opts = []; setProg('👣 ' + num(S.fi) + '/' + num(CH.follow.length)); later(0.6, stageDone); }
+        else { S.opts = []; later(0.5, () => this.fork(S)); }
+      } else { chRun.mistakes++; sfx.bad(); flash('#ffd3dc'); sayLine('wrong_way'); S.cool = 1.5; P.x = S.origin.x; P.z = S.origin.z + 1; P.vx = P.vz = 0; }
+      break;
+    }
+  }
+};
+STAGE.route = {
+  start(S) { S.ri = 0; S.order = CH.route.order; S.rings = {}; Object.keys(PLACES).forEach(k => { const p = placePos(k, 0.9); const r = ringAt(p.x, p.z, 0x7fb6ff, 2.2); world.add(r); stObjs.push(r); const sg = textSign(placeName(k), '#ffffff', 3.4); sg.position.set(p.x, 3.2, p.z); world.add(sg); stObjs.push(sg); S.rings[k] = r; }); setCard('🗓️ ' + t('schedule'), txt(CH.route)); sayText(txt(CH.route)); this.prog(S); S.inside = null; },
+  prog(S) { setProg('🗓️ ' + num(S.ri) + '/' + num(S.order.length)); },
+  update(S, dt) {
+    let inside = null; for (const k of Object.keys(PLACES)) { const p = placePos(k, 0.9); if (Math.hypot(P.x - p.x, P.z - p.z) < 2.3) inside = k; }
+    if (inside && inside !== S.inside) {
+      const want = S.order[S.ri];
+      if (inside === want) { S.ri++; sfx.good(); S.rings[inside].material.color.set(0x2fd39a); this.prog(S); burst(P.x, 1, P.z, 12); if (S.ri >= S.order.length) { addClue('🗓️ ' + txt(CH.route)); later(0.6, stageDone); } else sayLine('right_way'); }
+      else if (!S.order.slice(0, S.ri).includes(inside)) { chRun.mistakes++; sfx.bad(); sayLine('wrong_place'); toast('✘ ' + placeName(inside), 1); }
+    }
+    S.inside = inside;
+  }
+};
+STAGE.deliver = {
+  start(S) { S.list = shuffle(txt(CH.deliver)); S.di = 0; S.carry = null; const pile = new THREE.Group(); for (let k = 0; k < 3; k++) { const m = parcelMesh(); m.position.set((k - 1) * 0.5, k === 1 ? 0.6 : 0, 0); pile.add(m); } pile.position.set(1.8, 0, -2.5); world.add(pile); stObjs.push(pile); S.pile = pile; this.prog(S); setCard('📦', lineText('g_deliver')); },
+  prog(S) { setProg('📦 ' + num(S.di) + '/' + num(S.list.length)); },
+  update(S, dt) {
+    if (S.carry) { S.carry.position.set(P.x, 2.1, P.z); S.carry.rotation.y = P.face; }
+    if (S.carry) for (const k of Object.keys(PLACES)) { const p = placePos(k, 0.9); if (Math.hypot(P.x - p.x, P.z - p.z) < 2.3 && S.lastPlace !== k) { S.lastPlace = k;
+      if (k === S.list[S.di][1]) { world.remove(S.carry); S.carry = null; S.di++; sfx.good(); sayLine('delivered'); burst(p.x, 1, p.z, 16); this.prog(S); setCard('📦', lineText('g_deliver')); if (S.di >= S.list.length) later(0.8, stageDone); }
+      else { chRun.mistakes++; sfx.bad(); sayLine('wrong_place'); toast('✘ ' + placeName(k), 1.1); } } }
+    if (!S.carry) S.lastPlace = null;
+  },
+  near(S) { return !S.carry && S.di < S.list.length && Math.hypot(P.x - S.pile.position.x, P.z - S.pile.position.z) < 2.2 ? { type: 'pile' } : null; },
+  interact(S, nr) {
+    if (nr.type !== 'pile' || S.carry) return false; const [label] = S.list[S.di];
+    S.carry = parcelMesh(); const lab = textSign(label, '#fffdf4', 2.6); lab.position.y = 1.1; S.carry.add(lab); world.add(S.carry); stObjs.push(S.carry); sfx.open(); setCard('📦 ' + num(S.di + 1), label); sayText(label); S.lastPlace = null; return true;
+  }
+};
+STAGE.decode = {
+  start(S) { S.wi = 0; setCard('📜', lineText('g_decode')); setProg('📜 0/' + num(CH.decode.length)); later(0.6, () => this.open(S)); },
+  open(S) {
+    if (state !== 'play') { later(0.5, () => this.open(S)); return; }
+    state = 'puz'; $('puz').classList.remove('hidden'); $('puzT').textContent = '📜 ' + t('torn'); S.word = CH.decode[S.wi]; S.gaps = pickGaps(S.word[0]); S.gi = 0; this.draw(S);
+  },
+  draw(S) {
+    const W = Array.from(S.word[0]), pos = S.gaps[S.gi];
+    $('puzClue').innerHTML = `<span style="font-size:1.4em">${S.word[1]}</span>`;
+    $('puzSlots').innerHTML = W.map((c, i) => { const g = S.gaps.indexOf(i); return g < 0 ? `<span class="slot given">${c}</span>` : g < S.gi ? `<span class="slot got">${c}</span>` : `<span class="slot${i === pos ? ' next' : ''}"></span>`; }).join('');
+    $('puzFb').textContent = '';
+    if (S.gi >= S.gaps.length) { $('puzTiles').innerHTML = ''; return; }
+    const target = W[pos], opts = shuffle([target, ...shuffle(lookalikes(target).concat(ALL_L.filter(c => c !== target))).filter((c, i, a) => a.indexOf(c) === i && c !== target).slice(0, 3)]);
+    $('puzTiles').innerHTML = opts.map(c => `<button class="tile" data-c="${c}">${c}</button>`).join('');
+    $('puzTiles').querySelectorAll('.tile').forEach(b => b.onclick = () => {
+      if (b.dataset.c === target) { sfx.good(); S.gi++; this.draw(S); if (S.gi >= S.gaps.length) { sfx.clue(); sayText(S.word[0]); const rid = runId; setTimeout(() => { if (rid !== runId) return; addClue('📜 ' + S.word[0]); S.wi++; setProg('📜 ' + num(S.wi) + '/' + num(CH.decode.length)); if (S.wi >= CH.decode.length) { $('puz').classList.add('hidden'); state = 'play'; last = performance.now(); stageDone(); } else this.open2(S); }, 1100); } }
+      else { chRun.mistakes++; sfx.bad(); b.classList.add('no'); b.disabled = true; $('puzFb').textContent = t('tryAgain'); }
+    });
+  },
+  open2(S) { S.word = CH.decode[S.wi]; S.gaps = pickGaps(S.word[0]); S.gi = 0; this.draw(S); }
+};
+STAGE.solve = {
+  start(S) { S.picked = false; $('solveBtn').classList.remove('hidden'); $('solveBtn').classList.add('ready'); $('solveBtn').textContent = '⭐ ' + t('solve'); setCard('⭐', lineText('g_solve')); setProg(''); },
+  open(S) {
+    if (state !== 'play' || S.picked) return;
+    const q = txt(CH.solve), cb = () => { S.picked = true; $('solveBtn').classList.add('hidden'); ev('there'); markAnswer(); setCard('★', t('rightSolve')); }; cb.final = true;
+    openText(t('solveQ'), clues.join('\n'), q, cb, false);
+  },
+  near(S) { return S.picked && marker && Math.hypot(P.x - marker.position.x, P.z - marker.position.z) < 2 ? { type: 'answer' } : null; },
+  interact(S, nr) { if (nr.type !== 'answer') return false; reveal(); return true; },
+  exit() { $('solveBtn').classList.add('hidden'); }
+};
+function markAnswer() {
+  const p = placePos(CH.answer, 0.9); const g = new THREE.Group(); const ic = iconSprite('★', '#ffd23f'); ic.scale.setScalar(1.4); ic.position.y = 2.2; g.add(ic);
+  g.add(ringAt(0, 0, 0xffd23f, 1.3)); g.position.set(p.x, 0, p.z); world.add(g); marker = g;
+}
+function reveal() {
+  if (state !== 'play') return; state = 'reveal'; revealT = 0;
+  const C = CH, p = marker.position;
+  if (C.item === 'cat') prize = glb('cat', 1.1, 'h') || (() => { const g = new THREE.Group(); const b = mesh(SPH, M(0xf0a050)); b.scale.set(1, 0.7, 1.3); b.position.y = 0.4; g.add(b); return g; })();
+  else if (C.item === 'pearl') { prize = new THREE.Group(); const pr = mesh(SPH, new THREE.MeshToonMaterial({ color: 0xfff6fb, gradientMap: grad, emissive: 0x332233 })); pr.scale.setScalar(0.6); prize.add(pr); }
+  else if (C.item === 'parcel') { prize = parcelMesh(); prize.scale.setScalar(1.6); }
+  else if (C.item === 'parrot') { prize = new THREE.Group(); const b = mesh(SPH, M(0x2fbf71)); b.scale.set(0.6, 0.8, 0.6); b.position.y = 2.8; prize.add(b); const h = mesh(SPH, M(0x2fbf71)); h.scale.setScalar(0.45); h.position.set(0, 3.35, 0.1); prize.add(h); const bk = mesh(CONE, M(0xffc93c)); bk.scale.set(0.15, 0.25, 0.15); bk.rotation.x = Math.PI / 2; bk.position.set(0, 3.3, 0.38); prize.add(bk); const w = box(0.12, 0.5, 0.4, 0xe0403a, 0.32, 2.8, 0); prize.add(w); const w2 = box(0.12, 0.5, 0.4, 0xe0403a, -0.32, 2.8, 0); prize.add(w2); }
+  else if (C.item === 'magnifier') { prize = new THREE.Group(); const r = mesh(new THREE.TorusGeometry(0.55, 0.1, 10, 28), new THREE.MeshToonMaterial({ color: 0xffc93c, gradientMap: grad, emissive: 0x553300 })); r.position.y = 1.6; prize.add(r); const gl = mesh(new THREE.CircleGeometry(0.5, 24), new THREE.MeshBasicMaterial({ color: 0xcff4ff, transparent: true, opacity: 0.6, side: THREE.DoubleSide })); gl.position.y = 1.6; prize.add(gl); const hd = box(0.16, 0.8, 0.16, 0x8a5a32, 0, 0.8, 0); prize.add(hd); }
+  else { prize = new THREE.Group(); for (let k = 0; k < 9; k++) { const b = mesh(SPH, M([0xff5f8f, 0xffd23f, 0x2fd39a, 0x7fb6ff][k % 4])); b.scale.set(0.6, 0.75, 0.6); b.position.set((Math.random() - 0.5) * 3, 2 + Math.random() * 1.5, (Math.random() - 0.5) * 2); prize.add(b); } }
+  prize.position.set(p.x, 0, p.z); world.add(prize); stObjs.push(prize); world.remove(marker); marker = null; burst(p.x, 1.5, p.z, 40); sfx.win(); ev('solved');
+  npcs.forEach((n, k) => { n.dest = new THREE.Vector3(p.x + Math.cos(k * 1.7) * 2.6, 0, p.z + Math.sin(k * 1.7) * 2.6); });
+  later2(1.6, () => openText('⭐ ' + t('chDone'), txt(C.reveal), null, () => { state = 'play'; stageDone(); }));
+}
+
+// ---------- spelling helpers (torn note) ----------
+const TRICKY = 'ةءأإؤئىآثذظضطصغقخحجشز';
+const LOOKALIKE = [['ب', 'ت', 'ث', 'ن', 'ي'], ['ج', 'ح', 'خ'], ['د', 'ذ'], ['ر', 'ز', 'و'], ['س', 'ش'], ['ص', 'ض'], ['ط', 'ظ'], ['ع', 'غ'], ['ف', 'ق'], ['ك', 'ل'], ['م', 'ه'], ['ة', 'ه', 'ت'], ['ا', 'أ', 'إ', 'آ', 'ل'], ['ي', 'ى', 'ئ'], ['ء', 'ئ', 'ؤ', 'أ']];
+const ALL_L = 'ابتثجحخدذرزسشصضطظعغفقكلمنهويةءئأى'.split('');
+function lookalikes(ch) { const g = LOOKALIKE.find(g => g.includes(ch)) || []; return g.filter(c => c !== ch); }
+function gapCount() { const b = band(); return b === 0 ? 1 : b === 1 ? 2 : 99; }
+function pickGaps(w) { const L = Array.from(w), n = gapCount(); if (n >= L.length) return L.map((_, i) => i); const idx = L.map((_, i) => i).sort(() => Math.random() - 0.5).sort((a, b) => (TRICKY.includes(L[b]) ? 1 : 0) - (TRICKY.includes(L[a]) ? 1 : 0)); return idx.slice(0, n).sort((a, b) => a - b); }
+
+// ---------- stage lifecycle ----------
+function startChapter(i, skipIntro, resume) {
+  chI = i; CH = CASES[i]; chRun = { mistakes: 0 }; clues = [];
+  if (resume) { chRun.mistakes = resume.m || 0; clues = (resume.clues || []).slice(); }
+  buildWorld(); placePeople(); drawClues();
+  if (det) scene.remove(det); det = makeDetective(); scene.add(det);
+  const go = () => startStage(resume ? resume.s : 0);
+  if (skipIntro) go(); else storyShow(save.intro ? CH.intro2 : INTRO.concat(CH.intro2), () => { save.intro = true; persist(); go(); });
+}
+function startStage(i, retry) {
+  runId++; timers = [];
+  if (S && STAGE[S.type].exit) STAGE[S.type].exit(S);
+  clearStage(); stI = i; const def = CH.stages[i];
+  if (!retry) { save.cur = { c: chI, s: i, m: chRun.mistakes, clues: clues.slice() }; persist(); }
+  else if (save.cur && save.cur.clues) clues = save.cur.clues.slice();
+  drawClues(); npcs.forEach(n => { n.icon.visible = false; n.dest = null; });
+  Object.assign(P, { x: 0, z: 3, vx: 0, vz: 0, face: Math.PI }); target = null; prize = null;
+  S = { type: def.type, def };
+  drawGoal(); setCard('', ''); setProg('');
+  state = 'card'; showOnly('stageCard');
+  $('scIcon').textContent = def.icon; $('scNum').textContent = `${t('chapter')} ${num(chI + 1)} · ${t('stage')} ${num(i + 1)} ${t('of')} ${num(CH.stages.length)}`;
+  $('scTitle').textContent = stTitle(def); $('scWhy').textContent = ''; $('scSub').textContent = stageSub(def); $('scGoal').textContent = lineText(def.goal); $('scGo').textContent = t('go'); $('scCtrl').textContent = coarse ? '' : t('ctrl');
+  $('scGo').onclick = () => { vCtx(); musStart(); state = 'play'; last = performance.now(); showOnly(null); $('hud').classList.remove('hidden'); $('joy').classList.toggle('hidden', !coarse); STAGE[S.type].start(S); };
+  sayLine(def.goal);
+}
+function stageDone() {
+  if (state !== 'play') return; state = 'stagedone'; runId++; timers = [];
+  if (STAGE[S.type].exit) STAGE[S.type].exit(S);
+  sfx.win(); setProg(''); $('actBtn').classList.add('hidden');
+  let went = false; const next = () => { if (went) return; went = true; if (stI + 1 < CH.stages.length) startStage(stI + 1); else chapterDone(); };
+  toast('✔', 1.2); later2(1.6, next);
+}
+function chapterDone() {
+  const mistakes = chRun.mistakes, stars = mistakes <= 2 ? 3 : mistakes <= 5 ? 2 : 1;
+  const prev = save.ch[chI] || { stars: 0 }, fresh = !save.ch[chI];
+  save.ch[chI] = { stars: Math.max(prev.stars, stars), clues: clues.length }; delete save.cur; persist();
+  $('hud').classList.add('hidden'); $('joy').classList.add('hidden');
+  storyShow(CH.outro, () => {
+    state = 'end'; showOnly('end'); sayLine('case_done');
+    $('endTitle').textContent = t('chDone');
+    $('endStars').innerHTML = [0, 1, 2].map(k => `<span class="${k < stars ? 'on' : ''}">★</span>`).join('');
+    $('endStats').innerHTML = `<span class="pill">🔎 ${num(clues.length)}</span><span class="pill">${t('mistakes')}: ${num(mistakes)}</span>`;
+    $('endGateT').textContent = t('gate'); drawGate($('endGate'), fresh ? [chI] : []);
+    $('endMap').textContent = t('toMap'); $('endMap').onclick = openMap;
+    const nx = CASES[chI + 1]; $('endNext').textContent = nx ? t('nextCh') : t('toMap');
+    $('endNext').onclick = () => { if (nx) startChapter(chI + 1); else openMap(); };
+    if (CH.finale) { // the Golden Magnifier certificate
+      const tot = Object.values(save.ch).reduce((a, c) => a + (c.stars || 0), 0);
+      $('endTitle').innerHTML = `<div style="font-size:54px;line-height:1">🔍</div>${lang === 'en' ? 'Golden Magnifier Certificate' : G ? 'شهادةُ المحقّقةِ الصّغيرة' : 'شهادةُ المحقّقِ الصّغير'}<div style="font-size:clamp(30px,8vw,46px);color:var(--berry);-webkit-text-stroke:1px var(--line)">${kidName()}</div><div style="font-size:15px;font-weight:600">${lang === 'en' ? 'solved six cases in the old souq and won the Golden Magnifier!' : G ? 'حلّتْ ستَّ قضايا في السّوقِ القديم، وفازتْ بالمكبّرةِ الذّهبيّة!' : 'حلَّ ستَّ قضايا في السّوقِ القديم، وفازَ بالمكبّرةِ الذّهبيّة!'}</div>`;
+      $('endStars').innerHTML = '<span class="on">★</span><span class="on">★</span><span class="on">★</span>';
+      $('endStats').innerHTML = `<span class="pill">★ ${num(tot)}</span>`;
+      $('endNext').textContent = t('print'); $('endNext').onclick = () => window.print();
+    }
+  });
+}
+
+// ---------- story panels ----------
+let stQ = [], stCb = null, stI2 = 0, stAuto = null;
+function storyShow(panels, cb) { stQ = panels; stCb = cb; stI2 = 0; state = 'story'; showOnly('story'); $('stSkip').textContent = t('skip'); $('stNext').textContent = t('next'); storyPanel(); }
+function storyPanel() {
+  const [img, id] = stQ[stI2]; const im = $('stImg');
+  if (im.dataset.src !== img) { im.dataset.src = img; const own = KIDSLUG ? img.replace('dt2-', 'dt2-' + KIDSLUG + '-') : img; im.onerror = () => { im.onerror = null; im.src = ART + img; }; im.src = ART + own; im.style.animation = 'none'; void im.offsetWidth; im.style.animation = ''; }
+  $('stText').textContent = lineText(id);
+  $('stDots').innerHTML = stQ.map((_, i) => `<i class="${i <= stI2 ? 'on' : ''}"></i>`).join('');
+  clearTimeout(stAuto); const my = stI2;
+  sayLine(id, false, () => { if (state === 'story' && stI2 === my) stAuto = setTimeout(storyNext, 1300); });
+}
+function storyNext() { clearTimeout(stAuto); if (state !== 'story') return; stI2++; if (stI2 >= stQ.length) { vStop(); const cb = stCb; stCb = null; showOnly(null); cb && cb(); } else storyPanel(); }
+$('stNext').onclick = e => { e.stopPropagation(); vCtx(); storyNext(); };
+$('story').onclick = () => { vCtx(); storyNext(); };
+$('stSkip').onclick = e => { e.stopPropagation(); clearTimeout(stAuto); vStop(); stI2 = stQ.length - 1; storyNext(); };
+
+// ---------- screens ----------
+function showOnly(id) { if (id && id !== 'pause') caption(''); ['title', 'map', 'story', 'stageCard', 'pause', 'end', 'read', 'book', 'puz'].forEach(s => $(s).classList.toggle('hidden', s !== id)); if (id) { $('hud').classList.add('hidden'); $('joy').classList.add('hidden'); $('actBtn').classList.add('hidden'); } }
+function drawGate(el, popIdx = []) { el.innerHTML = CASES.map((c, i) => `<i class="${save.ch[i] ? 'on' : ''}${c.finale ? ' gold' : ''}${popIdx.includes(i) ? ' pop' : ''}">${save.ch[i] ? c.icon : ''}</i>`).join(''); }
+function leaveStage() { if (S) { if (STAGE[S.type].exit) STAGE[S.type].exit(S); S = null; } clearStage(); $('puz').classList.add('hidden'); }
+function openMap() {
+  vStop(); runId++; timers = []; clearTimeout(stAuto); state = 'map'; showOnly('map'); leaveStage();
+  $('mapT').textContent = t('map'); $('mapImg').src = ART + 'dt2-map.jpg'; $('gateT').textContent = t('gate'); drawGate($('gate'));
+  $('mapShells').textContent = num(Object.values(save.ch).reduce((n, c) => n + (c.clues || 0), 0)); $('mapPath').innerHTML = '';
+  const wrap = $('mapWrap'); wrap.querySelectorAll('.node').forEach(n => n.remove());
+  const nextI = CASES.findIndex((c, i) => !save.ch[i]);
+  CASES.forEach((c, i) => {
+    const done = !!save.ch[i], now = i === nextI, lock = !done && !now && !UNLOCK;
+    const b = document.createElement('button'); b.className = 'node' + (done ? ' done' : now ? ' now' : lock ? ' lock' : '');
+    b.style.left = c.node[0] + '%'; b.style.top = c.node[1] + '%';
+    b.innerHTML = (c.finale ? '🔍' : num(i + 1)) + `<small>${c.name[lang === 'en' ? 1 : 0]}</small>` + (done ? `<span class="st">${'★'.repeat(save.ch[i].stars)}</span>` : '');
+    b.onclick = () => chCard(i); wrap.appendChild(b);
+  });
+  chCard(save.cur && CASES[save.cur.c] ? save.cur.c : Math.max(0, nextI < 0 ? 0 : nextI));
+}
+const UNLOCK = /[?&]all\b/.test(location.search);
+function chCard(i) {
+  const c = CASES[i], cur = save.cur && save.cur.c === i && save.cur.s > 0 && save.cur.s < c.stages.length ? save.cur : null, done = !!save.ch[i], nextI = CASES.findIndex((_, k) => !save.ch[k]), open = done || i === nextI || UNLOCK;
+  const sub = !open ? '🔒 ' + t('locked') : c.stages.map(s => s.icon + ' ' + stTitle(s)).join(' · ');
+  $('chCard').innerHTML = `<div style="font-size:40px">${c.icon}</div><div class="tx"><b>${t('chapter') + ' ' + num(i + 1) + ': '}${c.name[lang === 'en' ? 1 : 0]}</b><small>${sub}</small></div>` + (open ? `<div class="gos">${cur ? `<button class="go" id="chRes">${t('resume2')} ${num(cur.s + 1)}</button><button class="go2" id="chGo">${t('fromStart')}</button>` : `<button class="go" id="chGo">${done ? t('replay') : t('play')}</button>`}</div>` : '');
+  if (open) $('chGo').onclick = () => { vCtx(); musStart(); delete save.cur; persist(); startChapter(i); };
+  if (open && cur) $('chRes').onclick = () => { vCtx(); musStart(); startChapter(i, true, cur); };
+}
+function drawTitle() {
+  document.documentElement.lang = lang; document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+  $('langAr').classList.toggle('on', lang === 'ar'); $('langEn').classList.toggle('on', lang === 'en');
+  $('tTitle').textContent = t('title'); $('tTag').textContent = t('tag'); $('meT').textContent = t('me'); $('meName').textContent = kidName();
+  $('ageT').textContent = t('age'); $('howto').innerHTML = t('howto');
+  if (!save.age && CHILD.age) save.age = CHILD.age;
+  $('ages').querySelectorAll('.age').forEach(b => { b.textContent = num(b.dataset.a); b.classList.toggle('on', +b.dataset.a === save.age); });
+  $('startBtn').textContent = Object.keys(save.ch).length || save.intro ? t('cont') : t('start'); $('startBtn').disabled = !save.age;
+  $('hubBtn').textContent = t('hub'); $('scBack').textContent = t('toMap2'); $('homeBtn').textContent = t('home'); $('pauseT').textContent = t('pause'); $('resumeBtn').textContent = t('resume'); $('restartBtn').textContent = t('restart'); $('quitBtn').textContent = t('quit');
+  $('bookT').textContent = t('notebook'); $('bookClose').textContent = t('close');
+  heroCard();
+}
+document.querySelectorAll('.age').forEach(b => b.onclick = () => { save.age = +b.dataset.a; persist(); drawTitle(); });
+$('langAr').onclick = () => { lang = save.lang = 'ar'; persist(); drawTitle(); };
+$('langEn').onclick = () => { lang = save.lang = 'en'; persist(); drawTitle(); };
+$('startBtn').onclick = () => { if (!save.age) return; vCtx(); musStart(); if (!save.intro) startChapter(0); else openMap(); };
+function toTitle() { vStop(); runId++; timers = []; leaveStage(); for (const n of npcs) world.remove(n.g); npcs.length = 0; state = 'title'; showOnly('title'); drawTitle(); }
+$('mapBack').onclick = toTitle;
+const KIDSLUG = (CHILD.walkModel && /^([\w]+)-run/.test(CHILD.walkModel)) ? CHILD.walkModel.match(/^([\w]+)-run/)[1] : null;
+const HUB = KIDSLUG ? KIDSLUG + '.html' : 'index.html';
+$('hubBtn').href = HUB;
+$('stBack').onclick = e => { e.stopPropagation(); clearTimeout(stAuto); stCb = null; openMap(); };
+$('scBack').onclick = () => openMap();
+$('homeBtn').onclick = () => { $('pause').classList.add('hidden'); toTitle(); };
+$('endHome').onclick = toTitle;
+$('bookBtn').onclick = () => { if (state !== 'play') return; state = 'book'; $('book').classList.remove('hidden'); $('bookList').innerHTML = clues.length ? clues.map(c => `<li>${c}</li>`).join('') : '<li>–</li>'; };
+$('bookClose').onclick = () => { $('book').classList.add('hidden'); if (state === 'book') state = 'play'; last = performance.now(); };
+$('solveBtn').onclick = () => { if (S && S.type === 'solve') STAGE.solve.open(S); };
+
+// hero card on the title screen
+let cardR = null, cardS = null, cardC = null, cardArt = null, cardMix = null;
+function heroCard() {
+  const en = lang === 'en';
+  $('meLoadT').textContent = en ? 'Getting your hero ready…' : G ? 'نجهّز بطلتك…' : 'نجهّز بطلك…';
+  const age = save.age || CHILD.age || 0;
+  $('meTag').textContent = !age ? '' : en ? '🎂 Age ' + age : '🎂 ' + num(age) + (age <= 10 ? ' سنوات' : ' سنة'); $('meTag').style.display = age ? '' : 'none';
+  if (!GLB.hero) return;
+  if (!cardR) { try { cardR = new THREE.WebGLRenderer({ canvas: $('pvMe'), antialias: true, alpha: true }); } catch (_) { return; }
+    cardS = new THREE.Scene(); cardS.add(new THREE.HemisphereLight(0xffffff, 0xb59a7a, 1.05)); const k = new THREE.DirectionalLight(0xffffff, 0.75); k.position.set(2, 4, 5); cardS.add(k); const rim = new THREE.DirectionalLight(0xffffff, 0.35); rim.position.set(-3, 3, -4); cardS.add(rim); cardC = new THREE.PerspectiveCamera(28, 1, 0.05, 50); }
+  if (!cardArt) {
+    const art = glb('hero', 2, 'max'); if (!art) return; const clip = art.userData.clips && art.userData.clips[0];
+    if (clip) { cardMix = new THREE.AnimationMixer(art.userData.model); cardMix.clipAction(clip).play(); cardMix.update(0.2); }
+    const piv = new THREE.Group(); piv.add(art); cardS.add(piv); const b = boxOf(art), c = new THREE.Vector3(), z = new THREE.Vector3(); b.getCenter(c); b.getSize(z);
+    art.position.sub(c); const h = Math.max(z.x, z.y, z.z); cardC.position.set(0, h * 0.12, h * 2.25); cardC.lookAt(0, 0, 0); cardArt = piv;
+  }
+  $('meCard').classList.remove('loading');
+}
+function heroCardTick(dt) { if (!cardArt || !cardR || state !== 'title') return; cardArt.rotation.y += dt * 0.6; if (cardMix) cardMix.update(dt * 0.7); cardR.render(cardS, cardC); }
+
+// ---------- input ----------
+function interact() {
+  if (state !== 'play' || !near || !S) return;
+  const st = STAGE[S.type];
+  if (st.interact && st.interact(S, near)) return;
+  if (near.type === 'npc') { const n = near.o, P0 = PEOPLE[n.key]; if (n.client) openText(P0.name, txt(CH.intro), null); else { const w = CH.witnesses[n.wi]; openText(P0.name, txt(w[2])[0], null); } }
+}
+addEventListener('keydown', e => {
+  keys[e.key] = 1; const k = e.key;
+  if (state === 'play') { if (k === ' ' || k === 'Enter') { interact(); e.preventDefault(); } else if (k === 'Escape' || k === 'p') pauseGame(); }
+  else if (state === 'paused' && (k === 'Escape' || k === 'p')) resumeGame();
+  else if (state === 'story' && !e.repeat && (k === ' ' || k === 'Enter')) storyNext();
+  else if (state === 'card' && !e.repeat && (k === ' ' || k === 'Enter')) $('scGo').click();
+  if (k.startsWith('Arrow') || k === ' ') e.preventDefault();
+});
+addEventListener('keyup', e => { keys[e.key] = 0; });
+const ray = new THREE.Raycaster(), ndc = new THREE.Vector2(), floorPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
+canvas.addEventListener('pointerdown', e => {
+  if (state !== 'play') return; vCtx();
+  ndc.set(e.clientX / innerWidth * 2 - 1, -(e.clientY / innerHeight) * 2 + 1); ray.setFromCamera(ndc, camera);
+  for (const n of npcs) { const v = n.g.position.clone(); v.y = 1.2; if (ray.ray.distanceToPoint(v) < 1.1) { target = { x: v.x, z: v.z, talk: { type: 'npc', o: n } }; return; } }
+  for (const s of spots) { if (s.done) continue; const v = s.g.position.clone(); v.y = 0.6; if (ray.ray.distanceToPoint(v) < 1.0) { target = { x: v.x, z: v.z, talk: { type: 'spot', o: s } }; return; } }
+  const hit = new THREE.Vector3(); if (ray.ray.intersectPlane(floorPlane, hit)) target = { x: hit.x, z: hit.z };
+});
+let joyId = null, joyC = null; const joy = $('joy'), knob = $('knob');
+joy.addEventListener('pointerdown', e => { e.stopPropagation(); vCtx(); joyId = e.pointerId; const r = joy.getBoundingClientRect(); joyC = { x: r.left + r.width / 2, y: r.top + r.height / 2, r: r.width / 2 }; joy.setPointerCapture(e.pointerId); joyMove(e); });
+joy.addEventListener('pointermove', e => { if (e.pointerId === joyId) joyMove(e); });
+const joyEnd = e => { if (e.pointerId !== joyId) return; joyId = null; inp.x = inp.z = 0; knob.style.transform = ''; };
+joy.addEventListener('pointerup', joyEnd); joy.addEventListener('pointercancel', joyEnd);
+function joyMove(e) { let dx = e.clientX - joyC.x, dy = e.clientY - joyC.y; const d = Math.hypot(dx, dy), m = joyC.r * 0.8; if (d > m) { dx *= m / d; dy *= m / d; } knob.style.transform = `translate(${dx}px,${dy}px)`; inp.x = dx / m; inp.z = dy / m; target = null; }
+$('actBtn').onclick = () => { vCtx(); interact(); };
+function pauseGame() { if (state !== 'play') return; state = 'paused'; vStop(); $('pause').classList.remove('hidden'); }
+function resumeGame() { if (state !== 'paused') return; state = 'play'; $('pause').classList.add('hidden'); last = performance.now(); }
+$('pauseBtn').onclick = pauseGame; $('resumeBtn').onclick = resumeGame; $('quitBtn').onclick = () => { $('pause').classList.add('hidden'); openMap(); };
+$('restartBtn').onclick = () => { $('pause').classList.add('hidden'); startStage(stI, true); };
+addEventListener('blur', pauseGame); document.addEventListener('visibilitychange', () => { if (document.hidden) pauseGame(); });
+
+// ---------- update ----------
+function update(dt) {
+  if (toastT > 0) { toastT -= dt; if (toastT <= 0) $('toast').classList.remove('on'); }
+  for (let i = parts.length - 1; i >= 0; i--) { const p = parts[i]; p.life -= dt; p.v.y -= 12 * dt; p.m.position.addScaledVector(p.v, dt); if (p.life <= 0) { scene.remove(p.m); parts.splice(i, 1); } }
+  if (state === 'reveal') { revealT += dt; npcs.forEach(n => { if (n.dest) n.g.position.lerp(n.dest, Math.min(1, dt * 1.5)); }); for (let i = timers.length - 1; i >= 0; i--) { const x = timers[i]; x.t -= dt; if (x.t <= 0) { timers.splice(i, 1); x.fn(); } } }
+  if (state !== 'play') { P.vx = P.vz = 0; return; }
+  for (let i = timers.length - 1; i >= 0; i--) { const x = timers[i]; x.t -= dt; if (x.t <= 0) { timers.splice(i, 1); x.fn(); } }
+  if (state !== 'play') return;
+  let ix = inp.x, iz = inp.z;
+  if (keys.ArrowLeft || keys.a) ix = -1; if (keys.ArrowRight || keys.d) ix = 1; if (keys.ArrowUp || keys.w) iz = -1; if (keys.ArrowDown || keys.s) iz = 1;
+  if (ix || iz) target = null;
+  if (target) { const dx = target.x - P.x, dz = target.z - P.z, d = Math.hypot(dx, dz); const stop = target.talk ? 1.6 : 0.2; if (d > stop) { ix = dx / d; iz = dz / d; } else { const tk = target.talk; target = null; if (tk) { near = tk; interact(); } } }
+  const m = Math.hypot(ix, iz); const sp = 5.2;
+  if (m > 0.05) { P.vx = ix / Math.max(1, m) * sp; P.vz = iz / Math.max(1, m) * sp; P.face = Math.atan2(P.vx, P.vz); } else { P.vx *= 0.7; P.vz *= 0.7; }
+  P.x = Math.max(-19, Math.min(19, P.x + P.vx * dt)); P.z = Math.max(-17, Math.min(17, P.z + P.vz * dt));
+  for (const n of npcs) { const dx = P.x - n.g.position.x, dz = P.z - n.g.position.z, d = Math.hypot(dx, dz); if (d < 0.9 && d > 0.001) { P.x = n.g.position.x + dx / d * 0.9; P.z = n.g.position.z + dz / d * 0.9; } }
+  if (S && STAGE[S.type].update) STAGE[S.type].update(S, dt); if (state !== 'play') return;
+  // what can we interact with?
+  near = (S && STAGE[S.type].near) ? STAGE[S.type].near(S) : null; let best = 2.4;
+  if (!near) {
+    for (const n of npcs) { const d = Math.hypot(P.x - n.g.position.x, P.z - n.g.position.z); if (d < best) { best = d; near = { type: 'npc', o: n }; } }
+    for (const s of spots) if (!s.done) { const d = Math.hypot(P.x - s.g.position.x, P.z - s.g.position.z); if (d < Math.min(best, 1.8)) { best = d; near = { type: 'spot', o: s }; } }
+  }
+  const b = $('actBtn'); b.classList.toggle('hidden', !near);
+  if (near) b.textContent = near.type === 'npc' ? '💬 ' + t('talk') : near.type === 'spot' ? '🔍 ' + t('inspect') : near.type === 'pile' ? '📦 ' + t('take') : '★ ' + t('solve');
+  if (near && near.type === 'answer') interact();
+}
+
+// ---------- visuals ----------
+let time = 0;
+function visuals(dt) {
+  time += dt;
+  for (const n of npcs) { n.icon.position.y = 3.25 + Math.sin(time * 3) * 0.1; }
+  for (const s of spots) { s.ring.material.opacity = 0.5 + Math.sin(time * 4) * 0.3; s.g.children[0].position.y = 0.9 + Math.sin(time * 2.5 + s.i) * 0.12; }
+  if (marker) { marker.children[0].position.y = 2.2 + Math.sin(time * 3) * 0.15; marker.rotation.y += dt; }
+  if (prize) { prize.rotation.y += dt * 0.8; if (CH && CH.item === 'pearl') prize.position.y = 1.2 + Math.sin(time * 2) * 0.15; }
+  if (!det) return;
+  det.position.set(P.x, 0, P.z);
+  det.rotation.y += ((P.face - det.rotation.y + Math.PI * 3) % (Math.PI * 2) - Math.PI) * Math.min(1, dt * 10);
+  const spd = Math.hypot(P.vx, P.vz), u = det.userData;
+  if (u.glb) { if (u.act) u.act.timeScale = spd > 0.4 ? 0.75 : 0; u.mixer.update(dt); if (spd <= 0.4 && u.act) u.act.time = 0; }
+  else { P.walk += dt * spd * 2.2; const k = spd > 0.4 ? Math.sin(P.walk) : 0; u.legs[0].rotation.x = k * 0.7; u.legs[1].rotation.x = -k * 0.7; u.arms[0].rotation.x = -k * 0.6; u.arms[1].rotation.x = k * 0.6; }
+  const cx = P.x * 0.85, cz = P.z + camZ, cy = camY;
+  camera.position.x += (cx - camera.position.x) * Math.min(1, dt * 4); camera.position.y += (cy - camera.position.y) * Math.min(1, dt * 4); camera.position.z += (cz - camera.position.z) * Math.min(1, dt * 4);
+  camera.lookAt(P.x * 0.9, 1.2, P.z - 3);
+  sunL.position.set(P.x - 12, 22, P.z + 10); sunL.target.position.set(P.x, 0, P.z); sunL.target.updateMatrixWorld();
+}
+
+// ---------- loop ----------
+let camY = 8.5, camZ = 11.5;
+function resize() { const w = innerWidth, h = innerHeight; renderer.setSize(w, h, false); camera.aspect = w / h; camera.fov = w < h ? 64 : 48; camY = w < h ? 11 : 8.5; camZ = w < h ? 13 : 11.5; camera.updateProjectionMatrix(); }
+addEventListener('resize', resize); resize();
+buildWorld(); camera.position.set(0, 12, 15);
+let last = performance.now();
+function frame(now) {
+  const dt = Math.min(0.05, (now - last) / 1000); last = now;
+  heroCardTick(dt);
+  if (state === 'title' || state === 'map') { camera.position.set(Math.sin(now / 9000) * 16, 12, Math.cos(now / 9000) * 16); camera.lookAt(0, 1, 0); }
+  update(dt); if (state !== 'title' && state !== 'map') visuals(dt);
+  renderer.render(scene, camera);
+  requestAnimationFrame(frame);
+}
+drawTitle();
+requestAnimationFrame(frame);
+loadArt(
+  { hero: CHILD.walkModel || 'child-run.gltf.json', shop: 'shop.gltf.json', stall: 'stall.gltf.json', palm: 'palm.gltf.json', lantern: 'lantern.gltf.json', boat: 'boat.gltf.json', cat: 'cat.gltf.json',
+    npcDates: 'npc-dates.gltf.json', npcPerfume: 'npc-perfume.gltf.json', npcFisher: 'npc-fisher.gltf.json', npcTailor: 'npc-tailor.gltf.json', npcUncle: 'npc-uncle.gltf.json', npcGranny: 'npc-granny.gltf.json' },
+  { bg: 'bg-wh-souq.jpg' }
+).then(() => { if (state === 'title' || state === 'map') buildWorld(); heroCard(); window.__artReady = true; });
+document.fonts && document.fonts.ready.then(() => {});
+window.__dt2 = { get state() { return state; }, get S() { return S; }, P, get npcs() { return npcs; }, get spots() { return spots; }, get marker() { return marker; }, get near() { return near; }, set target(v) { target = v; }, get stI() { return stI; }, get chI() { return chI; }, get clues() { return clues; }, get chRun() { return chRun; }, get miss() { return vMiss; }, keys, inp, interact, startChapter, startStage, stageDone, storyNext, openMap, update, visuals, save, pauseGame, resumeGame, STAGE, CASES };
+</script>
