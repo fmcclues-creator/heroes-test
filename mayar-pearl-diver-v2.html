@@ -559,15 +559,24 @@ function imgColor(im, yFrac, k = 1) { // average colour of one row band of an im
   const d = x.getImageData(0, Math.floor(yFrac * 31), 32, 1).data; let r = 0, g = 0, b = 0; for (let i = 0; i < 32; i++) { r += d[i * 4]; g += d[i * 4 + 1]; b += d[i * 4 + 2]; }
   const f = v => Math.min(255, Math.round(v / 32 * k)); return `${f(r)},${f(g)},${f(b)}`;
 }
+let artPct = 0, artDone = false;
+const STORY_IMGS = ["pd2-cave.jpg", "pd2-home.jpg", "pd2-intro.jpg", "pd2-map.jpg", "pd2-octo.jpg", "pd2-reef.jpg", "pd2-seagrass.jpg", "pd2-storm.jpg", "pd2-wreck.jpg"];
+function artProgress() { const b = document.getElementById('startBtn'); if (!b || artDone) return; b.disabled = true; b.textContent = (lang === 'ar' ? 'جارِ التحميل… ' : 'Loading… ') + num(artPct) + (lang === 'ar' ? '٪' : '%'); }
 function loadArt(models, images) {
-  const jobs = [];
+  const jobs = []; let done = 0;
+  const tick = () => { done++; artPct = Math.min(99, Math.round(done / Math.max(1, jobs.length) * 100)); artProgress(); };
   if (THREE.GLTFLoader) {
     const L = new THREE.GLTFLoader();
-    for (const [k, f] of Object.entries(models)) jobs.push(new Promise(res => L.load(ART + f, g => { const s = g.scene; prepModel(s); s.userData.clips = g.animations; GLB[k] = s; res(); }, undefined, () => res())));
+    for (const [k, f] of Object.entries(models)) jobs.push(new Promise(res => L.load(ART + f, g => { const s = g.scene; prepModel(s); s.userData.clips = g.animations; GLB[k] = s; res(); tick(); }, undefined, () => { res(); tick(); })));
   }
   const TL = new THREE.TextureLoader();
-  for (const [k, f] of Object.entries(images)) jobs.push(new Promise(res => TL.load(ART + f, t => { IMG[k] = t; res(); }, undefined, () => res())));
-  return Promise.race([Promise.all(jobs), new Promise(r => setTimeout(r, 45000))]);
+  for (const [k, f] of Object.entries(images)) jobs.push(new Promise(res => TL.load(ART + f, t => { IMG[k] = t; res(); tick(); }, undefined, () => { res(); tick(); })));
+  // Story pictures too, so they are on screen the moment the story opens.
+  for (const f of STORY_IMGS) jobs.push(new Promise(res => { const ok = () => { res(); tick(); }; const own = (typeof KIDSLUG !== 'undefined' && KIDSLUG) ? f.replace('pd2-', 'pd2-' + KIDSLUG + '-') : f; const im = new Image(); im.onload = ok; im.onerror = () => { if (own === f) return ok(); const b = new Image(); b.onload = ok; b.onerror = ok; b.src = ART + f; }; im.src = ART + own; }));
+  // The voices too, so the first story line is heard.
+  jobs.push(new Promise(res => { const w = () => (typeof VOICE !== 'undefined' && VOICE !== null) ? (res(), tick()) : setTimeout(w, 250); w(); }));
+  artProgress();
+  return Promise.race([Promise.all(jobs), new Promise(r => setTimeout(r, 300000))]).then(() => { artDone = true; artPct = 100; drawTitle(); });
 }
 const BED = -14, SURF = 0;
 Object.assign(MODEL_YAW, { turtle: Math.PI / 2, dolphin: Math.PI / 2, shark: Math.PI / 2, octopus: 0 }); // these sea friends swim sideways across the screen
@@ -1188,14 +1197,14 @@ function drawTitle() {
   $('ageT').textContent = t('age'); $('howto').innerHTML = t('howto');
   if (!save.age && CHILD.age) save.age = CHILD.age;
   $('ages').querySelectorAll('.age').forEach(b => { b.textContent = num(b.dataset.a); b.classList.toggle('on', +b.dataset.a === save.age); });
-  $('startBtn').textContent = Object.keys(save.ch).length || save.intro ? t('cont') : t('start'); $('startBtn').disabled = !save.age;
+  $('startBtn').textContent = Object.keys(save.ch).length || save.intro ? t('cont') : t('start'); $('startBtn').disabled = !save.age; if (!artDone) artProgress();
   $('hubBtn').textContent = t('hub'); $('scBack').textContent = t('toMap2'); $('homeBtn').textContent = t('home'); $('pauseT').textContent = t('pause'); $('resumeBtn').textContent = t('resume'); $('restartBtn').textContent = t('restart'); $('quitBtn').textContent = t('quit'); $('airLbl').textContent = t('air');
   heroCard();
 }
 document.querySelectorAll('.age').forEach(b => b.onclick = () => { save.age = +b.dataset.a; persist(); drawTitle(); });
 $('langAr').onclick = () => { lang = save.lang = 'ar'; persist(); drawTitle(); };
 $('langEn').onclick = () => { lang = save.lang = 'en'; persist(); drawTitle(); };
-$('startBtn').onclick = () => { if (!save.age) return; vCtx(); musStart(); if (!save.intro) startChapter(0); else openMap(); };
+$('startBtn').onclick = () => { if (!save.age || !artDone) return; vCtx(); musStart(); if (!save.intro) startChapter(0); else openMap(); };
 function toTitle() { vStop(); runId++; timers = []; leaveStage(); state = 'title'; showOnly('title'); applyDay(DAYS[0]); drawTitle(); }
 $('mapBack').onclick = toTitle;
 const KIDSLUG = (CHILD.swimModel && /^([\w]+)-swim/.test(CHILD.swimModel)) ? CHILD.swimModel.match(/^([\w]+)-swim/)[1] : null;
