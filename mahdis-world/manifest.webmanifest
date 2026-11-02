@@ -1,0 +1,23 @@
+{
+  "name": "Mahdi's World · عالم مهدي",
+  "short_name": "Mahdi's World",
+  "start_url": "index.html",
+  "display": "standalone",
+  "background_color": "#8fd3ff",
+  "theme_color": "#4fb3ff",
+  "lang": "ar",
+  "dir": "auto",
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
