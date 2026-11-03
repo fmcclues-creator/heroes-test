@@ -1,0 +1,364 @@
+﻿Language,Section,File name,Text,Meaning,When it plays,Voice
+Arabic,Praise,audio/ar/lines/praise-01.mp3,أَحْسَنْتَ يا عَبْدَ الله!,"Well done, Abdullah!",Right answer,3ain
+Arabic,Praise,audio/ar/lines/praise-02.mp3,رائِع!,Great!,Right answer,3ain
+Arabic,Praise,audio/ar/lines/praise-03.mp3,عَمَلٌ رائِع!,Great work!,Right answer,3ain
+Arabic,Praise,audio/ar/lines/praise-04.mp3,مُمْتاز!,Excellent!,Right answer,3ain
+Arabic,Praise,audio/ar/lines/praise-05.mp3,أَحْسَنْتَ صُنْعًا!,Nicely done!,Right answer,3ain
+Arabic,Praise,audio/ar/lines/praise-06.mp3,ما شاءَ الله!,Amazing!,Right answer,3ain
+Arabic,Praise,audio/ar/lines/praise-07.mp3,صَحِيح!,That's right!,Right answer,3ain
+Arabic,Praise,audio/ar/lines/praise-08.mp3,جَمِيل!,Lovely!,Right answer,3ain
+Arabic,Praise,audio/ar/lines/praise-09.mp3,واو!,Wow!,Big moments,3ain
+Arabic,Try again,audio/ar/lines/try-01.mp3,حاوِلْ مَرَّةً أُخْرى,Try again,Wrong answer,3ain
+Arabic,Try again,audio/ar/lines/try-02.mp3,لَيْسَ هذا، اُنْظُرْ جَيِّدًا,"Not that one, look carefully",Wrong answer,3ain
+Arabic,Try again,audio/ar/lines/try-03.mp3,اِقْتَرَبْتَ كَثِيرًا!,So close!,Nearly right,3ain
+Arabic,Try again,audio/ar/lines/try-04.mp3,لا بَأْس، هَيّا نُحاوِلُ مَرَّةً أُخْرى,"Never mind, let's go again",Lost a level or race,3ain
+Arabic,Try again,audio/ar/lines/try-05.mp3,أُوه!,Oops!,Bump or slip,3ain
+Arabic,Every game,audio/ar/lines/start.mp3,هَيّا نَلْعَب!,Let's play!,Pressing Play,3ain
+Arabic,Every game,audio/ar/lines/count-3.mp3,ثَلاثَة,Three,Countdown,3ain
+Arabic,Every game,audio/ar/lines/count-2.mp3,اِثْنان,Two,Countdown,3ain
+Arabic,Every game,audio/ar/lines/count-1.mp3,واحِد,One,Countdown,3ain
+Arabic,Every game,audio/ar/lines/go.mp3,اِنْطَلِق!,Go!,Countdown,3ain
+Arabic,Every game,audio/ar/lines/level-done.mp3,أَنْهَيْتَ المَرْحَلَة!,Level complete!,End of a level,3ain
+Arabic,Every game,audio/ar/lines/all-done.mp3,أَنْهَيْتَ المَراحِلَ الثَّلاث!,You finished all three levels!,End of the last level,3ain
+Arabic,Star Hop,audio/ar/lines/hop-intro.mp3,ساعِدْ عَبْدَ الله لِيَقْفِزَ بَيْنَ الجُزُرِ وَيَجْمَعَ كُلَّ الحُرُوف!,Help Abdullah hop across the islands and collect all the letters!,Level starts,3ain
+Arabic,Star Hop,audio/ar/lines/hop-all-letters.mp3,جَمَعْتَ كُلَّ الحُرُوف! اِذْهَبْ إلى النَّجْمَةِ الكَبِيرَة,You found all the letters! Now go to the big star,Last letter caught,3ain
+Arabic,Star Hop,audio/ar/lines/hop-need-letters.mp3,اِجْمَعْ كُلَّ الحُرُوفِ أَوَّلًا,Find all the letters first,Touching the big star too early,3ain
+Arabic,Star Hop,audio/ar/lines/hop-checkpoint.mp3,نُقْطَةُ حِفْظ!,Checkpoint!,Touching a flag,3ain
+Arabic,Star Hop,audio/ar/lines/hop-splash.mp3,سَقَطَ في الماء!,Splash!,Falling in the water,3ain
+Arabic,Star Hop,audio/ar/lines/hop-net.mp3,بُوينْغ! عُدْ إلى الأَعْلى,Boing! Back up you go,Bouncing on the safety net,3ain
+Arabic,Star Hop,audio/ar/lines/hop-squish.mp3,طاخ!,Squish!,Jumping on a grumble,3ain
+Arabic,Star Hop,audio/ar/lines/hop-ouch.mp3,آه!,Ouch!,Bumped by a grumble,3ain
+Arabic,Star Hop,audio/ar/lines/hop-out.mp3,اِنْتَهَتِ القُلُوب. هَيّا نُحاوِلُ مَرَّةً أُخْرى,Out of hearts. Let's try again,Losing all hearts,3ain
+Arabic,Letter Kart,audio/ar/lines/kart-intro.mp3,هَيّا نَتَسابَق!,Let's race!,Race starts,3ain
+Arabic,Letter Kart,audio/ar/lines/name-abdullah.mp3,عَبْدُ الله,Abdullah,Racer intro,3ain
+Arabic,Letter Kart,audio/ar/lines/name-fofo.mp3,فوفو,Fofo,Racer intro,3ain
+Arabic,Letter Kart,audio/ar/lines/name-najma.mp3,نَجْمَة,Najma,Racer intro,3ain
+Arabic,Letter Kart,audio/ar/lines/name-mishmish.mp3,مِشْمِش,Mishmish,Racer intro,3ain
+Arabic,Letter Kart,audio/ar/lines/kart-find.mp3,مُرَّ مِنَ الصُّورَةِ الَّتِي تَبْدَأُ بِحَرْف…,Drive through the picture that starts with…,New picture challenge,3ain
+Arabic,Letter Kart,audio/ar/lines/kart-spell.mp3,رَكِّبِ الكَلِمَة!,Spell the word!,New spelling challenge,3ain
+Arabic,Letter Kart,audio/ar/lines/kart-word-done.mp3,كَلِمَةٌ جَمِيلَة!,Great word!,Word finished,3ain
+Arabic,Letter Kart,audio/ar/lines/kart-all-letters.mp3,جَمَعْتَ كُلَّ الحُرُوف!,You got all the letters!,Last letter on Easy,3ain
+Arabic,Letter Kart,audio/ar/lines/kart-final-lap.mp3,اللَّفَّةُ الأَخِيرَة!,Final lap!,Last lap starts,3ain
+Arabic,Letter Kart,audio/ar/lines/kart-slip.mp3,اِنْزَلَقْت!,Slippery!,Driving through a puddle,3ain
+Arabic,Letter Kart,audio/ar/lines/kart-boost.mp3,سُرْعَة!,Boost!,Boost pad,3ain
+Arabic,Letter Kart,audio/ar/lines/kart-jump.mp3,قَفْزَةٌ كَبِيرَة!,Big jump!,Ramp jump,3ain
+Arabic,Letter Kart,audio/ar/lines/kart-rocket.mp3,صارُوخ!,Rocket!,Using the rocket,3ain
+Arabic,Letter Kart,audio/ar/lines/kart-shield.mp3,دِرْع!,Shield!,Using the shield,3ain
+Arabic,Letter Kart,audio/ar/lines/kart-magnet.mp3,مِغْناطِيس!,Magnet!,Using the magnet,3ain
+Arabic,Letter Kart,audio/ar/lines/kart-bubble.mp3,فُقّاعَة!,Bubble!,Throwing a bubble,3ain
+Arabic,Letter Kart,audio/ar/lines/kart-bubbled.mp3,عَلِقْتَ في فُقّاعَة!,You got bubbled!,Hit by a bubble,3ain
+Arabic,Letter Kart,audio/ar/lines/kart-win.mp3,فُزْتَ بِالسِّباق!,You won the race!,Finishing first,3ain
+Arabic,Letter Kart,audio/ar/lines/kart-place-2.mp3,وَصَلَ عَبْدُ الله في المَرْكَزِ الثّاني!,Abdullah came second!,Finishing second,3ain
+Arabic,Letter Kart,audio/ar/lines/kart-place-3.mp3,وَصَلَ عَبْدُ الله في المَرْكَزِ الثّالِث!,Abdullah came third!,Finishing third,3ain
+Arabic,Letter Kart,audio/ar/lines/kart-place-4.mp3,وَصَلَ عَبْدُ الله في المَرْكَزِ الرّابِع!,Abdullah came fourth!,Finishing fourth,3ain
+Arabic,Letter Kart,audio/ar/lines/kart-again.mp3,سابِقْ مَرَّةً أُخْرى لِتَفُوز!,Race again to win!,After not winning,3ain
+Arabic,Letter Kart,audio/ar/lines/kart-stickers.mp3,مُلْصَقاتٌ جَدِيدَة!,New stickers!,Results screen,3ain
+Arabic,Letter Glider,audio/ar/lines/glide-intro.mp3,هَيّا نَطِير!,Let's fly!,Flight starts,3ain
+Arabic,Letter Glider,audio/ar/lines/glide-catch.mp3,اِلْتَقِطِ الحَرْفَ اللّامِع!,Catch the glowing letter!,Easy: start of the flight,3ain
+Arabic,Letter Glider,audio/ar/lines/glide-bird.mp3,أُرِيدُ الحَرْفَ الَّذِي تَبْدَأُ بِهِ…,I want the letter that starts…,A baby bird appears,3ain
+Arabic,Letter Glider,audio/ar/lines/glide-yum.mp3,يَمّ! شُكْرًا!,Yum! Thank you!,Feeding the right letter,3ain
+Arabic,Letter Glider,audio/ar/lines/glide-no.mp3,لَيْسَ هذا!,Not that one!,Wrong balloon,3ain
+Arabic,Letter Glider,audio/ar/lines/glide-spell.mp3,تَهَجَّها!,Spell it!,New spelling word,3ain
+Arabic,Letter Glider,audio/ar/lines/glide-thermal.mp3,الهَواءُ الدّافِئُ يَرْتَفِعُ إلى الأَعْلى! وِيييي!,Warm air rises! Wheee!,First warm-air spiral,3ain
+Arabic,Letter Glider,audio/ar/lines/glide-thermal-fact.mp3,الهَواءُ الدّافِئُ يَرْتَفِعُ، وَيَرْفَعُ الطّائِراتِ الشِّراعِيَّةَ وَالطُّيُورَ مَعَه.,"Warm air goes up, and it lifts gliders and birds with it.",Straight after the line above,3ain
+Arabic,Letter Glider,audio/ar/lines/glide-bump.mp3,اِرْتَفِعْ إلى الأَعْلى!,Up you go!,Flying too low,3ain
+Arabic,Letter Glider,audio/ar/lines/glide-write.mp3,كِتابَةٌ في السَّماء! اِتْبَعِ الحَلَقات,Sky writing! Follow the rings,Sky-writing starts,3ain
+Arabic,Letter Glider,audio/ar/lines/glide-wrote.mp3,كَتَبْتَهُ في السَّماء!,You wrote it in the sky!,Sky-writing finished (the letter recording plays after),3ain
+Arabic,Letter Glider,audio/ar/lines/glide-land.mp3,اِهْبِطْ عَلى الهَدَف!,Land on the target!,Landing starts,3ain
+Arabic,Letter Glider,audio/ar/lines/glide-stars-1.mp3,هُبُوطٌ جَيِّد,Good landing,1-star landing,3ain
+Arabic,Letter Glider,audio/ar/lines/glide-stars-2.mp3,هُبُوطٌ رائِع!,Super landing!,2-star landing,3ain
+Arabic,Letter Glider,audio/ar/lines/glide-stars-3.mp3,هُبُوطٌ مِثالِيّ!,Perfect landing!,3-star landing,3ain
+Arabic,Letter Glider,audio/ar/lines/glide-landed-failaka.mp3,هَبَطْتَ في جَزِيرَةِ فَيْلَكا!,You landed on Failaka Island!,End of the Easy flight,3ain
+Arabic,Letter Glider,audio/ar/lines/glide-landed-north.mp3,هَبَطْتَ عَلى الشّاطِئِ الشَّمالِيّ!,You landed on the north shore!,End of the Medium flight,3ain
+Arabic,Letter Glider,audio/ar/lines/glide-landed-desert.mp3,هَبَطْتَ في الصَّحْراء!,You landed in the desert!,End of the Hard flight,3ain
+Arabic,Letter Glider,audio/ar/lines/glide-album.mp3,جَدِيدٌ في أَلْبُومِك!,New in your album!,Results screen,3ain
+Arabic,Abdullah's World home screen,audio/ar/lines/hub-welcome.mp3,مَرْحَبًا! هذا عالَمُ عَبْدِ الله,Hi! This is Abdullah's World,Opening the home screen,3ain
+Arabic,Abdullah's World home screen,audio/ar/lines/hub-choose.mp3,اِخْتَرْ لُعْبَة!,Pick a game!,Opening the home screen,3ain
+Arabic,Abdullah's World home screen,audio/ar/lines/hub-game-hop.mp3,قَفْزَةُ النُّجُوم,Star Hop,Tapping the game,3ain
+Arabic,Abdullah's World home screen,audio/ar/lines/hub-game-kart.mp3,سِباقُ الحُرُوف,Letter Kart,Tapping the game,3ain
+Arabic,Abdullah's World home screen,audio/ar/lines/hub-game-glide.mp3,طَيَرانُ الحُرُوف,Letter Glider,Tapping the game,3ain
+Arabic,Picture words,audio/ar/words/lion.mp3,أَسَد,lion,Word: أسد,3ain
+Arabic,Picture words,audio/ar/words/rabbit.mp3,أَرْنَب,rabbit,Word: أرنب,3ain
+Arabic,Picture words,audio/ar/words/duck.mp3,بَطَّة,duck,Word: بطة,3ain
+Arabic,Picture words,audio/ar/words/house.mp3,بَيْت,house,Word: بيت,3ain
+Arabic,Picture words,audio/ar/words/door.mp3,بَاب,door,Word: باب,3ain
+Arabic,Picture words,audio/ar/words/apple.mp3,تُفَّاحَة,apple,Word: تفاحة,3ain
+Arabic,Picture words,audio/ar/words/fox.mp3,ثَعْلَب,fox,Word: ثعلب,3ain
+Arabic,Picture words,audio/ar/words/camel.mp3,جَمَل,camel,Word: جمل,3ain
+Arabic,Picture words,audio/ar/words/horse.mp3,حِصَان,horse,Word: حصان,3ain
+Arabic,Picture words,audio/ar/words/milk.mp3,حَلِيب,milk,Word: حليب,3ain
+Arabic,Picture words,audio/ar/words/bag.mp3,حَقِيبَة,bag,Word: حقيبة,3ain
+Arabic,Picture words,audio/ar/words/sheep.mp3,خَرُوف,sheep,Word: خروف,3ain
+Arabic,Picture words,audio/ar/words/cucumber.mp3,خِيَار,cucumber,Word: خيار,3ain
+Arabic,Picture words,audio/ar/words/chicken.mp3,دَجَاجَة,chicken,Word: دجاجة,3ain
+Arabic,Picture words,audio/ar/words/bear.mp3,دُبّ,bear,Word: دب,3ain
+Arabic,Picture words,audio/ar/words/corn.mp3,ذُرَة,corn,Word: ذرة,3ain
+Arabic,Picture words,audio/ar/words/feather.mp3,رِيشَة,feather,Word: ريشة,3ain
+Arabic,Picture words,audio/ar/words/robot.mp3,رُوبُوت,robot,Word: روبوت,3ain
+Arabic,Picture words,audio/ar/words/giraffe.mp3,زَرَافَة,giraffe,Word: زرافة,3ain
+Arabic,Picture words,audio/ar/words/flower.mp3,زَهْرَة,flower,Word: زهرة,3ain
+Arabic,Picture words,audio/ar/words/fish.mp3,سَمَكَة,fish,Word: سمكة,3ain
+Arabic,Picture words,audio/ar/words/fishes.mp3,سَمَك,fishes,Word: سمك,3ain
+Arabic,Picture words,audio/ar/words/car.mp3,سَيَّارَة,car,Word: سيارة,3ain
+Arabic,Picture words,audio/ar/words/watch.mp3,سَاعَة,watch,Word: ساعة,3ain
+Arabic,Picture words,audio/ar/words/sun.mp3,شَمْس,sun,Word: شمس,3ain
+Arabic,Picture words,audio/ar/words/tree.mp3,شَجَرَة,tree,Word: شجرة,3ain
+Arabic,Picture words,audio/ar/words/rocket.mp3,صَارُوخ,rocket,Word: صاروخ,3ain
+Arabic,Picture words,audio/ar/words/falcon.mp3,صَقْر,falcon,Word: صقر,3ain
+Arabic,Picture words,audio/ar/words/frog.mp3,ضِفْدَع,frog,Word: ضفدع,3ain
+Arabic,Picture words,audio/ar/words/plane.mp3,طَيَّارَة,plane,Word: طيارة,3ain
+Arabic,Picture words,audio/ar/words/tomato.mp3,طَمَاطِم,tomato,Word: طماطم,3ain
+Arabic,Picture words,audio/ar/words/envelope.mp3,ظَرْف,envelope,Word: ظرف,3ain
+Arabic,Picture words,audio/ar/words/grapes.mp3,عِنَب,grapes,Word: عنب,3ain
+Arabic,Picture words,audio/ar/words/eye.mp3,عَيْن,eye,Word: عين,3ain
+Arabic,Picture words,audio/ar/words/cloud.mp3,غَيْمَة,cloud,Word: غيمة,3ain
+Arabic,Picture words,audio/ar/words/deer.mp3,غَزَال,deer,Word: غزال,3ain
+Arabic,Picture words,audio/ar/words/elephant.mp3,فِيل,elephant,Word: فيل,3ain
+Arabic,Picture words,audio/ar/words/butterfly.mp3,فَرَاشَة,butterfly,Word: فراشة,3ain
+Arabic,Picture words,audio/ar/words/cat.mp3,قِطَّة,cat,Word: قطة,3ain
+Arabic,Picture words,audio/ar/words/moon.mp3,قَمَر,moon,Word: قمر,3ain
+Arabic,Picture words,audio/ar/words/pencil.mp3,قَلَم,pencil,Word: قلم,3ain
+Arabic,Picture words,audio/ar/words/dog.mp3,كَلْب,dog,Word: كلب,3ain
+Arabic,Picture words,audio/ar/words/book.mp3,كِتَاب,book,Word: كتاب,3ain
+Arabic,Picture words,audio/ar/words/ball.mp3,كُرَة,ball,Word: كرة,3ain
+Arabic,Picture words,audio/ar/words/lemon.mp3,لَيْمُون,lemon,Word: ليمون,3ain
+Arabic,Picture words,audio/ar/words/banana.mp3,مَوْز,banana,Word: موز,3ain
+Arabic,Picture words,audio/ar/words/key.mp3,مِفْتَاح,key,Word: مفتاح,3ain
+Arabic,Picture words,audio/ar/words/star.mp3,نَجْمَة,star,Word: نجمة,3ain
+Arabic,Picture words,audio/ar/words/bee.mp3,نَحْلَة,bee,Word: نحلة,3ain
+Arabic,Picture words,audio/ar/words/gift.mp3,هَدِيَّة,gift,Word: هدية,3ain
+Arabic,Picture words,audio/ar/words/rose.mp3,وَرْدَة,rose,Word: وردة,3ain
+Arabic,Picture words,audio/ar/words/roses.mp3,وَرْد,roses,Word: ورد,3ain
+Arabic,Picture words,audio/ar/words/hand.mp3,يَد,hand,Word: يد,3ain
+Arabic,Picture words,audio/ar/words/sea.mp3,بَحْر,sea,Word: بحر,3ain
+Arabic,Postcards from Kuwait,audio/ar/postcards/towers.mp3,أَبْراجُ الكُوَيْت. اِثْنَتانِ مِنَ الكُراتِ الزَّرْقاءِ في أَبْراجِ الكُوَيْتِ تُخَزِّنانِ الماء!,Kuwait Towers. Two of the big blue balls on the Kuwait Towers hold water!,Letter Glider postcard,3ain
+Arabic,Postcards from Kuwait,audio/ar/postcards/dhow.mp3,البُوم. قَدِيمًا، كانَ بَحّارَةُ الكُوَيْتِ يُسافِرُونَ في البَحْرِ بِسُفُنٍ خَشَبِيَّةٍ اسْمُها البُوم.,"The dhow. Long ago, Kuwaiti sailors travelled the sea in wooden boats called dhows.",Letter Glider postcard,3ain
+Arabic,Postcards from Kuwait,audio/ar/postcards/failaka.mp3,جَزِيرَةُ فَيْلَكا. عاشَ النّاسُ في جَزِيرَةِ فَيْلَكا مُنْذُ آلافِ السِّنِين!,Failaka Island. People lived on Failaka Island thousands of years ago!,Letter Glider postcard,3ain
+Arabic,Postcards from Kuwait,audio/ar/postcards/pearl.mp3,الغَوْص. كانَ الغَوّاصُونَ يَحْبِسُونَ أَنْفاسَهُمْ وَيَنْزِلُونَ إلى الأَعْماقِ لِيَجِدُوا اللُّؤْلُؤَ في المَحار.,Pearl diving. Divers held their breath and swam deep to find pearls in oysters.,Letter Glider postcard,3ain
+Arabic,Postcards from Kuwait,audio/ar/postcards/bridge.mp3,جِسْرُ الشَّيْخِ جابِر. جِسْرُ الشَّيْخِ جابِرٍ مِنْ أَطْوَلِ الجُسُورِ فَوْقَ البَحْرِ في العالَم!,Sheikh Jaber Bridge. The Sheikh Jaber Causeway is one of the longest bridges over the sea in the world!,Letter Glider postcard,3ain
+Arabic,Postcards from Kuwait,audio/ar/postcards/camel.mp3,الجَمَل. يَسْتَطِيعُ الجَمَلُ أَنْ يَمْشِيَ أَيّامًا في الصَّحْراءِ دُونَ أَنْ يَشْرَبَ الماء.,Camels. Camels can walk for days in the desert without drinking water.,Letter Glider postcard,3ain
+Arabic,Postcards from Kuwait,audio/ar/postcards/tent.mp3,بَيْتُ الشَّعْر. كانَ البَدْوُ يَعِيشُونَ في خَيْمَةٍ مِنْ شَعْرِ الماعِزِ اسْمُها بَيْتُ الشَّعْر.,"Bait Al-Sha'ar. Bedouins lived in tents woven from goat hair, called bait al-sha'ar.",Letter Glider postcard,3ain
+Arabic,Letter sounds,audio/ar/sounds/01-alif.mp3,أَ,Sound of ا,Letter ا,3ain
+Arabic,Letter sounds,audio/ar/sounds/03-baa.mp3,بَ,Sound of ب,Letter ب,3ain
+Arabic,Letter sounds,audio/ar/sounds/04-taa.mp3,تَ,Sound of ت,Letter ت,3ain
+Arabic,Letter sounds,audio/ar/sounds/05-thaa.mp3,ثَ,Sound of ث,Letter ث,3ain
+Arabic,Letter sounds,audio/ar/sounds/06-jeem.mp3,جَ,Sound of ج,Letter ج,3ain
+Arabic,Letter sounds,audio/ar/sounds/07-haa.mp3,حَ,Sound of ح,Letter ح,3ain
+Arabic,Letter sounds,audio/ar/sounds/08-khaa.mp3,خَ,Sound of خ,Letter خ,3ain
+Arabic,Letter sounds,audio/ar/sounds/09-daal.mp3,دَ,Sound of د,Letter د,3ain
+Arabic,Letter sounds,audio/ar/sounds/10-dhaal.mp3,ذَ,Sound of ذ,Letter ذ,3ain
+Arabic,Letter sounds,audio/ar/sounds/11-raa.mp3,رَ,Sound of ر,Letter ر,3ain
+Arabic,Letter sounds,audio/ar/sounds/12-zaay.mp3,زَ,Sound of ز,Letter ز,3ain
+Arabic,Letter sounds,audio/ar/sounds/13-seen.mp3,سَ,Sound of س,Letter س,3ain
+Arabic,Letter sounds,audio/ar/sounds/14-sheen.mp3,شَ,Sound of ش,Letter ش,3ain
+Arabic,Letter sounds,audio/ar/sounds/15-saad.mp3,صَ,Sound of ص,Letter ص,3ain
+Arabic,Letter sounds,audio/ar/sounds/16-daad.mp3,ضَ,Sound of ض,Letter ض,3ain
+Arabic,Letter sounds,audio/ar/sounds/17-taa-emphatic.mp3,طَ,Sound of ط,Letter ط,3ain
+Arabic,Letter sounds,audio/ar/sounds/18-dhaa-emphatic.mp3,ظَ,Sound of ظ,Letter ظ,3ain
+Arabic,Letter sounds,audio/ar/sounds/19-ayn.mp3,عَ,Sound of ع,Letter ع,3ain
+Arabic,Letter sounds,audio/ar/sounds/20-ghayn.mp3,غَ,Sound of غ,Letter غ,3ain
+Arabic,Letter sounds,audio/ar/sounds/21-faa.mp3,فَ,Sound of ف,Letter ف,3ain
+Arabic,Letter sounds,audio/ar/sounds/22-qaaf.mp3,قَ,Sound of ق,Letter ق,3ain
+Arabic,Letter sounds,audio/ar/sounds/23-kaaf.mp3,كَ,Sound of ك,Letter ك,3ain
+Arabic,Letter sounds,audio/ar/sounds/24-laam.mp3,لَ,Sound of ل,Letter ل,3ain
+Arabic,Letter sounds,audio/ar/sounds/25-meem.mp3,مَ,Sound of م,Letter م,3ain
+Arabic,Letter sounds,audio/ar/sounds/26-noon.mp3,نَ,Sound of ن,Letter ن,3ain
+Arabic,Letter sounds,audio/ar/sounds/27-haa-h.mp3,هَ,Sound of ه,Letter ه,3ain
+Arabic,Letter sounds,audio/ar/sounds/29-waaw.mp3,وَ,Sound of و,Letter و,3ain
+Arabic,Letter sounds,audio/ar/sounds/30-yaa.mp3,يَ,Sound of ي,Letter ي,3ain
+Arabic,Abdullah's own voice,audio/ar/abdullah/abd-yay.mp3,يَيييه!,Yaaay!,Cheering after a win,character male young
+Arabic,Abdullah's own voice,audio/ar/abdullah/abd-letsgo.mp3,هَيّا!,Let's go!,Starting,character male young
+Arabic,Abdullah's own voice,audio/ar/abdullah/abd-oops.mp3,أُووه!,Ohhh!,Slipping or falling,character male young
+Arabic,Abdullah's own voice,audio/ar/abdullah/abd-wow.mp3,واااو!,Wooow!,Big jump or warm air,character male young
+Arabic,Abdullah's own voice,audio/ar/abdullah/abd-laugh.mp3,هههههه,(giggle),Bouncing,character male young
+English,Letter names,audio/en/letters/a.mp3,Ay,Letter A,Letter A,Jeanette
+English,Letter names,audio/en/letters/b.mp3,Bee,Letter B,Letter B,Jeanette
+English,Letter names,audio/en/letters/c.mp3,See,Letter C,Letter C,Jeanette
+English,Letter names,audio/en/letters/d.mp3,Dee,Letter D,Letter D,Jeanette
+English,Letter names,audio/en/letters/e.mp3,Ee,Letter E,Letter E,Jeanette
+English,Letter names,audio/en/letters/f.mp3,Eff,Letter F,Letter F,Jeanette
+English,Letter names,audio/en/letters/g.mp3,Jee,Letter G,Letter G,Jeanette
+English,Letter names,audio/en/letters/h.mp3,Aitch,Letter H,Letter H,Jeanette
+English,Letter names,audio/en/letters/i.mp3,Eye,Letter I,Letter I,Jeanette
+English,Letter names,audio/en/letters/j.mp3,Jay,Letter J,Letter J,Jeanette
+English,Letter names,audio/en/letters/k.mp3,Kay,Letter K,Letter K,Jeanette
+English,Letter names,audio/en/letters/l.mp3,Ell,Letter L,Letter L,Jeanette
+English,Letter names,audio/en/letters/m.mp3,Em,Letter M,Letter M,Jeanette
+English,Letter names,audio/en/letters/n.mp3,En,Letter N,Letter N,Jeanette
+English,Letter names,audio/en/letters/o.mp3,Oh,Letter O,Letter O,Jeanette
+English,Letter names,audio/en/letters/p.mp3,Pee,Letter P,Letter P,Jeanette
+English,Letter names,audio/en/letters/q.mp3,Cue,Letter Q,Letter Q,Jeanette
+English,Letter names,audio/en/letters/r.mp3,Ar,Letter R,Letter R,Jeanette
+English,Letter names,audio/en/letters/s.mp3,Ess,Letter S,Letter S,Jeanette
+English,Letter names,audio/en/letters/t.mp3,Tee,Letter T,Letter T,Jeanette
+English,Letter names,audio/en/letters/u.mp3,You,Letter U,Letter U,Jeanette
+English,Letter names,audio/en/letters/v.mp3,Vee,Letter V,Letter V,Jeanette
+English,Letter names,audio/en/letters/w.mp3,Double-you,Letter W,Letter W,Jeanette
+English,Letter names,audio/en/letters/x.mp3,Ex,Letter X,Letter X,Jeanette
+English,Letter names,audio/en/letters/y.mp3,Why,Letter Y,Letter Y,Jeanette
+English,Letter names,audio/en/letters/z.mp3,Zed,Letter Z,Letter Z,Jeanette
+English,Praise,audio/en/lines/praise-01.mp3,"Well done, Abdullah!",,Right answer,Jeanette
+English,Praise,audio/en/lines/praise-02.mp3,Great!,,Right answer,Jeanette
+English,Praise,audio/en/lines/praise-03.mp3,Great work!,,Right answer,Jeanette
+English,Praise,audio/en/lines/praise-04.mp3,Excellent!,,Right answer,Jeanette
+English,Praise,audio/en/lines/praise-05.mp3,Nicely done!,,Right answer,Jeanette
+English,Praise,audio/en/lines/praise-06.mp3,Amazing!,,Right answer,Jeanette
+English,Praise,audio/en/lines/praise-07.mp3,That's right!,,Right answer,Jeanette
+English,Praise,audio/en/lines/praise-08.mp3,Lovely!,,Right answer,Jeanette
+English,Praise,audio/en/lines/praise-09.mp3,Wow!,,Big moments,Jeanette
+English,Try again,audio/en/lines/try-01.mp3,Try again,,Wrong answer,Jeanette
+English,Try again,audio/en/lines/try-02.mp3,"Not that one, look carefully",,Wrong answer,Jeanette
+English,Try again,audio/en/lines/try-03.mp3,So close!,,Nearly right,Jeanette
+English,Try again,audio/en/lines/try-04.mp3,"Never mind, let's go again",,Lost a level or race,Jeanette
+English,Try again,audio/en/lines/try-05.mp3,Oops!,,Bump or slip,Jeanette
+English,Every game,audio/en/lines/start.mp3,Let's play!,,Pressing Play,Jeanette
+English,Every game,audio/en/lines/count-3.mp3,Three,,Countdown,Jeanette
+English,Every game,audio/en/lines/count-2.mp3,Two,,Countdown,Jeanette
+English,Every game,audio/en/lines/count-1.mp3,One,,Countdown,Jeanette
+English,Every game,audio/en/lines/go.mp3,Go!,,Countdown,Jeanette
+English,Every game,audio/en/lines/level-done.mp3,Level complete!,,End of a level,Jeanette
+English,Every game,audio/en/lines/all-done.mp3,You finished all three levels!,,End of the last level,Jeanette
+English,Star Hop,audio/en/lines/hop-intro.mp3,Help Abdullah hop across the islands and collect all the letters!,,Level starts,Jeanette
+English,Star Hop,audio/en/lines/hop-all-letters.mp3,You found all the letters! Now go to the big star,,Last letter caught,Jeanette
+English,Star Hop,audio/en/lines/hop-need-letters.mp3,Find all the letters first,,Touching the big star too early,Jeanette
+English,Star Hop,audio/en/lines/hop-checkpoint.mp3,Checkpoint!,,Touching a flag,Jeanette
+English,Star Hop,audio/en/lines/hop-splash.mp3,Splash!,,Falling in the water,Jeanette
+English,Star Hop,audio/en/lines/hop-net.mp3,Boing! Back up you go,,Bouncing on the safety net,Jeanette
+English,Star Hop,audio/en/lines/hop-squish.mp3,Squish!,,Jumping on a grumble,Jeanette
+English,Star Hop,audio/en/lines/hop-ouch.mp3,Ouch!,,Bumped by a grumble,Jeanette
+English,Star Hop,audio/en/lines/hop-out.mp3,Out of hearts. Let's try again,,Losing all hearts,Jeanette
+English,Letter Kart,audio/en/lines/kart-intro.mp3,Let's race!,,Race starts,Jeanette
+English,Letter Kart,audio/en/lines/name-abdullah.mp3,Abdullah,,Racer intro,Jeanette
+English,Letter Kart,audio/en/lines/name-fofo.mp3,Fofo,,Racer intro,Jeanette
+English,Letter Kart,audio/en/lines/name-najma.mp3,Najma,,Racer intro,Jeanette
+English,Letter Kart,audio/en/lines/name-mishmish.mp3,Mishmish,,Racer intro,Jeanette
+English,Letter Kart,audio/en/lines/kart-find.mp3,Drive through the picture that starts with…,,New picture challenge,Jeanette
+English,Letter Kart,audio/en/lines/kart-spell.mp3,Spell the word!,,New spelling challenge,Jeanette
+English,Letter Kart,audio/en/lines/kart-word-done.mp3,Great word!,,Word finished,Jeanette
+English,Letter Kart,audio/en/lines/kart-all-letters.mp3,You got all the letters!,,Last letter on Easy,Jeanette
+English,Letter Kart,audio/en/lines/kart-final-lap.mp3,Final lap!,,Last lap starts,Jeanette
+English,Letter Kart,audio/en/lines/kart-slip.mp3,Slippery!,,Driving through a puddle,Jeanette
+English,Letter Kart,audio/en/lines/kart-boost.mp3,Boost!,,Boost pad,Jeanette
+English,Letter Kart,audio/en/lines/kart-jump.mp3,Big jump!,,Ramp jump,Jeanette
+English,Letter Kart,audio/en/lines/kart-rocket.mp3,Rocket!,,Using the rocket,Jeanette
+English,Letter Kart,audio/en/lines/kart-shield.mp3,Shield!,,Using the shield,Jeanette
+English,Letter Kart,audio/en/lines/kart-magnet.mp3,Magnet!,,Using the magnet,Jeanette
+English,Letter Kart,audio/en/lines/kart-bubble.mp3,Bubble!,,Throwing a bubble,Jeanette
+English,Letter Kart,audio/en/lines/kart-bubbled.mp3,You got bubbled!,,Hit by a bubble,Jeanette
+English,Letter Kart,audio/en/lines/kart-win.mp3,You won the race!,,Finishing first,Jeanette
+English,Letter Kart,audio/en/lines/kart-place-2.mp3,Abdullah came second!,,Finishing second,Jeanette
+English,Letter Kart,audio/en/lines/kart-place-3.mp3,Abdullah came third!,,Finishing third,Jeanette
+English,Letter Kart,audio/en/lines/kart-place-4.mp3,Abdullah came fourth!,,Finishing fourth,Jeanette
+English,Letter Kart,audio/en/lines/kart-again.mp3,Race again to win!,,After not winning,Jeanette
+English,Letter Kart,audio/en/lines/kart-stickers.mp3,New stickers!,,Results screen,Jeanette
+English,Letter Glider,audio/en/lines/glide-intro.mp3,Let's fly!,,Flight starts,Jeanette
+English,Letter Glider,audio/en/lines/glide-catch.mp3,Catch the glowing letter!,,Easy: start of the flight,Jeanette
+English,Letter Glider,audio/en/lines/glide-bird.mp3,I want the letter that starts…,,A baby bird appears,Jeanette
+English,Letter Glider,audio/en/lines/glide-yum.mp3,Yum! Thank you!,,Feeding the right letter,Jeanette
+English,Letter Glider,audio/en/lines/glide-no.mp3,Not that one!,,Wrong balloon,Jeanette
+English,Letter Glider,audio/en/lines/glide-spell.mp3,Spell it!,,New spelling word,Jeanette
+English,Letter Glider,audio/en/lines/glide-thermal.mp3,Warm air rises! Wheee!,,First warm-air spiral,Jeanette
+English,Letter Glider,audio/en/lines/glide-thermal-fact.mp3,"Warm air goes up, and it lifts gliders and birds with it.",,Straight after the line above,Jeanette
+English,Letter Glider,audio/en/lines/glide-bump.mp3,Up you go!,,Flying too low,Jeanette
+English,Letter Glider,audio/en/lines/glide-write.mp3,Sky writing! Follow the rings,,Sky-writing starts,Jeanette
+English,Letter Glider,audio/en/lines/glide-wrote.mp3,You wrote it in the sky!,,Sky-writing finished (the letter recording plays after),Jeanette
+English,Letter Glider,audio/en/lines/glide-land.mp3,Land on the target!,,Landing starts,Jeanette
+English,Letter Glider,audio/en/lines/glide-stars-1.mp3,Good landing,,1-star landing,Jeanette
+English,Letter Glider,audio/en/lines/glide-stars-2.mp3,Super landing!,,2-star landing,Jeanette
+English,Letter Glider,audio/en/lines/glide-stars-3.mp3,Perfect landing!,,3-star landing,Jeanette
+English,Letter Glider,audio/en/lines/glide-landed-failaka.mp3,You landed on Failaka Island!,,End of the Easy flight,Jeanette
+English,Letter Glider,audio/en/lines/glide-landed-north.mp3,You landed on the north shore!,,End of the Medium flight,Jeanette
+English,Letter Glider,audio/en/lines/glide-landed-desert.mp3,You landed in the desert!,,End of the Hard flight,Jeanette
+English,Letter Glider,audio/en/lines/glide-album.mp3,New in your album!,,Results screen,Jeanette
+English,Abdullah's World home screen,audio/en/lines/hub-welcome.mp3,Hi! This is Abdullah's World,,Opening the home screen,Jeanette
+English,Abdullah's World home screen,audio/en/lines/hub-choose.mp3,Pick a game!,,Opening the home screen,Jeanette
+English,Abdullah's World home screen,audio/en/lines/hub-game-hop.mp3,Star Hop,,Tapping the game,Jeanette
+English,Abdullah's World home screen,audio/en/lines/hub-game-kart.mp3,Letter Kart,,Tapping the game,Jeanette
+English,Abdullah's World home screen,audio/en/lines/hub-game-glide.mp3,Letter Glider,,Tapping the game,Jeanette
+English,Picture words,audio/en/words/ant.mp3,Ant,,Picture word,Jeanette
+English,Picture words,audio/en/words/apple.mp3,Apple,,Picture word,Jeanette
+English,Picture words,audio/en/words/ball.mp3,Ball,,Picture word,Jeanette
+English,Picture words,audio/en/words/bee.mp3,Bee,,Picture word,Jeanette
+English,Picture words,audio/en/words/bird.mp3,Bird,,Picture word,Jeanette
+English,Picture words,audio/en/words/boat.mp3,Boat,,Picture word,Jeanette
+English,Picture words,audio/en/words/bus.mp3,Bus,,Picture word,Jeanette
+English,Picture words,audio/en/words/camel.mp3,Camel,,Picture word,Jeanette
+English,Picture words,audio/en/words/car.mp3,Car,,Picture word,Jeanette
+English,Picture words,audio/en/words/cat.mp3,Cat,,Picture word,Jeanette
+English,Picture words,audio/en/words/cow.mp3,Cow,,Picture word,Jeanette
+English,Picture words,audio/en/words/dog.mp3,Dog,,Picture word,Jeanette
+English,Picture words,audio/en/words/duck.mp3,Duck,,Picture word,Jeanette
+English,Picture words,audio/en/words/egg.mp3,Egg,,Picture word,Jeanette
+English,Picture words,audio/en/words/elephant.mp3,Elephant,,Picture word,Jeanette
+English,Picture words,audio/en/words/fish.mp3,Fish,,Picture word,Jeanette
+English,Picture words,audio/en/words/frog.mp3,Frog,,Picture word,Jeanette
+English,Picture words,audio/en/words/giraffe.mp3,Giraffe,,Picture word,Jeanette
+English,Picture words,audio/en/words/grapes.mp3,Grapes,,Picture word,Jeanette
+English,Picture words,audio/en/words/hat.mp3,Hat,,Picture word,Jeanette
+English,Picture words,audio/en/words/house.mp3,House,,Picture word,Jeanette
+English,Picture words,audio/en/words/ice-cream.mp3,Ice cream,,Picture word,Jeanette
+English,Picture words,audio/en/words/juice.mp3,Juice,,Picture word,Jeanette
+English,Picture words,audio/en/words/key.mp3,Key,,Picture word,Jeanette
+English,Picture words,audio/en/words/kite.mp3,Kite,,Picture word,Jeanette
+English,Picture words,audio/en/words/lemon.mp3,Lemon,,Picture word,Jeanette
+English,Picture words,audio/en/words/lion.mp3,Lion,,Picture word,Jeanette
+English,Picture words,audio/en/words/monkey.mp3,Monkey,,Picture word,Jeanette
+English,Picture words,audio/en/words/moon.mp3,Moon,,Picture word,Jeanette
+English,Picture words,audio/en/words/nose.mp3,Nose,,Picture word,Jeanette
+English,Picture words,audio/en/words/orange.mp3,Orange,,Picture word,Jeanette
+English,Picture words,audio/en/words/owl.mp3,Owl,,Picture word,Jeanette
+English,Picture words,audio/en/words/pig.mp3,Pig,,Picture word,Jeanette
+English,Picture words,audio/en/words/pizza.mp3,Pizza,,Picture word,Jeanette
+English,Picture words,audio/en/words/plane.mp3,Plane,,Picture word,Jeanette
+English,Picture words,audio/en/words/queen.mp3,Queen,,Picture word,Jeanette
+English,Picture words,audio/en/words/rabbit.mp3,Rabbit,,Picture word,Jeanette
+English,Picture words,audio/en/words/rocket.mp3,Rocket,,Picture word,Jeanette
+English,Picture words,audio/en/words/shell.mp3,Shell,,Picture word,Jeanette
+English,Picture words,audio/en/words/star.mp3,Star,,Picture word,Jeanette
+English,Picture words,audio/en/words/sun.mp3,Sun,,Picture word,Jeanette
+English,Picture words,audio/en/words/tiger.mp3,Tiger,,Picture word,Jeanette
+English,Picture words,audio/en/words/train.mp3,Train,,Picture word,Jeanette
+English,Picture words,audio/en/words/umbrella.mp3,Umbrella,,Picture word,Jeanette
+English,Picture words,audio/en/words/van.mp3,Van,,Picture word,Jeanette
+English,Picture words,audio/en/words/watch.mp3,Watch,,Picture word,Jeanette
+English,Picture words,audio/en/words/whale.mp3,Whale,,Picture word,Jeanette
+English,Picture words,audio/en/words/yo-yo.mp3,Yo-yo,,Picture word,Jeanette
+English,Picture words,audio/en/words/zebra.mp3,Zebra,,Picture word,Jeanette
+English,Postcards from Kuwait,audio/en/postcards/towers.mp3,Kuwait Towers. Two of the big blue balls on the Kuwait Towers hold water!,,Letter Glider postcard,Jeanette
+English,Postcards from Kuwait,audio/en/postcards/dhow.mp3,"The dhow. Long ago, Kuwaiti sailors travelled the sea in wooden boats called dhows.",,Letter Glider postcard,Jeanette
+English,Postcards from Kuwait,audio/en/postcards/failaka.mp3,Failaka Island. People lived on Failaka Island thousands of years ago!,,Letter Glider postcard,Jeanette
+English,Postcards from Kuwait,audio/en/postcards/pearl.mp3,Pearl diving. Divers held their breath and swam deep to find pearls in oysters.,,Letter Glider postcard,Jeanette
+English,Postcards from Kuwait,audio/en/postcards/bridge.mp3,Sheikh Jaber Bridge. The Sheikh Jaber Causeway is one of the longest bridges over the sea in the world!,,Letter Glider postcard,Jeanette
+English,Postcards from Kuwait,audio/en/postcards/camel.mp3,Camels. Camels can walk for days in the desert without drinking water.,,Letter Glider postcard,Jeanette
+English,Postcards from Kuwait,audio/en/postcards/tent.mp3,"Bait Al-Sha'ar. Bedouins lived in tents woven from goat hair, called bait al-sha'ar.",,Letter Glider postcard,Jeanette
+English,Letter sounds,audio/en/sounds/a.mp3,ah,Sound of A,Letter A,Jeanette
+English,Letter sounds,audio/en/sounds/b.mp3,buh,Sound of B,Letter B,Jeanette
+English,Letter sounds,audio/en/sounds/c.mp3,kuh,Sound of C,Letter C,Jeanette
+English,Letter sounds,audio/en/sounds/d.mp3,duh,Sound of D,Letter D,Jeanette
+English,Letter sounds,audio/en/sounds/e.mp3,eh,Sound of E,Letter E,Jeanette
+English,Letter sounds,audio/en/sounds/f.mp3,fff,Sound of F,Letter F,Jeanette
+English,Letter sounds,audio/en/sounds/g.mp3,guh,Sound of G,Letter G,Jeanette
+English,Letter sounds,audio/en/sounds/h.mp3,huh,Sound of H,Letter H,Jeanette
+English,Letter sounds,audio/en/sounds/i.mp3,ih,Sound of I,Letter I,Jeanette
+English,Letter sounds,audio/en/sounds/j.mp3,juh,Sound of J,Letter J,Jeanette
+English,Letter sounds,audio/en/sounds/k.mp3,kuh,Sound of K,Letter K,Jeanette
+English,Letter sounds,audio/en/sounds/l.mp3,lll,Sound of L,Letter L,Jeanette
+English,Letter sounds,audio/en/sounds/m.mp3,mmm,Sound of M,Letter M,Jeanette
+English,Letter sounds,audio/en/sounds/n.mp3,nnn,Sound of N,Letter N,Jeanette
+English,Letter sounds,audio/en/sounds/o.mp3,aw,Sound of O,Letter O,Jeanette
+English,Letter sounds,audio/en/sounds/p.mp3,puh,Sound of P,Letter P,Jeanette
+English,Letter sounds,audio/en/sounds/q.mp3,kwuh,Sound of Q,Letter Q,Jeanette
+English,Letter sounds,audio/en/sounds/r.mp3,rrr,Sound of R,Letter R,Jeanette
+English,Letter sounds,audio/en/sounds/s.mp3,sss,Sound of S,Letter S,Jeanette
+English,Letter sounds,audio/en/sounds/t.mp3,tuh,Sound of T,Letter T,Jeanette
+English,Letter sounds,audio/en/sounds/u.mp3,uh,Sound of U,Letter U,Jeanette
+English,Letter sounds,audio/en/sounds/v.mp3,vvv,Sound of V,Letter V,Jeanette
+English,Letter sounds,audio/en/sounds/w.mp3,wuh,Sound of W,Letter W,Jeanette
+English,Letter sounds,audio/en/sounds/x.mp3,ks,Sound of X,Letter X,Jeanette
+English,Letter sounds,audio/en/sounds/y.mp3,yuh,Sound of Y,Letter Y,Jeanette
+English,Letter sounds,audio/en/sounds/z.mp3,zzz,Sound of Z,Letter Z,Jeanette
+English,Abdullah's own voice,audio/en/abdullah/abd-yay.mp3,Yaaay!,,Cheering after a win,character male young
+English,Abdullah's own voice,audio/en/abdullah/abd-letsgo.mp3,Let's go!,,Starting,character male young
+English,Abdullah's own voice,audio/en/abdullah/abd-oops.mp3,Ohhh!,,Slipping or falling,character male young
+English,Abdullah's own voice,audio/en/abdullah/abd-wow.mp3,Wooow!,,Big jump or warm air,character male young
+English,Abdullah's own voice,audio/en/abdullah/abd-laugh.mp3,Hehehe!,,Bouncing,character male young
