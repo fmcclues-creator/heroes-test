@@ -659,7 +659,7 @@ function voiceThen(key, then, fallback) { playSeq([lineUrl(key), then], fallback
 function vt(tkey, key, mode) { voice(key, mode); return t(tkey); }
 function sayLetter(ch, name, mode) { playSeq([letterUrl(ch)], name || ch, mode || 'now'); }
 function sayWord(w, then, mode) { playSeq([wordUrl(w), then && lineUrl(then)], w, mode || 'now'); }
-function say(text) { try { const ss = window.speechSynthesis; if (!ss) return; ss.cancel(); const u = new SpeechSynthesisUtterance(text); u.lang = lang === 'ar' ? 'ar-SA' : 'en-US'; u.rate = 0.9; u.pitch = 1.15; const v = ss.getVoices().find(v => v.lang && v.lang.toLowerCase().startsWith(lang)); if (v) u.voice = v; ss.speak(u); } catch (_) {} }
+function say(text) { return; /* no device voice: recorded clips only */ try { const ss = window.speechSynthesis; if (!ss) return; ss.cancel(); const u = new SpeechSynthesisUtterance(text); u.lang = lang === 'ar' ? 'ar-SA' : 'en-US'; u.rate = 0.9; u.pitch = 1.15; const v = ss.getVoices().find(v => v.lang && v.lang.toLowerCase().startsWith(lang)); if (v) u.voice = v; ss.speak(u); } catch (_) {} }
 
 // ================= input =================
 const keys = {}; let touchL = false, touchR = false, touchUp = false;
@@ -989,5 +989,7 @@ requestAnimationFrame(frame);
 })();
 </script>
 
+<script>/* menu tap sound */(function(){var c;function tap(){try{c=c||new (window.AudioContext||window.webkitAudioContext)();if(c.state==='suspended')c.resume();var t=c.currentTime;[[880,520,0],[1320,990,0.012]].forEach(function(p){var o=c.createOscillator(),g=c.createGain();o.type='sine';o.frequency.setValueAtTime(p[0],t+p[2]);o.frequency.exponentialRampToValueAtTime(p[1],t+p[2]+0.07);g.gain.setValueAtTime(0.0001,t+p[2]);g.gain.exponentialRampToValueAtTime(p[2]?0.06:0.16,t+p[2]+0.006);g.gain.exponentialRampToValueAtTime(0.0001,t+p[2]+0.1);o.connect(g);g.connect(c.destination);o.start(t+p[2]);o.stop(t+p[2]+0.12);});}catch(e){}}
+document.addEventListener('pointerdown',function(e){var b=e.target.closest&&e.target.closest('button,a,[role=button],#g1n,#g2n,#g3n,#kidsBox,label');if(!b||b.matches('.jump,.jumpBtn,.steer,.itemBtn,.upBtn'))return;tap();},true);})();</script>
 </body>
 </html>
