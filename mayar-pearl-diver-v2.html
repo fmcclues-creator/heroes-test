@@ -430,10 +430,11 @@ sfx.shell = () => [880, 1175, 1568].forEach((f, i) => setTimeout(() => beep(f, 0
 
 // ---------- voice: recorded clips. voice-pd.json = words, clues, letters & event lines; voice-pd2.json = story lines ----------
 let VOICE = null, vBuf = {}, vSrc = null, vQueue = [], vMiss = [], vTok = 0;
+let VOICE_EN = null, VOICE_EN_P = null; function enLoad() { if (!VOICE_EN_P) VOICE_EN_P = fetch('assets/voice-en-pd.json').then(r => r.ok ? r.json() : null).then(j => { VOICE_EN = j || { clips: {}, keys: {} }; }).catch(() => { VOICE_EN = { clips: {}, keys: {} }; }); return VOICE_EN_P; }
 Promise.all(['assets/voice-pd.json', 'assets/voice-pd2.json'].map(f => fetch(f).then(r => r.ok ? r.json() : {}).catch(() => ({})))).then(([a, b]) => { VOICE = Object.assign({}, a, b); });
 function vCtx() { if (!actx) { try { actx = new (window.AudioContext || window.webkitAudioContext)(); } catch (_) {} } if (actx && actx.state === 'suspended') actx.resume(); return actx; }
 async function vDecode(k) {
-  if (vBuf[k]) return vBuf[k]; const b64 = VOICE && VOICE[k]; const c = vCtx(); if (!b64 || !c) return null;
+  if (vBuf[k]) return vBuf[k]; const b64 = String(k).startsWith('en:') ? (VOICE_EN && VOICE_EN.clips[VOICE_EN.keys[k.slice(3)]]) : (VOICE && VOICE[k]); const c = vCtx(); if (!b64 || !c) return null;
   const bin = atob(b64.replace(/^data:[^,]+,/, '')), u8 = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) u8[i] = bin.charCodeAt(i);
   vBuf[k] = await new Promise((res, rej) => c.decodeAudioData(u8.buffer, res, rej)).catch(() => null); return vBuf[k];
 }
@@ -454,7 +455,7 @@ function caption(txt, secs, cls) { const e = $('sub'); clearTimeout(subT); if (!
 function sayLine(id, queued, cb, noCap) {
   const k = lineKey(id); if (!k) { cb && cb(); return; }
   if (!noCap && (state === 'play' || state === 'stagedone' || state === 'fail')) caption(LINES[k][lang === 'en' ? 1 : 0], 0, state === 'stagedone' ? 'ok' : '');
-  if (lang === 'en') { enSpeak(LINES[k][1], cb); return; }
+  if (lang === 'en') { enLoad(); if (VOICE_EN && VOICE_EN.keys[k] != null) { const ek = 'en:' + k; if (queued && (vSrc || vQueue.length)) { vQueue.push({ k: ek, cb }); return; } vQueue = []; vTok++; vPlay(ek, cb); } else if (cb) { setTimeout(cb, readSecs(LINES[k][1]) * 1000); } return; }
   if (VOICE && !VOICE[k]) vMiss.push(k);
   if (queued && (vSrc || vQueue.length)) { vQueue.push({ k, cb }); return; }
   vQueue = []; vTok++; vPlay(k, cb);
@@ -1190,7 +1191,7 @@ function chCard(i) {
   if (open) $('chGo').onclick = () => { vCtx(); musStart(); delete save.cur; persist(); startChapter(i); };
   if (open && cur) $('chRes').onclick = () => { vCtx(); musStart(); startChapter(i, true, cur); };
 }
-function drawTitle() {
+function drawTitle() { if (lang === 'en') enLoad();
   document.documentElement.lang = lang; document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
   $('langAr').classList.toggle('on', lang === 'ar'); $('langEn').classList.toggle('on', lang === 'en');
   $('tTitle').textContent = t('title'); $('tTag').textContent = t('tag'); $('meT').textContent = t('me'); $('meName').textContent = kidName();
